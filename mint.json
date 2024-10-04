@@ -18,7 +18,7 @@
   "topbarLinks": [
     {
       "name": "Support",
-      "url": "mailto:hi@mintlify.com"
+      "url": "mailto:support@chargeblast.com"
     }
   ],
   "topbarCtaButton": {
@@ -32,6 +32,12 @@
     }
   ],
   "anchors": [
+       {
+      "name": "API Reference",
+      "openapi": "https://api.chargeblast.com/Swagger/swagger.json",
+      "url": "api-reference",
+      "icon": "square-terminal"
+    },
     {
       "name": "Documentation",
       "icon": "book-open-cover",
