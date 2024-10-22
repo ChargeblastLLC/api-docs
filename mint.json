@@ -12,7 +12,7 @@
       "to": "#7d5ffe"
     }
   },
-  "font": { "headings": { "family": "Poppins" , "weight": 600} },
+  "font": { "headings": { "family": "Poppins", "weight": 600 } },
   "modeToggle": {
     "default": "light",
     "isHidden": true
@@ -85,29 +85,31 @@
       ]
     },
     {
+      "group": "webhooks",
+      "pages": ["api-reference/webhooks/setup"]
+    },
+    {
       "group": "Sync Data",
+      "pages": ["api-reference/sync-data/upload-orders"]
+    },
+    {
+      "group": "Alerts",
       "pages": [
-        "api-reference/sync-data/upload-orders"
+        "api-reference/alerts/fetch-an-alert",
+        "api-reference/alerts/update-alert",
+        "api-reference/alerts/fetch-alerts"
       ]
     },
     {
-    "group": "Alerts",
-    "pages": [
-      "api-reference/alerts/fetch-an-alert",
-      "api-reference/alerts/update-alert",
-      "api-reference/alerts/fetch-alerts"
-    ]
-    },
-    {
-    "group": "Enrollment",
-    "pages": [
-      "api-reference/enrollment/fetch-merchants",
-      "api-reference/enrollment/fetch-descriptors",
-      "api-reference/enrollment/fetch-merchant",
-      "api-reference/enrollment/enroll-merchant",
-      "api-reference/enrollment/unenroll-merchant"
-    ]
-  }
+      "group": "Enrollment",
+      "pages": [
+        "api-reference/enrollment/fetch-merchants",
+        "api-reference/enrollment/fetch-descriptors",
+        "api-reference/enrollment/fetch-merchant",
+        "api-reference/enrollment/enroll-merchant",
+        "api-reference/enrollment/unenroll-merchant"
+      ]
+    }
   ],
   "footerSocials": {
     "x": "https://twitter.com/chargeblast",
