@@ -1,0 +1,53 @@
+---
+title: "Refund Endpoint"
+---
+
+## Overview
+
+To integrate with our system, you need to set up an endpoint that handles refund requests and returns a structured response. This endpoint will be used to action alerts, and it must respond with the specific structure defined below. The API key will be passed as a query parameter in the URL. Prior to implementing this endpoint, we recommend implementing the `/orders/upload` [endpoint](/reference/orders-upload), which will be used to perform the transaction matching logic.
+
+#### Endpoint Requirements
+
+**HTTP Method:** POST  
+**Query Parameter:** api_key (Your unique API key)
+
+Your endpoint should accept a POST request with the API key included in the query string like this:  
+`https://your-domain.com/your-endpoint?api_key={{YOUR_API_KEY}}`
+
+You can set this URL in your account under developer settings:
+
+![](/images/reference/cb73ad3a066492daf730885b57a0a3c1c25a89f5a94e270984699d0c7ca2a9da-Screenshot_2024-10-03_at_8.50.20_PM.png)
+
+#### Request Body
+
+The request body will include the necessary details for processing a refund. This will be in JSON format (details of the request structure can be provided based on your specific requirements).
+
+Here's an example request body:
+
+json
+
+`{ 
+  "charge_id": "ch_xxxxxxxx", // corresponds to charge object in your database
+  "alert_id": "al_xxxxxxxx" 
+}
+`
+
+#### Response
+
+Your endpoint must return a response that conforms to the following payload:
+
+json
+
+`{  
+  "code": "Resolved"  
+}
+`
+
+The potential responses are:
+
+- Resolved - the alert was used to successfully refund a cardholder.
+- AlreadyChargeback - the transaction was already a dispute.
+- AlreadyRefunded - the transaction was already refunded prior to the alert being transmitted.
+- UnmatchedGeneral - a catch-all rejection code for alerts rejected for various other reasons.
+
+If there's any issue with the request (e.g., missing API key or invalid data), appropriate HTTP status codes should be returned along with a message explaining the issue.

@@ -84,13 +84,20 @@
         "reference/checkout-champ-integration"
       ]
     },
-    {
-      "group": "Webhooks",
-      "pages": ["api-reference/webhooks/setup"]
-    },
+
     {
       "group": "Sync Data",
       "pages": ["api-reference/sync-data/upload-orders"]
+    },
+    {
+      "group": "Getting Started",
+      "icon": "hand-wave",
+      "iconType": "solid",
+      "pages": [
+        "api-reference/getting-started/guide",
+        "api-reference/getting-started/refund-endpoint",
+        "api-reference/webhooks/setup"
+      ]
     },
     {
       "group": "Alerts",
