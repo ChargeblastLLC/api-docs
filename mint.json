@@ -1,29 +1,38 @@
 {
   "$schema": "https://mintlify.com/schema.json",
-  "name": "Starter Kit",
-  "logo": {
-    "dark": "/logo/dark.svg",
-    "light": "/logo/light.svg"
-  },
-  "favicon": "/favicon.svg",
+  "name": "Chargeblast",
+  "logo": "/logo/logo.png",
+  "favicon": "/favicon.png",
   "colors": {
-    "primary": "#0D9373",
-    "light": "#07C983",
-    "dark": "#0D9373",
+    "primary": "#7d5fff",
+    "light": "#9d89ff",
+    "dark": "#7d5fff",
     "anchors": {
-      "from": "#0D9373",
-      "to": "#07C983"
+      "from": "#9d89ff",
+      "to": "#7d5ffe"
     }
   },
+  "font": { "headings": { "family": "Poppins" , "weight": 600} },
+  "modeToggle": {
+    "default": "light",
+    "isHidden": true
+  },
+  "background": { "style": "gradient" },
   "topbarLinks": [
     {
-      "name": "Support",
-      "url": "mailto:support@chargeblast.com"
+      "name": "Contact sales",
+      "url": "https://meetings.hubspot.com/chargeblast/learn-about-chargeblast?__hstc=123172564.3337601c5527cf533e665087a1c93434.1728899644886.1728899644886.1728901995866.2&__hssc=123172564.3.1728901995866&__hsfp=2296146515&uuid=8d7c5ee0-1800-4e4d-9b3f-4a0cda85475b"
+    },
+    {
+      "name": "Log In",
+      "url": "https://app.chargeblast.com/dashboard"
     }
   ],
   "topbarCtaButton": {
-    "name": "Dashboard",
-    "url": "https://dashboard.mintlify.com"
+    "name": "Sign Up",
+    "url": "https://app.chargeblast.com/auth/registration",
+    "arrow": false,
+    "style": "roundedRectangle"
   },
   "tabs": [
     {
@@ -32,66 +41,76 @@
     }
   ],
   "anchors": [
-       {
-      "name": "API Reference",
-      "openapi": "https://api.chargeblast.com/Swagger/swagger.json",
-      "url": "api-reference",
-      "icon": "square-terminal"
+    {
+      "name": "About",
+      "icon": "users",
+      "url": "https://www.chargeblast.com/about"
     },
     {
-      "name": "Documentation2",
-      "icon": "book-open-cover",
-      "url": "https://mintlify.com/docs"
-    },
-    {
-      "name": "Community",
-      "icon": "slack",
-      "url": "https://mintlify.com/community"
+      "name": "Help Center",
+      "icon": "headset",
+      "url": "https://help.chargeblast.com/"
     },
     {
       "name": "Blog",
       "icon": "newspaper",
-      "url": "https://mintlify.com/blog"
+      "url": "https://www.chargeblast.com/blog"
     }
   ],
   "navigation": [
     {
       "group": "Get Started",
       "pages": [
-        "introduction",
-        "quickstart",
-        "development"
+        {
+          "group": "Welcome to Chargeblast",
+          "icon": "hand-wave",
+          "iconType": "solid",
+          "pages": [
+            "reference/welcome-to-chargeblast",
+            "reference/welcome-to-chargeblast-copy"
+          ]
+        },
+        "reference/refunding-alerts"
       ]
     },
     {
-      "group": "Essentials",
+      "group": "Integrations",
       "pages": [
-        "essentials/markdown",
-        "essentials/code",
-        "essentials/images",
-        "essentials/settings",
-        "essentials/navigation",
-        "essentials/reusable-snippets"
+        "reference/slack-integration",
+        "reference/stripe-integration",
+        "reference/zapier-integration",
+        "reference/klaviyo-integration",
+        "reference/mamopay-integration",
+        "reference/checkout-champ-integration"
       ]
     },
     {
-      "group": "API Documentation",
+      "group": "Sync Data",
       "pages": [
-        "api-reference/introduction"
+        "api-reference/sync-data/upload-orders"
       ]
     },
     {
-      "group": "Endpoint Examples",
-      "pages": [
-        "api-reference/endpoint/get",
-        "api-reference/endpoint/create",
-        "api-reference/endpoint/delete"
-      ]
-    }
+    "group": "Alerts",
+    "pages": [
+      "api-reference/alerts/fetch-an-alert",
+      "api-reference/alerts/update-alert",
+      "api-reference/alerts/fetch-alerts"
+    ]
+    },
+    {
+    "group": "Enrollment",
+    "pages": [
+      "api-reference/enrollment/fetch-merchants",
+      "api-reference/enrollment/fetch-descriptors",
+      "api-reference/enrollment/fetch-merchant",
+      "api-reference/enrollment/enroll-merchant",
+      "api-reference/enrollment/unenroll-merchant"
+    ]
+  }
   ],
   "footerSocials": {
-    "x": "https://x.com/mintlify",
-    "github": "https://github.com/mintlify",
-    "linkedin": "https://www.linkedin.com/company/mintsearch"
+    "x": "https://twitter.com/chargeblast",
+    "linkedin": "https://www.linkedin.com/company/chargeblast"
   }
 }

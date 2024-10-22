@@ -1,0 +1,41 @@
+---
+title: "Refunding Alerts"
+icon: bell
+iconType: solid
+description: For Ethoca (Mastercard) and CDRN (VISA) alerts, you as a merchant, are responsible for issuing refunds. Failure to issue a refund for an alert can result in a chargeback - additionally, the card networks are expecting these transactions are refunded, so if you only plan on refunding a portion of alerts please contact support for a custom integration.
+---
+
+<Info>
+  **Don't want to deal with the refunds manually?**
+
+  You can add [support@chargeblast.io](mailto:support@chargeblast.io) with refund analyst permissions to your Stripe account and we will handle them for you.
+</Info>
+
+#### For Stripe Businesses
+
+Unlike other PSPs, Stripe does not expose transaction ARNs. ARNs are unique identifying information that tracks each transaction through the payment network. For Stripe, we must use other identifying info to match transactions. For this, we look at:
+
+* Last 4 Digits
+* Transaction Date
+* Transaction Amount/Currency
+* Issuing Bank
+
+The fastest way to search for a transaction in Stripe is by searching for a transaction by typing last4:xxxx into the search bar:
+
+<Frame>
+  <img src="/images/reference/b55f606-Screenshot_2023-07-05_at_10.09.56_PM.png"/>
+</Frame>
+
+Then look for a transaction that matches the date, amount, and currency type for the alert. Most, _but not all_, of the Ethoca alerts will be for Mastercard transactions.
+
+#### Can't find the alert by the last 4 digits?
+
+Occasionally Stripe will mask the card number so when you search for the transaction by last 4 digits, no corresponding transaction will show up. When this happens, it is best to fall back on issuer name to match the corresponding transaction. We recommend searching instead by dollar amount, and transaction date, and then sorting through transactions to find one that matches the issuer for the alert, like [this](https://dashboard.stripe.com/payments?status%5B0%5D=successful&amount=1199&created%5Bgte%5D=1688184000&created%5Blte%5D=1688270399):
+
+<Frame>
+  <img src="/images/reference/05b5a4a-Screenshot_2023-07-05_at_10.21.24_PM.png"/>
+</Frame>
+
+<Frame caption='Clicking into the payment shows the issuer, in this case "Commonwealth Bank of Australia"'>
+  <img src="/images/reference/c7e54bb-Screenshot_2023-07-05_at_10.23.35_PM.png" alt='Clicking into the payment shows the issuer, in this case "Commonwealth Bank of Australia"'/>
+</Frame>

@@ -1,0 +1,51 @@
+---
+title: "Stripe Integration"
+description: "This page will help you get started with Integrations."
+icon: stripe
+iconType: solid
+---
+
+By installing our Stripe app, you will get access to the following key features:
+
+1. **Transaction Matching** \- alerts from Mastercard & VISA will be matched to your Stripe transactions.
+2. **Billing Descriptor Override** \- for large merchants where transaction amount, date, and last 4 digits are insufficient to match transactions, you can set up several billing descriptors from within Chargeblast that will override the billing descriptors set in your Stripe account.
+3. **EFW Rules** \- for merchants needing additional coverage selling low ASP products, set up custom low early fraud warning rules to auto-refund specific transactions.
+
+### Connecting your Stripe account
+
+The first step is to go to the [integrations](https://app.chargeblast.io/integrations) page within your Chargeblast dashboard and connect your Stripe account.
+
+<Frame>
+  <img src="/images/reference/17badff-Screenshot_2023-08-03_at_2.13.13_PM.png"/>
+</Frame>
+
+Once connected, your data will begin syncing to our servers. You will receive an email when the data sync has been completed. Our estimated time for data syncs are 1 hour per every 100K charges per month.
+
+### Transaction matching
+<Frame>
+  <img src="/images/reference/241ee3f-image-57.png"/>
+</Frame>
+
+Within your alerts tab, you will now be able to see the corresponding transaction within Stripe. **You will still have to refund it**.
+
+### Billing Descriptor Override
+
+In order to match transactions on card carriers that mask the last 4 digits, for example Apple Pay, we need to rely on other data such as the billing descriptor. This is only useful for merchants typically processing 30k+ transactions per month, where last 4 digits, amount, date, card brand and issuing bank is not sufficient.
+
+You can set descriptors within the Chargeblast settings menu [here](https://app.chargeblast.io/settings/descriptors). This will randomly allocate a descriptor to each of your transactions.
+<Frame>
+  <img src="/images/reference/36fcc24-Screenshot_2023-08-03_at_3.01.37_PM.png"/>
+</Frame>
+
+For guidelines on how to determine a good billing descriptor, please consult Stripe's docs [here](https://stripe.com/docs/payments/account/statement-descriptors).
+
+### Early Fraud Warning auto-refunds
+
+Stripe issues early fraud warnings (EFWs) whenever a customer reports their card as lost or stolen. Our Stripe integration allows you to set custom logic to refund certain transactions. We do not recommend refunding EFWs for transactions >$30 since EFWs only have a \~70% probability of becoming a dispute. For more info on what an EFW is, check out Stripe's docs [here](https://support.stripe.com/questions/getting-started-with-stripe-fraud-and-disputes#early-warnings).
+
+For merchants not set up with our custom Amex/Discover integration (contact support for details), Amex/Discover rules are also recommended.
+<Frame caption="As a reminder, there is no cost for EFW alerts">
+  <img src="/images/reference/c99e128-Screenshot_2023-08-04_at_6.24.11_PM.png"/>
+</Frame>
+
+

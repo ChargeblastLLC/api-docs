@@ -1,0 +1,23 @@
+---
+title: "Welcome to Chargeblast"
+description: You're on your way to eliminating chargebacks!
+sidebarTitle: Overview
+icon: hand-wave
+iconType: solid
+---
+
+<iframe width="100%" height="420" src="https://www.youtube.com/embed/Fi_uRopa1Qw?si=15NWSQlFg4u1LGpP" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+## <Icon icon="file-pen" iconType="solid" size="24"/> Types of Alerts
+
+We offer 3 types of alerts: Ethoca (Mastercard), CDRN (Visa) and RDR (Visa). You can sign up for all 3 alert types, however depending on your merchant risk level, this may be overkill.
+
+* **Ethoca:** Ethoca is the premier alert offered and has the best coverage of all the alert types. This Mastercard service also front runs VISA's products, so if multiple alert products are used, the Ethoca alerts will come in first. Ethoca will cover both Mastercard and VISA transactions, though focuses mostly on Mastercard transactions (around 95% coverage for MC, and 30% for VISA). Ethoca alerts require merchant-side refunding. With additional configs, the Ethoca feed can be deployed on Amex/Discover transactions.
+* **CDRN:** CDRN is a legacy product offered by VISA, however, is still in operation. CDRN focuses on VISA related transactions and requires merchant-side refunding. They are also the most expensive alert.
+* **RDR:** RDR is the more modern dispute resolution product offered by VISA. Unlike CDRN and Ethoca, RDR is an issuer side product, meaning the acquirer (for example Stripe) will be responsible for refunding the transactions. No action is acquired by the merchant for RDR.
+
+Our recommendation for the highest risk merchants is to subscribe to all three products, wherein you will get the best coverage, and be able to accept the widest range of payments. For medium risk merchants, our recommendation would be to use RDR and Ethoca.
+
+It's worth noting, since Ethoca is deployed at the consumer bank level, and RDR at the acquiring bank level, for a merchant that is refunding all their Ethoca alerts, they will receive no duplicate RDR alerts, since the Ethoca feed front runs the RDR feed by about 7 days.
+
+For Ethoca alerts on Visa cards that are rejected, they will turn into disputes or hit RDR. For this reason, for merchant being very selective about what transactions are refunded (namely resolve rates of \<50%) it is not advised to run both Ethoca & RDR, however this is a very niche use case.
