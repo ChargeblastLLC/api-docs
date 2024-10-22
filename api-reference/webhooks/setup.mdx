@@ -1,6 +1,5 @@
 ---
 title: "Webhook"
-openapi: post /api/orders/upload
 description: "This page will help you get started with our webhooks."
 ---
 
@@ -20,7 +19,7 @@ In order to authenticate the request, you perform a HMAC-SHA256 encoding using a
 
 This is a common method for ensuring that the webhook messages you receive in your server are from a trusted source and haven't been tampered with.
 
-```
+```Python routes.py
 # Your webhook secret key
 key = "ws_xxxxxxxxx"
 
