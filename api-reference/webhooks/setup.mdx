@@ -6,19 +6,22 @@ api: POST https://yourwebsite.com/webhook/endpoint
 
 ### Headers
 
-<ParamField header="svix-id" type="string" required></ParamField>
+<ParamField
+  header="svix-id"
+  type="string"
+  placeholder="msg_2oElGfSBDxbSP6x924Uv8j72nG8"
+></ParamField>
 <ParamField
   header="svix-timestamp"
   type="string"
-  default="123"
-  required
+  placeholder="1730411936"
 ></ParamField>
-
-<ResponseField name="X-Webhook-Signature" type="string"></ResponseField>
-<ResponseField name="svix-timestamp" type="string"></ResponseField>
-<ResponseField name="svix-signature" type="string"></ResponseField>
-<ResponseField name="svix-id" type="string"></ResponseField>
-
+<ParamField
+  name="svix-signature"
+  type="string"
+  placeholder="112a1b6b284216816f375bf905798617908b016990e3e1a902b844a1a7aa5723
+"
+></ParamField>
 ### Body
 
 <ResponseField name="id" type="string"></ResponseField>
