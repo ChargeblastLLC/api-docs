@@ -19,12 +19,123 @@ api: POST https://yourwebsite.com/webhook/endpoint
 <ParamField
   name="svix-signature"
   type="string"
-  placeholder="112a1b6b284216816f375bf905798617908b016990e3e1a902b844a1a7aa5723
-"
+  placeholder="112a1b6b284216816f375bf905798617908b016990e3e1a902b844a1a7aa5723"
 ></ParamField>
 ### Body
 
-<ResponseField name="id" type="string"></ResponseField>
+<ResponseField
+  name="alertId"
+  type="string"
+  placeholder="al_4xUCdBXVs23u03i51cpQBJ"
+></ResponseField>
+<ResponseField
+  name="alertType"
+  type="string"
+  placeholder="FRAUD"
+></ResponseField>
+<ResponseField name="amount" type="float" placeholder="529.65"></ResponseField>
+<ResponseField
+  name="arn"
+  type="string"
+  placeholder="82117554274000005990521"
+></ResponseField>
+<ResponseField
+  name="authCode"
+  type="string"
+  placeholder="05534Z"
+></ResponseField>
+<ResponseField
+  name="card"
+  type="string"
+  placeholder="512025******9493"
+></ResponseField>
+<ResponseField
+  name="cardBrand"
+  type="string"
+  placeholder="Mastercard"
+></ResponseField>
+<ResponseField
+  name="createdAt"
+  type="string"
+  placeholder="2024-10-31 21:57:23.601000Z"
+></ResponseField>
+<ResponseField
+  name="creditAppealed"
+  type="bool"
+  placeholder="false"
+></ResponseField>
+<ResponseField
+  name="creditStatus"
+  type="string"
+  placeholder="None"
+></ResponseField>
+<ResponseField name="currency" type="string" placeholder="USD"></ResponseField>
+<ResponseField
+  name="customerEmail"
+  type="string"
+  placeholder="caroledamani54@gmail.com"
+></ResponseField>
+<ResponseField
+  name="customerId"
+  type="string"
+  placeholder="cus_QwfeH401taw9dr"
+></ResponseField>
+<ResponseField
+  name="descriptor"
+  type="string"
+  placeholder="CB FUTUR* FH D3OR627"
+></ResponseField>
+<ResponseField
+  name="externalOrder"
+  type="string"
+  placeholder="ch_3Q4mJCJtNeaYv7630iXL2Ixo"
+></ResponseField>
+<ResponseField
+  name="externalUrl"
+  type="string"
+  placeholder="https://dashboard.stripe.com/charges/ch_3Q4mJCJtNeaYv7630iXL2Ixo"
+></ResponseField>
+<ResponseField
+  name="id"
+  type="string"
+  placeholder="al_4xUCdBXVs23u03i51cpQBJ"
+></ResponseField>
+<ResponseField
+  name="issuer"
+  type="string"
+  placeholder="Capital One, National Association"
+></ResponseField>
+<ResponseField
+  name="merchantId"
+  type="string"
+  placeholder="cb_Lu5Stoaxk10tGT9Nyp1Thf"
+></ResponseField>
+<ResponseField
+  name="provider"
+  type="string"
+  placeholder="ethoca"
+></ResponseField>
+<ResponseField
+  name="reasonCode"
+  type="string"
+  placeholder="Resolved"
+></ResponseField>
+<ResponseField
+  name="responseAction"
+  type="string"
+  placeholder="Accepted"
+></ResponseField>
+<ResponseField name="site" type="string" placeholder=""></ResponseField>
+<ResponseField
+  name="subprovider"
+  type="string"
+  placeholder="Ethoca"
+></ResponseField>
+<ResponseField
+  name="transactionDate"
+  type="string"
+  placeholder="2024-09-30 00:00:00.000000Z"
+></ResponseField>
 
 ---
 
