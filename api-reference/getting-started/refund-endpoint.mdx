@@ -4,7 +4,9 @@ title: "Refund Endpoint"
 
 ## Overview
 
-To integrate with our system, you need to set up an endpoint that handles refund requests and returns a structured response. This endpoint will be used to action alerts, and it must respond with the specific structure defined below. The API key will be passed as a query parameter in the URL. Prior to implementing this endpoint, we recommend implementing the `/orders/upload` [endpoint](/reference/orders-upload), which will be used to perform the transaction matching logic.
+One method for integrating with our system, is to expose a refund endpoint which returns a structured response. This endpoint will be used to action alerts, and it must respond with the specific structure defined below. The API key will be passed as a query parameter in the URL. Prior to implementing this endpoint, we recommend implementing the `/orders/upload` [endpoint](/reference/orders-upload), which will be used to perform the transaction matching logic.
+
+This endpoint is designed for FinTechs that have multiple processors. If you're a merchant using a single processor, instead request an integration build.
 
 #### Endpoint Requirements
 
@@ -35,12 +37,11 @@ Here's an example request body:
 
 Your endpoint must return a response that conforms to the following payload:
 
-json
-
-`{  
-  "code": "Resolved"  
+```json
+{
+  "code": "Resolved"
 }
-`
+```
 
 The potential responses are:
 
