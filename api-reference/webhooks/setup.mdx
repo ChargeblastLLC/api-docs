@@ -175,7 +175,7 @@ api: POST https://yourwebsite.com/webhook/endpoint
 
 First set up your webhook URL in the Chargeblast dashboard in the settings tab.
 
-![](/images/reference/aabcd3e-Screenshot_2024-02-01_at_4.08.36_PM.png)
+![](/images/reference/webhooksetup.png)
 
 Chargeblast will begin emitting events to your webhook URL with the following schema. These events will be fired anytime a new alert is generated.
 
@@ -214,4 +214,8 @@ print("Verification failed: Signatures do not match.")
 
 ### Types
 
-There is currently only one type of webhook, the `alert.create` webhook, however additional events are coming soon.
+There is currently the following webhook types:
+
+- `alert.updated` - occurs when
+- `alert.created`
+- `alert.refunded``
