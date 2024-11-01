@@ -1,6 +1,20 @@
 ---
 title: "Webhook"
 description: "This page will help you get started with our webhooks."
+api: POST https://yourwebsite.com/webhook/endpoint
+---
+
+### Headers
+
+<ResponseField name="X-Webhook-Signature" type="string"></ResponseField>
+<ResponseField name="svix-timestamp" type="string"></ResponseField>
+<ResponseField name="svix-signature" type="string"></ResponseField>
+<ResponseField name="svix-id" type="string"></ResponseField>
+
+### Body
+
+<ResponseField name="RAW_BODY" type="object"></ResponseField>
+
 ---
 
 First set up your webhook URL in the Chargeblast dashboard in the settings tab.
