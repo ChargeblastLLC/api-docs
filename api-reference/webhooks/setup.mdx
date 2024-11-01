@@ -216,6 +216,6 @@ print("Verification failed: Signatures do not match.")
 
 There is currently the following webhook types:
 
-- `alert.updated` - occurs when
-- `alert.created`
-- `alert.refunded``
+- `alert.created`: transmitted when an alert is first created.
+- `alert.updated`: transmitted when an alert's status is updated. Use this if you require `externalOrder` the field.
+- `alert.refunded`: transmitted when an alert triggers a transaction to be refunded.

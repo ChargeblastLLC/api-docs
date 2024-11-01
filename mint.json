@@ -86,10 +86,6 @@
     },
 
     {
-      "group": "Sync Data",
-      "pages": ["api-reference/sync-data/upload-orders"]
-    },
-    {
       "group": "Getting Started",
       "icon": "hand-wave",
       "iconType": "solid",
@@ -98,6 +94,10 @@
         "api-reference/getting-started/refund-endpoint",
         "api-reference/webhooks/setup"
       ]
+    },
+    {
+      "group": "Sync Data",
+      "pages": ["api-reference/sync-data/upload-orders"]
     },
     {
       "group": "Alerts",
