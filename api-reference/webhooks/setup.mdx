@@ -148,11 +148,11 @@ api: POST https://yourwebsite.com/webhook/endpoint
     "arn": "12345678901234567890123",
     "authCode": "ABC123",
     "card": "123456xxxxxxx7890",
-    "cardBrand": "Visa",
+    "cardBrand": "visa",
     "createdAt": "2024-10-31 21:57:23.601000Z",
     "creditAppealed": false,
     "creditStatus": "None",
-    "currency": "USD",
+    "currency": "usd",
     "customerEmail": "customer@example.com",
     "customerId": "cus_genericId456",
     "descriptor": "GENERIC TXN12345",
@@ -194,23 +194,18 @@ This is a common method for ensuring that the webhook messages you receive in yo
 key = "ws_xxxxxxxxx"
 
 # The JSON string representation of the request body
-
 message = "\{ ... }" # Replace with actual JSON data
 
 # Create a new HMAC object using the SHA256 hash algorithm
-
 hmac_sha256 = hmac.new(key.encode(), message.encode(), hashlib.sha256)
 
 # Get the hexadecimal representation of the HMAC
-
 hmac_hex = hmac_sha256.hexdigest()
 
 # The X-Webhook-Signature from the request header
-
 received_signature = "..." # Replace with the actual signature from the request header
 
 # Verifying the signature
-
 if hmac_hex == received_signature:
 print("Verification successful: Signatures match.")
 else:
