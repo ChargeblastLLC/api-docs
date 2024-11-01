@@ -141,38 +141,35 @@ api: POST https://yourwebsite.com/webhook/endpoint
 
 <ResponseExample>
 ```json
-
 {
-"alertId": "al_genericId123",
-"alertType": "FRAUD",
-"amount": 500.00,
-"arn": "12345678901234567890123",
-"authCode": "ABC123",
-"card": "123456xxxxxxx7890",
-"cardBrand": "Visa",
-"createdAt": "2024-10-31 21:57:23.601000Z",
-"creditAppealed": false,
-"creditStatus": "None",
-"currency": "USD",
-"customerEmail": "customer@example.com",
-"customerId": "cus_genericId456",
-"descriptor": "GENERIC TXN12345",
-"externalOrder": "ch_genericOrder789",
-"externalUrl": "https://example.com/charges/ch_genericOrder789",
-"id": "al_genericId123",
-"issuer": "Generic Bank, Inc.",
-"merchantId": "cb_genericMerchantId",
-"provider": "exampleProvider",
-"reasonCode": "Resolved",
-"responseAction": "Accepted",
-"site": "example.com",
-"subprovider": "Ethoca",
-"transactionDate": "2024-09-30 00:00:00.000000Z"
+    "alertId": "al_genericId123",
+    "alertType": "FRAUD",
+    "amount": 500.00,
+    "arn": "12345678901234567890123",
+    "authCode": "ABC123",
+    "card": "123456xxxxxxx7890",
+    "cardBrand": "Visa",
+    "createdAt": "2024-10-31 21:57:23.601000Z",
+    "creditAppealed": false,
+    "creditStatus": "None",
+    "currency": "USD",
+    "customerEmail": "customer@example.com",
+    "customerId": "cus_genericId456",
+    "descriptor": "GENERIC TXN12345",
+    "externalOrder": "ch_genericOrder789",
+    "externalUrl": "https://example.com/charges/ch_genericOrder789",
+    "id": "al_genericId123",
+    "issuer": "Generic Bank, Inc.",
+    "merchantId": "cb_genericMerchantId",
+    "provider": "exampleProvider",
+    "reasonCode": "Resolved",
+    "responseAction": "Accepted",
+    "site": "example.com",
+    "subprovider": "Ethoca",
+    "transactionDate": "2024-09-30 00:00:00.000000Z"
 }
-
 ````
 </ResponseExample>
-
 
 ---
 
@@ -218,7 +215,7 @@ if hmac_hex == received_signature:
 print("Verification successful: Signatures match.")
 else:
 print("Verification failed: Signatures do not match.")
-````
+```
 
 ### Types
 
