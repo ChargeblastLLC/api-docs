@@ -90,6 +90,8 @@
       "icon": "hand-wave",
       "iconType": "solid",
       "pages": [
+        "api-reference/introduction/introduction",
+
         "api-reference/getting-started/guide",
         "api-reference/getting-started/refund-endpoint",
         "api-reference/webhooks/setup"
