@@ -104,7 +104,6 @@
     {
       "group": "Alerts",
       "pages": [
-        "api-reference/alerts/alert",
         "api-reference/alerts/fetch-an-alert",
         "api-reference/alerts/update-alert",
         "api-reference/alerts/fetch-alerts"

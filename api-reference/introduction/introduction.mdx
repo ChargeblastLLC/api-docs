@@ -1,5 +1,17 @@
-The Resend API is built on REST principles. We enforce HTTPS in every request to improve data security, integrity, and privacy. The API does not support HTTP.
+## Base URL
+
+The Chargeblast API is built on **REST** principles. We enforce **HTTPS** in every request to improve data security, integrity, and privacy. The API does not support **HTTP**.
 
 All requests contain the following base URL:
 
+```
 https://api.chargeblast.com
+```
+
+## Authentication
+
+To authenticate you need to add an (API key)['https://app.chargeblast.com/settings/developer'] as a _query parameter_ in each request, like so:
+
+```
+https://api.chargeblast.com/health?api_key=phkey_123456789
+```
