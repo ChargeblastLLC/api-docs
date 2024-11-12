@@ -16,10 +16,15 @@ To authenticate you need to add an [API key](https://app.chargeblast.com/setting
 https://api.chargeblast.com/health?api_key=phkey_123456789
 ```
 
-<Accordion title="I am an Accordion.">
-  You can put any content in here.
+<AccordionGroup>
+<Accordion title="How does pagination work?">
+  For endpoints that are paginated, you can simply pass in `?per=100&page=0` as
+  query string parameters (where the page starts at index = 0).
 </Accordion>
-<Accordion title="I am an Accordion.">
-  Currently, there’s no versioning system in place. We plan to add versioning via calendar-based headers in the future.
+<Accordion title="How do you handle versioning?">
+  Versioning is done in the route of the endpoint itself. We are currently on
+  version 2 of our API, and all our routes will be prefixed by v2. For example
+  `/api/v2/alerts`.
+</Accordion>
 
-</Accordion>
+</AccordionGroup
