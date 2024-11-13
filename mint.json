@@ -49,14 +49,14 @@
   ],
   "navigation": [
     {
-      "group": "Getting Started",
+      "group": "Welcome",
       "icon": "hand-wave",
       "iconType": "solid",
       "pages": ["reference/welcome-to-chargeblast.mdx"]
     },
 
     {
-      "group": "Getting Started",
+      "group": "Platform",
 
       "pages": [
         "api-reference/getting-started/guide",
