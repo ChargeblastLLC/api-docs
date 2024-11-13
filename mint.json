@@ -67,21 +67,11 @@
           "iconType": "solid",
           "pages": [
             "reference/welcome-to-chargeblast",
-            "reference/welcome-to-chargeblast-copy"
+
+            "api-reference/getting-started/guide"
           ]
         },
         "reference/refunding-alerts"
-      ]
-    },
-    {
-      "group": "Integrations",
-      "pages": [
-        "reference/slack-integration",
-        "reference/stripe-integration",
-        "reference/zapier-integration",
-        "reference/klaviyo-integration",
-        "reference/mamopay-integration",
-        "reference/checkout-champ-integration"
       ]
     },
 
@@ -90,11 +80,12 @@
       "icon": "hand-wave",
       "iconType": "solid",
       "pages": [
-        "api-reference/introduction/introduction",
-
         "api-reference/getting-started/guide",
-        "api-reference/getting-started/refund-endpoint",
-        "api-reference/webhooks/setup"
+
+        "api-reference/introduction/introduction",
+        "api-reference/webhooks/setup",
+
+        "api-reference/getting-started/refund-endpoint"
       ]
     },
     {
