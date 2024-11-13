@@ -1,7 +1,7 @@
 ---
-title: "Webhook"
+title: "Webhooks"
 description: "This page will help you get started with our webhooks."
-api: POST https://yourwebsite.com/webhook/endpoint
+api: https://yourwebsite.com/webhook/endpoint
 ---
 
 ### Headers
@@ -20,6 +20,11 @@ api: POST https://yourwebsite.com/webhook/endpoint
   header="svix-signature"
   type="string"
   placeholder="112a1b6b284216816f375bf905798617908b016990e3e1a902b844a1a7aa5723"
+></ParamField>
+<ParamField
+  header="X-Event-Type"
+  type="string"
+  placeholder="alert.created"
 ></ParamField>
 ### Body
   <Expandable title="properties">

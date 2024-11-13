@@ -1,5 +1,5 @@
 ---
-title: "Chargeblast Embedded Guide"
+title: "API Overview"
 ---
 
 There are multiple ways to programmatically integrate Chargeblast. This guide is intended for resellers, SaaS tools, payment aggregators, and other merchant of merchant businesses. If you are a merchant yourself, please see our [webhooks](/reference/webhooks), which should be sufficient for most use cases.
@@ -21,7 +21,7 @@ The integration path depends on whether you'd like to use our matching algorithm
   - Optionally, [if using PSPs we support](https://www.chargeblast.com/integrations), integrate account via our integrations directory.
 - Expose [your-domain.com/chargeblast/refund](/reference/refund-endpoint) endpoint to Chargeblast to implement refunds & subscription cancellations
 
-### Step 2\. Passing down costs to merchant
+### Step 2\. Passing down costs to your customer
 
 - Poll `/alerts` endpoint (or receive alerts via webhook) and associate each alert with a merchant in our system.
 - Bill your merchant accordingly
