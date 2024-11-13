@@ -52,10 +52,16 @@
       "group": "Getting Started",
       "icon": "hand-wave",
       "iconType": "solid",
+      "pages": ["reference/welcome-to-chargeblast.mdx"]
+    },
+
+    {
+      "group": "Getting Started",
+
       "pages": [
         "api-reference/getting-started/guide",
 
-        "api-reference/introduction/introduction",
+        "api-reference/introduction/authorization",
         "api-reference/webhooks/setup",
 
         "api-reference/getting-started/refund-endpoint"
