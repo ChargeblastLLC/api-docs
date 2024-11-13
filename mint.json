@@ -37,11 +37,6 @@
 
   "anchors": [
     {
-      "name": "Account",
-      "icon": "dashboard",
-      "url": "https://app.chargeblast.com"
-    },
-    {
       "name": "Help Center",
       "icon": "headset",
       "url": "https://help.chargeblast.com/"
@@ -66,10 +61,7 @@
         "api-reference/getting-started/refund-endpoint"
       ]
     },
-    {
-      "group": "Sync Data",
-      "pages": ["api-reference/sync-data/upload-orders"]
-    },
+
     {
       "group": "Alerts",
       "pages": [
@@ -87,6 +79,10 @@
         "api-reference/enrollment/enroll-merchant",
         "api-reference/enrollment/unenroll-merchant"
       ]
+    },
+    {
+      "group": "Sync Data",
+      "pages": ["api-reference/sync-data/upload-orders"]
     }
   ],
   "footerSocials": {
