@@ -34,17 +34,12 @@
     "arrow": false,
     "style": "roundedRectangle"
   },
-  "tabs": [
-    {
-      "name": "API Reference",
-      "url": "api-reference"
-    }
-  ],
+
   "anchors": [
     {
-      "name": "About",
-      "icon": "users",
-      "url": "https://www.chargeblast.com/about"
+      "name": "Account",
+      "icon": "dashboard",
+      "url": "https://app.chargeblast.com"
     },
     {
       "name": "Help Center",
@@ -58,23 +53,6 @@
     }
   ],
   "navigation": [
-    {
-      "group": "Get Started",
-      "pages": [
-        {
-          "group": "Welcome to Chargeblast",
-          "icon": "hand-wave",
-          "iconType": "solid",
-          "pages": [
-            "reference/welcome-to-chargeblast",
-
-            "api-reference/getting-started/guide"
-          ]
-        },
-        "reference/refunding-alerts"
-      ]
-    },
-
     {
       "group": "Getting Started",
       "icon": "hand-wave",
