@@ -49,10 +49,16 @@
   ],
   "navigation": [
     {
-      "group": "Welcome",
-      "icon": "hand-wave",
-      "iconType": "solid",
-      "pages": ["reference/welcome-to-chargeblast.mdx"]
+      "group": "Get Started",
+      "pages": [
+        {
+          "group": "Welcome to Chargeblast",
+          "icon": "hand-wave",
+          "iconType": "solid",
+          "pages": ["reference/welcome-to-chargeblast"]
+        },
+        "reference/refunding-alerts"
+      ]
     },
 
     {
