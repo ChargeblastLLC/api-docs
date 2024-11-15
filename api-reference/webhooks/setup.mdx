@@ -184,6 +184,11 @@ First set up your webhook URL in the Chargeblast dashboard in the settings tab.
 
 Chargeblast will begin emitting events to your webhook URL with the following schema. These events will be fired anytime a new alert is generated.
 
+<Note>
+  The `externalOrder` field is not available in the `alert.created` event.
+  Please use the `alert.updated` event if you require this field.
+</Note>
+
 ### Authentication
 
 To authenticate the integrity of incoming webhooks, a header is passed into the post request to your endpoint under the header name `svix-signature`. The value in this header is an HMAC-SHA256 encoded string using the payload of the request with the webhook secret as key.
