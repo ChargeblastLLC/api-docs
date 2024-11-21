@@ -1,2099 +1,2318 @@
 {
-  "paths": {
-    "/api/merchant": {
-      "get": {
-        "operationId": "merchant",
-        "tags": ["Enrollment"],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PayshieldRetailerDTO"
-                }
-              }
-            }
-          }
-        },
-        "parameters": [
-          {
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "in": "query",
-            "name": "api_key"
-          },
-          {
-            "required": false,
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "name": "merchant_id",
-            "in": "query"
-          }
-        ],
-        "description": "Get an individual merchant from your chargeblast account.",
-        "summary": "Fetch Merchant"
-      }
-    },
-    "/api/descriptors": {
-      "get": {
-        "tags": ["Enrollment"],
-        "operationId": "descriptors",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EmbedDescriptorsResponseDTO"
-                }
-              }
-            }
-          }
-        },
-        "parameters": [
-          {
-            "in": "query",
-            "name": "api_key",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "description": "Fetch all the descriptors for your merchants.",
-        "summary": "Fetch Descriptors"
-      }
-    },
-    "/api/enroll_merchant": {
-      "post": {
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/EmbedEnrollmentBody"
-              }
-            }
-          },
-          "required": true
-        },
-        "parameters": [
-          {
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "name": "api_key",
-            "in": "query"
-          },
-          {
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "name": "merchant_id",
-            "in": "query",
-            "required": false
-          }
-        ],
-        "operationId": "enroll-merchant",
-        "tags": ["Enrollment"],
-        "description": "Enroll the merchant in a various alert program. If no merchant_id is specified a new merchant object will be automatically generated. For each alert program various info is required. For example, for Ethoca, only descriptors are. To see which info is required see [here](https://docs.chargeblast.io/reference/enrollment-criteria)",
-        "summary": "Enroll Merchant",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "integer",
-                  "format": "int64"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/merchants": {
-      "get": {
-        "parameters": [
-          {
-            "name": "api_key",
-            "schema": {
-              "type": "string"
-            },
-            "in": "query",
-            "required": true
-          }
-        ],
-        "summary": "Fetch Merchants",
-        "description": "Get all the merchants from your chargeblast account.",
-        "tags": ["Enrollment"],
-        "operationId": "merchants",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EmbedMerchantResponseDTO"
-                }
-              }
-            },
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/alerts/update/{id}": {
-      "post": {
-        "operationId": "alerts-update",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "integer",
-                  "format": "int64"
-                }
-              }
-            },
-            "description": "OK"
-          }
-        },
-        "parameters": [
-          {
-            "name": "api_key",
-            "schema": {
-              "type": "string"
-            },
-            "in": "query",
-            "required": true
-          },
-          {
-            "required": true,
-            "name": "id",
-            "schema": {
-              "type": "string"
-            },
-            "in": "path"
-          }
-        ],
-        "summary": "Update Alert",
-        "description": "Update the state of an alert to properly inform the banks of whether or not a refund will be issued. If an alert is left unactioned for 72 hours it will be automatically declined. For best results mark alerts as resolved within 24 hours of receiving them (some smaller banks will escalate quarantined transactions as soon as 24 hours within propogating an alert). If you attempt to update an already actioned alert, the request will fail.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AlertUpdateBodyOpenAPI"
-              }
-            }
-          }
-        },
-        "tags": ["Alerts"]
-      }
-    },
-    "/api/alert/{id}": {
-      "get": {
-        "tags": ["Alerts"],
-        "description": "Get all the alerts from your chargeblast account.",
-        "summary": "Fetch an Alert",
-        "parameters": [
-          {
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "in": "query",
-            "name": "api_key"
-          },
-          {
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "in": "path"
-          }
-        ],
-        "operationId": "alert",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ExportAlert"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v2/alerts/update/{id}": {
-      "post": {
-        "tags": ["Alerts"],
-        "parameters": [
-          {
-            "schema": {
-              "type": "string"
-            },
-            "name": "api_key",
-            "required": true,
-            "in": "query"
-          },
-          {
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "name": "id"
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "format": "int64",
-                  "type": "integer"
-                }
-              }
-            },
-            "description": "OK"
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AlertUpdateBodyOpenAPI"
-              }
-            }
-          },
-          "required": true
-        },
-        "summary": "Update Alert",
-        "operationId": "alerts-update",
-        "description": "Update the state of an alert to properly inform the banks of whether or not a refund will be issued. If an alert is left unactioned for 72 hours it will be automatically declined. For best results mark alerts as resolved within 24 hours of receiving them (some smaller banks will escalate quarantined transactions as soon as 24 hours within propogating an alert). If you attempt to update an already actioned alert, the request will fail."
-      }
-    },
-    "/api/v2/alerts": {
-      "get": {
-        "description": "Get all the alerts from your chargeblast account.",
-        "parameters": [
-          {
-            "schema": {
-              "nullable": true,
-              "type": "integer",
-              "format": "int64"
-            },
-            "required": false,
-            "in": "query",
-            "description": "The starting page of the request. Default value of 0.",
-            "name": "page"
-          },
-          {
-            "name": "per",
-            "in": "query",
-            "schema": {
-              "format": "int64",
-              "type": "integer",
-              "nullable": true
-            },
-            "description": "How many objects to request per page. Default value of 10.",
-            "required": false
-          },
-          {
-            "schema": {
-              "type": "string"
-            },
-            "description": "Your API key.",
-            "name": "api_key",
-            "in": "query",
-            "required": true
-          }
-        ],
-        "summary": "Fetch Alerts",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ExportAPIAlertsResponse"
-                }
-              }
-            }
-          }
-        },
-        "operationId": "alerts",
-        "tags": ["Alerts"]
-      }
-    },
-    "/api/v2/orders/upload": {
-      "post": {
-        "operationId": "orders-upload",
-        "parameters": [
-          {
-            "required": true,
-            "in": "query",
-            "name": "api_key",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OrderUploadResponse"
-                }
-              }
-            }
-          }
-        },
-        "summary": "Upload Orders",
-        "tags": ["Sync Data"],
-        "description": "Upload orders to the chargeblast system. This will allow you to match disputes and chargebacks to the orders you have uploaded. Amount should be in cents, e.g. $19.99 => amount = 1999",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OrderUploadBody"
-              }
-            }
-          },
-          "required": true
-        }
-      }
-    },
-    "/api/alerts": {
-      "get": {
-        "parameters": [
-          {
-            "required": true,
-            "name": "api_key",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "schema": {
-              "nullable": true,
-              "type": "string"
-            },
-            "name": "merchant_id",
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ExportAlert"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "summary": "Fetch Alerts",
-        "tags": ["Alerts"],
-        "operationId": "alerts",
-        "description": "Get all the alerts from your chargeblast account."
-      }
-    },
-    "/api/unenroll": {
-      "post": {
-        "parameters": [
-          {
-            "name": "api_key",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "in": "query"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UnenrollmentBody"
-              }
-            }
-          },
-          "required": true
-        },
-        "description": "Pass in a given descriptor_id to unenroll merchant's descriptor. Ethoca alerts take 48 hours to confirm unenrollment, RDR ~2 weeks, CDRN ~24 hours.",
-        "summary": "Unenroll Merchant",
-        "operationId": "unenroll",
-        "tags": ["Enrollment"],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "format": "int64",
-                  "type": "integer"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v2/alert/{id}": {
-      "get": {
-        "description": "Get a specific alert.",
-        "operationId": "alert",
-        "summary": "Fetch an Alert",
-        "tags": ["Alerts"],
-        "parameters": [
-          {
-            "name": "api_key",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": true
-          },
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ExportAPIAlertResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+  "info": {
+  "version": "0.1.0",
+  "title": "Chargeblast API"
   },
-  "servers": [
-    {
-      "url": "https://api.chargeblast.com"
-    }
-  ],
   "components": {
-    "schemas": {
-      "ExportAlert": {
-        "properties": {
-          "createdAt": {
-            "format": "date-time",
-            "description": "Date and time when the alert was created.",
-            "type": "string"
-          },
-          "cardBrand": {
-            "description": "The card network (e.g., Visa, Mastercard, Amex).",
-            "nullable": true,
-            "type": "string"
-          },
-          "alertType": {
-            "type": "string",
-            "description": "Type of alert, e.g., FRAUD, DISPUTE."
-          },
-          "responseAction": {
-            "description": "Response action taken in response to the alert.",
-            "type": "string",
-            "nullable": true
-          },
-          "arn": {
-            "nullable": true,
-            "type": "string",
-            "description": "Acquirer Reference Number, unique identifier for the transaction."
-          },
-          "amount": {
-            "type": "number",
-            "description": "Transaction amount for the alert. $139.38 will be represented as 139.38",
-            "format": "double"
-          },
-          "creditStatus": {
-            "nullable": true,
-            "type": "string",
-            "description": "Status of the credit (if any) associated with the alert."
-          },
-          "card": {
-            "type": "string",
-            "nullable": true,
-            "description": "The redacted card number, e.g., 424242****1234."
-          },
-          "creditAppealed": {
-            "type": "boolean",
-            "description": "Indicates if the credit associated with the alert was appealed."
-          },
-          "invoicedAt": {
-            "type": "string",
-            "description": "Date and time when the alert was invoiced.",
-            "format": "date-time",
-            "nullable": true
-          },
-          "reasonCode": {
-            "type": "string",
-            "nullable": true,
-            "description": "Reason code associated with the alert, often indicating the nature of the dispute."
-          },
-          "authCode": {
-            "type": "string",
-            "nullable": true,
-            "description": "Authorization code for the transaction, if available."
-          },
-          "provider": {
-            "description": "Provider associated with the alert. Possible values: ethoca, verifi",
-            "type": "string",
-            "nullable": true
-          },
-          "merchantId": {
-            "nullable": true,
-            "description": "Identifier for the merchant within the system.",
-            "type": "string"
-          },
-          "externalUrl": {
-            "nullable": true,
-            "description": "URL linking to an external reference for the alert.",
-            "type": "string"
-          },
-          "customerId": {
-            "description": "Unique identifier for the customer associated with the alert, if available.",
-            "type": "string",
-            "nullable": true
-          },
-          "descriptor": {
-            "description": "Billing descriptor shown on the card statement.",
-            "nullable": true,
-            "type": "string"
-          },
-          "resolvedDate": {
-            "description": "Date and time when the alert was resolved.",
-            "type": "string",
-            "nullable": true,
-            "format": "date-time"
-          },
-          "site": {
-            "description": "Merchant's website or site string associated with the alert.",
-            "type": "string",
-            "nullable": true
-          },
-          "id": {
-            "description": "Id for the alert.",
-            "type": "string"
-          },
-          "customerEmail": {
-            "description": "Customer's email address associated with the alert, if available.",
-            "nullable": true,
-            "type": "string"
-          },
-          "subprovider": {
-            "type": "string",
-            "description": "Specific sub-provider within the provider service."
-          },
-          "resolvedByApi": {
-            "description": "Indicates if the alert was resolved via API.",
-            "nullable": true,
-            "type": "boolean"
-          },
-          "transactionDate": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Date and time when the transaction took place."
-          },
-          "currency": {
-            "nullable": true,
-            "description": "Currency code in ISO format (e.g., USD, EUR) for the transaction.",
-            "type": "string"
-          },
-          "creditNotes": {
-            "type": "string",
-            "nullable": true,
-            "description": "Additional notes or information regarding the credit status."
-          },
-          "externalOrder": {
-            "type": "string",
-            "description": "External charge id related to the alert.",
-            "nullable": true
-          },
-          "issuer": {
-            "nullable": true,
-            "type": "string",
-            "description": "Issuer of the card (e.g., bank or financial institution)."
-          },
-          "acquirerAction": {
-            "nullable": true,
-            "type": "string",
-            "description": "Actions taken by the acquirer in response to the alert. Only relevant for RDR and other acquirer side alerts - either Resolved or Declined."
-          },
-          "alertId": {
-            "description": "Unique identifier for the alert within the provider's system. Will match the id field.",
-            "nullable": true,
-            "type": "string"
-          }
-        },
-        "type": "object",
-        "description": "Export alert details.",
-        "required": [
-          "alertType",
-          "amount",
-          "createdAt",
-          "creditAppealed",
-          "id",
-          "subprovider",
-          "transactionDate"
-        ]
-      },
-      "Rule": {
-        "properties": {
-          "rules": {
-            "items": {
-              "$ref": "#/components/schemas/RuleGroup"
-            },
-            "type": "array"
-          },
-          "action": {
-            "$ref": "#/components/schemas/RuleAction"
-          }
-        },
-        "type": "object",
-        "required": ["rules"]
-      },
-      "PayshieldDescriptorDTO": {
-        "properties": {
-          "id": {
-            "type": "string",
-            "nullable": true
-          },
-          "details": {
-            "$ref": "#/components/schemas/DescriptorDetails"
-          },
-          "site": {
-            "$ref": "#/components/schemas/PayshieldSiteDTO"
-          },
-          "bankMid": {
-            "nullable": true,
-            "type": "string"
-          },
-          "type": {
-            "$ref": "#/components/schemas/DescriptorType"
-          },
-          "hasEmailSent": {
-            "type": "boolean"
-          },
-          "status": {
-            "$ref": "#/components/schemas/PayshieldDescriptorDescriptorStatus"
-          }
-        },
-        "type": "object",
-        "required": ["details", "hasEmailSent", "site", "status", "type"]
-      },
-      "WhopIntegration": {
-        "type": "object",
-        "properties": {
-          "userId": {
-            "type": "string"
-          },
-          "paymentStatus": {
-            "type": "string",
-            "nullable": true
-          },
-          "enabled": {
-            "type": "boolean"
-          },
-          "companyId": {
-            "type": "string"
-          }
-        },
-        "required": ["companyId", "enabled", "userId"]
-      },
-      "ExportAPIAlertsResponse": {
-        "properties": {
-          "total": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "per": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "alerts": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ExportAlert"
-            }
-          },
-          "page": {
-            "format": "int64",
-            "type": "integer"
-          }
-        },
-        "type": "object",
-        "required": ["alerts", "page", "per", "total"]
-      },
-      "RutterTokenDTOConnectionStatus": {
-        "type": "string",
-        "enum": ["active", "inactive"]
-      },
-      "UserDTO": {
-        "properties": {
-          "announcements": {
-            "items": {
-              "$ref": "#/components/schemas/AnnouncementDTO"
-            },
-            "type": "array"
-          },
-          "id": {
-            "type": "string",
-            "nullable": true
-          },
-          "phonenumber": {
-            "nullable": true,
-            "type": "string"
-          },
-          "isSalesAgent": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "settings": {
-            "$ref": "#/components/schemas/UserSettingsDTO"
-          },
-          "name": {
-            "type": "string",
-            "nullable": true
-          },
-          "tokens": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/RutterTokenDTO"
-            }
-          },
-          "admin": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "accounts": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CBAccountDTO"
-            }
-          },
-          "email": {
-            "nullable": true,
-            "type": "string"
-          },
-          "utmSource": {
-            "nullable": true,
-            "type": "string"
-          },
-          "referralCode": {
-            "type": "string",
-            "nullable": true
-          },
-          "fromInvite": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "stripeId": {
-            "type": "string",
-            "nullable": true
-          },
-          "risk": {
-            "$ref": "#/components/schemas/AccountRiskLevel"
-          },
-          "company": {
-            "type": "string",
-            "nullable": true
-          },
-          "merchantId": {
-            "type": "string",
-            "nullable": true
-          },
-          "pfStripeId": {
-            "type": "string",
-            "nullable": true
-          },
-          "agentDeal": {
-            "items": {
-              "$ref": "#/components/schemas/AgentDealDTO"
-            },
-            "type": "array"
-          },
-          "createdAt": {
-            "nullable": true,
-            "format": "date-time",
-            "type": "string"
-          },
-          "internalId": {
-            "type": "string",
-            "nullable": true
-          },
-          "internalCompany": {
-            "type": "string",
-            "nullable": true
-          },
-          "isBilledForResolved": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "svixId": {
-            "type": "string",
-            "nullable": true
-          },
-          "hubspotId": {
-            "type": "string",
-            "nullable": true
-          },
-          "invitations": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/InvitationDTO"
-            }
-          }
-        },
-        "required": [
-          "accounts",
-          "agentDeal",
-          "announcements",
-          "invitations",
-          "tokens"
-        ],
-        "type": "object"
-      },
-      "PayshieldDescriptorDescriptorStatus": {
-        "enum": [
-          "Pending",
-          "Enrolled",
-          "Disabled",
-          "Surpressed",
-          "Processing",
-          "Rejected",
-          "InReview"
-        ],
-        "type": "string"
-      },
-      "AgentSettings": {
-        "type": "object",
-        "required": ["bankTransferInfo", "cryptoInfo"],
-        "properties": {
-          "cryptoInfo": {
-            "$ref": "#/components/schemas/AgentSettingsCryptoInfo"
-          },
-          "bankTransferInfo": {
-            "$ref": "#/components/schemas/AgentSettingsBankTransferInfo"
-          }
-        }
-      },
-      "ClaritySettings": {
-        "type": "object",
-        "properties": {
-          "cancellationPolicyLink": {
-            "type": "string",
-            "nullable": true
-          },
-          "refundPolicyRecap": {
-            "nullable": true,
-            "type": "string"
-          },
-          "productDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "phoneForReceipt": {
-            "nullable": true,
-            "type": "string"
-          },
-          "merchantCategoryCode": {
-            "nullable": true,
-            "type": "string"
-          },
-          "websiteForReceipt": {
-            "type": "string",
-            "nullable": true
-          },
-          "postalCode": {
-            "type": "string",
-            "nullable": true
-          },
-          "termsAndConditionsRecap": {
-            "type": "string",
-            "nullable": true
-          },
-          "refundPolicyLink": {
-            "nullable": true,
-            "type": "string"
-          },
-          "productName": {
-            "nullable": true,
-            "type": "string"
-          },
-          "refundPolicy": {
-            "nullable": true,
-            "type": "string"
-          },
-          "name": {
-            "type": "string",
-            "nullable": true
-          },
-          "termsAndConditionsLink": {
-            "nullable": true,
-            "type": "string"
-          },
-          "line2": {
-            "nullable": true,
-            "type": "string"
-          },
-          "longitude": {
-            "type": "string",
-            "nullable": true
-          },
-          "logoUrl": {
-            "nullable": true,
-            "type": "string"
-          },
-          "cancellationPolicy": {
-            "nullable": true,
-            "type": "string"
-          },
-          "city": {
-            "type": "string",
-            "nullable": true
-          },
-          "emailForReceipt": {
-            "nullable": true,
-            "type": "string"
-          },
-          "termsAndConditions": {
-            "type": "string",
-            "nullable": true
-          },
-          "countrySubdivision": {
-            "nullable": true,
-            "type": "string"
-          },
-          "line1": {
-            "nullable": true,
-            "type": "string"
-          },
-          "country": {
-            "type": "string",
-            "nullable": true
-          },
-          "description": {
-            "nullable": true,
-            "type": "string"
-          },
-          "cancellationPolicyRecap": {
-            "nullable": true,
-            "type": "string"
-          },
-          "status": {
-            "type": "string",
-            "nullable": true
-          },
-          "latitude": {
-            "nullable": true,
-            "type": "string"
-          }
-        }
-      },
-      "ShopifyIntegration": {
-        "type": "object",
-        "properties": {
-          "external_id": {
-            "nullable": true,
-            "type": "string"
-          },
-          "store_unique_name": {
-            "nullable": true,
-            "type": "string"
-          },
-          "state": {
-            "type": "string",
-            "nullable": true
-          },
-          "id": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "OrderUploadResponse": {
-        "properties": {
-          "message": {
-            "type": "string"
-          }
-        },
-        "type": "object",
-        "required": ["message"]
-      },
-      "CBAccountDTO": {
-        "properties": {
-          "id": {
-            "type": "string",
-            "nullable": true
-          },
-          "email": {
-            "nullable": true,
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
-      "AgentSettingsBankTransferInfo": {
-        "type": "object",
-        "required": ["enabled"],
-        "properties": {
-          "swiftCode": {
-            "type": "string",
-            "nullable": true
-          },
-          "routingNumber": {
-            "nullable": true,
-            "type": "string"
-          },
-          "enabled": {
-            "type": "boolean"
-          },
-          "accountNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "bankAddress": {
-            "type": "string",
-            "nullable": true
-          },
-          "iban": {
-            "nullable": true,
-            "type": "string"
-          },
-          "bankName": {
-            "nullable": true,
-            "type": "string"
-          }
-        }
-      },
-      "SMSIntegration": {
-        "required": ["enabled", "phonenumber"],
-        "properties": {
-          "enabled": {
-            "type": "boolean"
-          },
-          "phonenumber": {
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
-      "OrderUploadBody": {
-        "properties": {
-          "orders": {
-            "items": {
-              "$ref": "#/components/schemas/OrderUploadBodyOrder"
-            },
-            "type": "array"
-          }
-        },
-        "type": "object",
-        "required": ["orders"]
-      },
-      "EmbedEnrollmentBody": {
-        "type": "object",
-        "properties": {
-          "requestData": {
-            "$ref": "#/components/schemas/DescriptorRequestBody"
-          },
-          "type": {
-            "$ref": "#/components/schemas/DescriptorType"
-          },
-          "merchantId": {
-            "nullable": true,
-            "type": "string"
-          }
-        },
-        "required": ["requestData", "type"]
-      },
-      "UserSettingsDTO": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "nullable": true,
-            "type": "string"
-          },
-          "settings": {
-            "$ref": "#/components/schemas/Settings"
-          }
-        }
-      },
-      "BraintreeIntegration": {
-        "type": "object",
-        "properties": {
-          "accountId": {
-            "type": "string",
-            "nullable": true
-          },
-          "merchantId": {
-            "nullable": true,
-            "type": "string"
-          },
-          "publicKey": {
-            "type": "string",
-            "nullable": true
-          },
-          "privateKey": {
-            "type": "string",
-            "nullable": true
-          },
-          "enabled": {
-            "nullable": true,
-            "type": "boolean"
-          }
-        }
-      },
-      "NextIntegration": {
-        "type": "object",
-        "properties": {
-          "store": {
-            "type": "string",
-            "nullable": true
-          },
-          "status": {
-            "nullable": true,
-            "type": "string"
-          },
-          "enabled": {
-            "type": "boolean",
-            "nullable": true
-          }
-        }
-      },
-      "DiscordIntegration": {
-        "type": "object",
-        "required": ["enabled", "webhook"],
-        "properties": {
-          "webhook": {
-            "type": "string"
-          },
-          "enabled": {
-            "type": "boolean"
-          }
-        }
-      },
-      "IntegrationSettings": {
-        "properties": {
-          "mamopayIntegration": {
-            "$ref": "#/components/schemas/MamopayIntegration"
-          },
-          "checkoutChampIntegration": {
-            "$ref": "#/components/schemas/CheckoutChampIntegration"
-          },
-          "skioIntegration": {
-            "$ref": "#/components/schemas/SkioIntegration"
-          },
-          "maverickIntegration": {
-            "$ref": "#/components/schemas/MaverickIntegration"
-          },
-          "stickyIntegration": {
-            "$ref": "#/components/schemas/StickyIntegration"
-          },
-          "slackIntegration": {
-            "$ref": "#/components/schemas/SlackIntegration"
-          },
-          "smsIntegration": {
-            "$ref": "#/components/schemas/SMSIntegration"
-          },
-          "stripeIntegration": {
-            "$ref": "#/components/schemas/StripeIntegration"
-          },
-          "nextIntegration": {
-            "$ref": "#/components/schemas/NextIntegration"
-          },
-          "discordIntegration": {
-            "$ref": "#/components/schemas/DiscordIntegration"
-          },
-          "sealIntegration": {
-            "$ref": "#/components/schemas/SealIntegration"
-          },
-          "braintreeIntegration": {
-            "$ref": "#/components/schemas/BraintreeIntegration"
-          },
-          "whopIntegration": {
-            "$ref": "#/components/schemas/WhopIntegration"
-          },
-          "shopifyIntegration": {
-            "$ref": "#/components/schemas/ShopifyIntegration"
-          },
-          "klaviyoIntegration": {
-            "$ref": "#/components/schemas/KlaviyoIntegration"
-          }
-        },
-        "type": "object"
-      },
-      "DescriptorDetails": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string"
-          }
-        },
-        "required": ["type"]
-      },
-      "AlertReasonCode": {
-        "enum": [
-          "Resolved",
-          "ResolvedPartial",
-          "ResolvedCancelled",
-          "AccountCancelled",
-          "CancellationProcessed",
-          "UnmatchedGeneral",
-          "UnmatchedCannotFindTransaction",
-          "Duplicate",
-          "MIDLost",
-          "AlreadyRefunded",
-          "AlreadyChargeback",
-          "Ineligible",
-          "TDS",
-          "CannotCancel",
-          "MatchedWillShip",
-          "EscalateChargeback",
-          "ContactedShipper",
-          "WIP",
-          "Error",
-          "None",
-          "NotMyDescriptor",
-          "Unactioned",
-          ""
-        ],
-        "type": "string"
-      },
-      "VerifiRiskLevel": {
-        "type": "string",
-        "enum": ["High", "Medium", "Low"]
-      },
-      "EmbedDescriptorsResponseDTO": {
-        "required": ["descriptors"],
-        "type": "object",
-        "properties": {
-          "descriptors": {
-            "items": {
-              "$ref": "#/components/schemas/PayshieldDescriptorDTO"
-            },
-            "type": "array"
-          }
-        }
-      },
-      "AccountRiskLevel": {
-        "type": "string",
-        "enum": ["High", "Medium", "Low"]
-      },
-      "AnnouncementDTO": {
-        "required": ["message", "type"],
-        "type": "object",
-        "properties": {
-          "type": {
-            "$ref": "#/components/schemas/AnnouncementDTOAnnouncementType"
-          },
-          "message": {
-            "type": "string"
-          },
-          "id": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "DescriptorType": {
-        "enum": [
-          "Ethoca",
-          "CDRN",
-          "RDR",
-          "Discover",
-          "AMEX",
-          "JCB",
-          "Unknown",
-          ""
-        ],
-        "type": "string"
-      },
-      "InvitationDTO": {
-        "required": ["email", "permission"],
-        "type": "object",
-        "properties": {
-          "status": {
-            "$ref": "#/components/schemas/InvitationDTOInvitationStatus"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "email": {
-            "type": "string"
-          },
-          "permission": {
-            "$ref": "#/components/schemas/AccountPermission"
-          },
-          "id": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "OrderUploadBodyOrder": {
-        "type": "object",
-        "properties": {
-          "brand": {
-            "nullable": true,
-            "description": "The brand of the card (case insensitive). visa, mastercard, amex, discover. Other values will default to unknown",
-            "type": "string"
-          },
-          "status": {
-            "type": "string",
-            "nullable": true,
-            "description": "The 3 character currency (case insensitive). E.g. 'usd'."
-          },
-          "arn": {
-            "type": "string",
-            "description": "The acquirer reference number of the charge, if available.",
-            "nullable": true
-          },
-          "refunded": {
-            "type": "boolean",
-            "description": "Whether the transaction has already been refunded.",
-            "nullable": true
-          },
-          "descriptor": {
-            "nullable": true,
-            "type": "string",
-            "description": "The billing descriptor of the charge."
-          },
-          "last4": {
-            "type": "string",
-            "description": "Last 4 digits of the card.",
-            "nullable": true
-          },
-          "currency": {
-            "type": "string",
-            "description": "The 3 character currency (case insensitive). E.g. 'usd'."
-          },
-          "gateway": {
-            "type": "string",
-            "nullable": true,
-            "description": "If multiple gateways are used, the gateway of the transaction. Used for analytics only."
-          },
-          "id": {
-            "type": "string",
-            "description": "The internal id of the order in your CRM."
-          },
-          "amount": {
-            "description": "The amount, in cents, of the order. For example, $19.99 would be 1999.",
-            "format": "int64",
-            "type": "integer"
-          },
-          "bin": {
-            "description": "First 6 digits of the card.",
-            "nullable": true,
-            "type": "string"
-          },
-          "transactionDate": {
-            "description": "The date of the charge either in yyyy-MM-dd'T'HH:mm:ssZ format or yyyy-MM-dd format.",
-            "type": "string"
-          },
-          "authCode": {
-            "description": "The authorization code of the charge. Used for matching purposes.",
-            "nullable": true,
-            "type": "string"
-          }
-        },
-        "required": ["amount", "currency", "id", "transactionDate"]
-      },
-      "CheckoutChampIntegration": {
-        "type": "object",
-        "required": ["enabled", "password", "username"],
-        "properties": {
-          "username": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string"
-          },
-          "enabled": {
-            "type": "boolean"
-          }
-        }
-      },
-      "RuleAction": {
-        "properties": {
-          "descriptor": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "type": "object"
-      },
-      "AccountPermission": {
-        "type": "string",
-        "enum": [
-          "manager",
-          "analyst",
-          "admin",
-          "refundAnalyst",
-          "any",
-          "unknown"
-        ]
-      },
-      "SealIntegration": {
-        "type": "object",
-        "required": ["apiKey", "enabled"],
-        "properties": {
-          "enabled": {
-            "type": "boolean"
-          },
-          "apiKey": {
-            "type": "string"
-          }
-        }
-      },
-      "InvoiceSettings": {
-        "properties": {
-          "state": {
-            "nullable": true,
-            "type": "string"
-          },
-          "line2": {
-            "type": "string",
-            "nullable": true
-          },
-          "line1": {
-            "nullable": true,
-            "type": "string"
-          },
-          "city": {
-            "type": "string",
-            "nullable": true
-          },
-          "vatCode": {
-            "type": "string",
-            "nullable": true
-          },
-          "postal_code": {
-            "type": "string",
-            "nullable": true
-          },
-          "country": {
-            "type": "string",
-            "nullable": true
-          },
-          "vatNumber": {
-            "nullable": true,
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
-      "ProviderSource": {
-        "type": "string",
-        "enum": ["Banks", "Ethoca", "Verifi"]
-      },
-      "SlackIntegration": {
-        "required": ["authCode", "channel", "enabled"],
-        "properties": {
-          "channel": {
-            "type": "string"
-          },
-          "authCode": {
-            "type": "string"
-          },
-          "enabled": {
-            "type": "boolean"
-          }
-        },
-        "type": "object"
-      },
-      "PayshieldRetailerDTO": {
-        "properties": {
-          "verifi_name": {
-            "nullable": true,
-            "type": "string"
-          },
-          "name": {
-            "type": "string",
-            "nullable": true
-          },
-          "rcode": {
-            "type": "string",
-            "nullable": true
-          },
-          "id": {
-            "type": "string",
-            "nullable": true
-          },
-          "user": {
-            "$ref": "#/components/schemas/UserDTO"
-          },
-          "merchant_id": {
-            "nullable": true,
-            "type": "string"
-          },
-          "verifiRiskLevel": {
-            "$ref": "#/components/schemas/VerifiRiskLevel"
-          },
-          "sites": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PayshieldSiteDTO"
-            }
-          },
-          "source": {
-            "$ref": "#/components/schemas/ProviderSource"
-          }
-        },
-        "required": ["sites", "user"],
-        "type": "object"
-      },
-      "MamopayIntegration": {
-        "type": "object",
-        "properties": {
-          "enabled": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "apiKey": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "SkioIntegration": {
-        "type": "object",
-        "properties": {
-          "apiKey": {
-            "type": "string",
-            "nullable": true
-          },
-          "enabled": {
-            "type": "boolean",
-            "nullable": true
-          }
-        }
-      },
-      "PayshieldSiteDTO": {
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "descriptors": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PayshieldDescriptorDTO"
-            }
-          },
-          "id": {
-            "nullable": true,
-            "type": "string"
-          },
-          "retailer": {
-            "$ref": "#/components/schemas/PayshieldRetailerDTO"
-          }
-        },
-        "type": "object",
-        "required": ["descriptors", "name", "retailer"]
-      },
-      "RutterTokenDTO": {
-        "type": "object",
-        "properties": {
-          "accessToken": {
-            "type": "string"
-          },
-          "storeUniqueName": {
-            "type": "string"
-          },
-          "status": {
-            "$ref": "#/components/schemas/RutterTokenDTOConnectionStatus"
-          },
-          "publicToken": {
-            "type": "string"
-          },
-          "platform": {
-            "type": "string"
-          },
-          "externalId": {
-            "type": "string",
-            "nullable": true
-          },
-          "isReady": {
-            "type": "boolean"
-          },
-          "id": {
-            "type": "string",
-            "nullable": true
-          },
-          "platformToken": {
-            "nullable": true,
-            "type": "string"
-          },
-          "connectionId": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "accessToken",
-          "connectionId",
-          "isReady",
-          "platform",
-          "publicToken",
-          "status",
-          "storeUniqueName"
-        ]
-      },
-      "AgentDealDTO": {
-        "properties": {
-          "id": {
-            "type": "string",
-            "nullable": true
-          },
-          "createdAt": {
-            "type": "string",
-            "nullable": true,
-            "format": "date-time"
-          },
-          "agentPayload": {
-            "additionalProperties": {},
-            "type": "object"
-          }
-        },
-        "required": ["agentPayload"],
-        "type": "object"
-      },
-      "InvitationDTOInvitationStatus": {
-        "enum": ["Pending", "Accepted"],
-        "type": "string"
-      },
-      "StickyIntegration": {
-        "properties": {
-          "password": {
-            "nullable": true,
-            "type": "string"
-          },
-          "username": {
-            "type": "string",
-            "nullable": true
-          },
-          "enabled": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "subdomain": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "type": "object"
-      },
-      "DescriptorRequestBody": {
-        "properties": {
-          "arns": {
-            "type": "array",
-            "nullable": true,
-            "items": {
-              "type": "string"
-            }
-          },
-          "type": {
-            "nullable": true,
-            "type": "string"
-          },
-          "dbaName": {
-            "type": "string",
-            "nullable": true
-          },
-          "amexSe": {
-            "type": "string",
-            "nullable": true
-          },
-          "selectedAlerts": {
-            "type": "array",
-            "nullable": true,
-            "items": {
-              "type": "string"
-            }
-          },
-          "discoverSe": {
-            "type": "string",
-            "nullable": true
-          },
-          "mcc": {
-            "nullable": true,
-            "type": "string"
-          },
-          "city": {
-            "type": "string",
-            "nullable": true
-          },
-          "country": {
-            "nullable": true,
-            "type": "string"
-          },
-          "zip": {
-            "type": "string",
-            "nullable": true
-          },
-          "legalName": {
-            "type": "string",
-            "nullable": true
-          },
-          "state": {
-            "nullable": true,
-            "type": "string"
-          },
-          "caids": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "nullable": true
-          },
-          "bins": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "nullable": true
-          },
-          "descriptors": {
-            "type": "array",
-            "nullable": true,
-            "items": {
-              "type": "string"
-            }
-          },
-          "processor": {
-            "nullable": true,
-            "type": "string"
-          },
-          "ruleset": {
-            "type": "string",
-            "nullable": true
-          },
-          "amexDescriptor": {
-            "type": "string",
-            "nullable": true
-          },
-          "streetAddress": {
-            "nullable": true,
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
-      "KlaviyoIntegration": {
-        "properties": {
-          "apiKey": {
-            "type": "string"
-          },
-          "enabled": {
-            "type": "boolean"
-          }
-        },
-        "type": "object",
-        "required": ["apiKey", "enabled"]
-      },
-      "EmbedMerchantResponseDTO": {
-        "type": "object",
-        "properties": {
-          "merchants": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PayshieldRetailerDTO"
-            }
-          }
-        },
-        "required": ["merchants"]
-      },
-      "AgentSettingsCryptoInfo": {
-        "required": ["token"],
-        "type": "object",
-        "properties": {
-          "token": {
-            "type": "string"
-          }
-        }
-      },
-      "StripeIntegration": {
-        "type": "object",
-        "properties": {
-          "account_id": {
-            "type": "string"
-          },
-          "state": {
-            "nullable": true,
-            "type": "string"
-          },
-          "useBillingDescriptors": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "enabled": {
-            "type": "boolean"
-          },
-          "testMode": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "shouldAppendDescriptor": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "user_id": {
-            "type": "string",
-            "nullable": true
-          },
-          "appendDescriptor": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "required": ["account_id", "enabled"]
-      },
-      "AlertUpdateBodyOpenAPI": {
-        "required": ["result"],
-        "type": "object",
-        "properties": {
-          "result": {
-            "$ref": "#/components/schemas/AlertReasonCode"
-          }
-        }
-      },
-      "UnenrollmentBody": {
-        "properties": {
-          "descriptor_id": {
-            "type": "string"
-          }
-        },
-        "required": ["descriptor_id"],
-        "type": "object"
-      },
-      "AnnouncementDTOAnnouncementType": {
-        "enum": ["Error", "Warning", "Success"],
-        "type": "string"
-      },
-      "MaverickIntegration": {
-        "type": "object",
-        "properties": {
-          "enabled": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "apiKey": {
-            "nullable": true,
-            "type": "string"
-          }
-        }
-      },
-      "ExportAPIAlertResponse": {
-        "type": "object",
-        "properties": {
-          "alert": {
-            "$ref": "#/components/schemas/ExportAlert"
-          }
-        },
-        "required": ["alert"]
-      },
-      "Settings": {
-        "required": ["apiKey", "emails", "webhooks"],
-        "properties": {
-          "integrationSettings": {
-            "$ref": "#/components/schemas/IntegrationSettings"
-          },
-          "arns": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "nullable": true
-          },
-          "touched": {
-            "type": "integer",
-            "format": "int64",
-            "nullable": true
-          },
-          "claritySettings": {
-            "$ref": "#/components/schemas/ClaritySettings"
-          },
-          "refundAPIEnabled": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "emails": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "alertColumns": {
-            "type": "array",
-            "nullable": true,
-            "items": {
-              "type": "string"
-            }
-          },
-          "threshholdEnabled": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "mcc": {
-            "nullable": true,
-            "type": "string"
-          },
-          "webhooks": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "accountBanned": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "descriptors": {
-            "nullable": true,
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "descriptorRules": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Rule"
-            },
-            "nullable": true
-          },
-          "cancelSubscription": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "addCustomerToBlockList": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "agentSettings": {
-            "$ref": "#/components/schemas/AgentSettings"
-          },
-          "efwRule": {
-            "$ref": "#/components/schemas/Rule"
-          },
-          "refundUrl": {
-            "nullable": true,
-            "type": "string"
-          },
-          "rdrNotifications": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "selectedAlerts": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "nullable": true
-          },
-          "apiKey": {
-            "type": "string"
-          },
-          "matchingThreshhold": {
-            "format": "double",
-            "type": "number",
-            "nullable": true
-          },
-          "paymentSource": {
-            "nullable": true,
-            "type": "string"
-          },
-          "invoiceSettings": {
-            "$ref": "#/components/schemas/InvoiceSettings"
-          },
-          "ruleset": {
-            "type": "string",
-            "nullable": true
-          },
-          "autoresolve": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "webhookSecret": {
-            "type": "string",
-            "nullable": true
-          },
-          "ethocaRule": {
-            "$ref": "#/components/schemas/Rule"
-          },
-          "processor": {
-            "type": "string",
-            "nullable": true
-          },
-          "refundAllFromCustomer": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "hasBetaFeatures": {
-            "nullable": true,
-            "type": "boolean"
-          }
-        },
-        "type": "object"
-      },
-      "RuleGroup": {
-        "type": "object",
-        "properties": {
-          "logicOperator": {
-            "type": "string"
-          }
-        },
-        "required": ["logicOperator"]
-      }
-    }
+  "schemas": {
+  "ClaritySettings": {
+  "type": "object",
+  "properties": {
+  "emailForReceipt": {
+  "nullable": true,
+  "type": "string"
+  },
+  "country": {
+  "nullable": true,
+  "type": "string"
+  },
+  "productName": {
+  "type": "string",
+  "nullable": true
+  },
+  "refundPolicyRecap": {
+  "type": "string",
+  "nullable": true
+  },
+  "logoUrl": {
+  "nullable": true,
+  "type": "string"
+  },
+  "websiteForReceipt": {
+  "type": "string",
+  "nullable": true
+  },
+  "termsAndConditionsLink": {
+  "type": "string",
+  "nullable": true
+  },
+  "refundPolicyLink": {
+  "type": "string",
+  "nullable": true
+  },
+  "name": {
+  "nullable": true,
+  "type": "string"
+  },
+  "cancellationPolicy": {
+  "nullable": true,
+  "type": "string"
+  },
+  "cancellationPolicyLink": {
+  "type": "string",
+  "nullable": true
+  },
+  "termsAndConditions": {
+  "type": "string",
+  "nullable": true
+  },
+  "termsAndConditionsRecap": {
+  "nullable": true,
+  "type": "string"
+  },
+  "status": {
+  "nullable": true,
+  "type": "string"
+  },
+  "refundPolicy": {
+  "type": "string",
+  "nullable": true
+  },
+  "longitude": {
+  "type": "string",
+  "nullable": true
+  },
+  "line2": {
+  "type": "string",
+  "nullable": true
+  },
+  "phoneForReceipt": {
+  "type": "string",
+  "nullable": true
+  },
+  "description": {
+  "type": "string",
+  "nullable": true
+  },
+  "postalCode": {
+  "nullable": true,
+  "type": "string"
+  },
+  "countrySubdivision": {
+  "type": "string",
+  "nullable": true
+  },
+  "city": {
+  "nullable": true,
+  "type": "string"
+  },
+  "line1": {
+  "type": "string",
+  "nullable": true
+  },
+  "cancellationPolicyRecap": {
+  "nullable": true,
+  "type": "string"
+  },
+  "merchantCategoryCode": {
+  "nullable": true,
+  "type": "string"
+  },
+  "productDescription": {
+  "nullable": true,
+  "type": "string"
+  },
+  "latitude": {
+  "type": "string",
+  "nullable": true
+  }
+  }
+  },
+  "WhopIntegration": {
+  "properties": {
+  "companyId": {
+  "type": "string"
+  },
+  "userId": {
+  "type": "string"
+  },
+  "enabled": {
+  "type": "boolean"
+  },
+  "paymentStatus": {
+  "nullable": true,
+  "type": "string"
+  }
+  },
+  "required": [
+  "companyId",
+  "enabled",
+  "userId"
+  ],
+  "type": "object"
+  },
+  "SkioIntegration": {
+  "properties": {
+  "apiKey": {
+  "nullable": true,
+  "type": "string"
+  },
+  "enabled": {
+  "type": "boolean",
+  "nullable": true
+  }
+  },
+  "type": "object"
+  },
+  "StickyIntegration": {
+  "type": "object",
+  "properties": {
+  "subdomain": {
+  "nullable": true,
+  "type": "string"
+  },
+  "enabled": {
+  "type": "boolean",
+  "nullable": true
+  },
+  "username": {
+  "type": "string",
+  "nullable": true
+  },
+  "password": {
+  "type": "string",
+  "nullable": true
+  }
+  }
+  },
+  "AnnouncementDTO": {
+  "required": [
+  "message",
+  "type"
+  ],
+  "type": "object",
+  "properties": {
+  "message": {
+  "type": "string"
+  },
+  "type": {
+  "$ref": "#/components/schemas/AnnouncementDTOAnnouncementType"
+  },
+  "id": {
+  "nullable": true,
+  "type": "string"
+  }
+  }
+  },
+  "MamopayIntegration": {
+  "type": "object",
+  "properties": {
+  "apiKey": {
+  "nullable": true,
+  "type": "string"
+  },
+  "enabled": {
+  "nullable": true,
+  "type": "boolean"
+  }
+  }
+  },
+  "EmbedEnrollmentBody": {
+  "required": [
+  "requestData",
+  "type"
+  ],
+  "properties": {
+  "requestData": {
+  "$ref": "#/components/schemas/DescriptorRequestBody"
+  },
+  "type": {
+  "$ref": "#/components/schemas/DescriptorType"
+  },
+  "merchantId": {
+  "type": "string",
+  "nullable": true
+  }
+  },
+  "type": "object"
+  },
+  "BraintreeIntegration": {
+  "type": "object",
+  "properties": {
+  "accountId": {
+  "nullable": true,
+  "type": "string"
+  },
+  "enabled": {
+  "nullable": true,
+  "type": "boolean"
+  },
+  "merchantId": {
+  "nullable": true,
+  "type": "string"
+  },
+  "privateKey": {
+  "nullable": true,
+  "type": "string"
+  },
+  "publicKey": {
+  "nullable": true,
+  "type": "string"
+  }
+  }
+  },
+  "DescriptorRequestBody": {
+  "properties": {
+  "bins": {
+  "type": "array",
+  "items": {
+  "type": "string"
+  },
+  "nullable": true
+  },
+  "city": {
+  "type": "string",
+  "nullable": true
+  },
+  "amexSe": {
+  "type": "string",
+  "nullable": true
+  },
+  "discoverSe": {
+  "nullable": true,
+  "type": "string"
+  },
+  "type": {
+  "type": "string",
+  "nullable": true
+  },
+  "selectedAlerts": {
+  "nullable": true,
+  "type": "array",
+  "items": {
+  "type": "string"
+  }
+  },
+  "descriptors": {
+  "items": {
+  "type": "string"
+  },
+  "type": "array",
+  "nullable": true
+  },
+  "legalName": {
+  "nullable": true,
+  "type": "string"
+  },
+  "mcc": {
+  "nullable": true,
+  "type": "string"
+  },
+  "zip": {
+  "type": "string",
+  "nullable": true
+  },
+  "arns": {
+  "items": {
+  "type": "string"
+  },
+  "type": "array",
+  "nullable": true
+  },
+  "ruleset": {
+  "nullable": true,
+  "type": "string"
+  },
+  "streetAddress": {
+  "type": "string",
+  "nullable": true
+  },
+  "caids": {
+  "items": {
+  "type": "string"
+  },
+  "type": "array",
+  "nullable": true
+  },
+  "amexDescriptor": {
+  "type": "string",
+  "nullable": true
+  },
+  "dbaName": {
+  "type": "string",
+  "nullable": true
+  },
+  "state": {
+  "nullable": true,
+  "type": "string"
+  },
+  "country": {
+  "type": "string",
+  "nullable": true
+  },
+  "processor": {
+  "nullable": true,
+  "type": "string"
+  }
+  },
+  "type": "object"
+  },
+  "InvitationDTO": {
+  "type": "object",
+  "properties": {
+  "email": {
+  "type": "string"
+  },
+  "permission": {
+  "$ref": "#/components/schemas/AccountPermission"
+  },
+  "id": {
+  "type": "string",
+  "nullable": true
+  },
+  "status": {
+  "$ref": "#/components/schemas/InvitationDTOInvitationStatus"
+  },
+  "createdAt": {
+  "type": "string",
+  "format": "date-time",
+  "nullable": true
+  }
+  },
+  "required": [
+  "email",
+  "permission"
+  ]
+  },
+  "UserSettingsDTO": {
+  "type": "object",
+  "properties": {
+  "settings": {
+  "$ref": "#/components/schemas/Settings"
+  },
+  "id": {
+  "nullable": true,
+  "type": "string"
+  }
+  }
+  },
+  "AlertUpdateBodyOpenAPI": {
+  "properties": {
+  "result": {
+  "$ref": "#/components/schemas/AlertReasonCode"
+  }
+  },
+  "type": "object",
+  "required": [
+  "result"
+  ]
+  },
+  "MaverickIntegration": {
+  "properties": {
+  "apiKey": {
+  "type": "string",
+  "nullable": true
+  },
+  "enabled": {
+  "type": "boolean",
+  "nullable": true
+  }
+  },
+  "type": "object"
+  },
+  "ShopifyIntegration": {
+  "type": "object",
+  "properties": {
+  "store_unique_name": {
+  "nullable": true,
+  "type": "string"
+  },
+  "external_id": {
+  "nullable": true,
+  "type": "string"
+  },
+  "id": {
+  "type": "string",
+  "nullable": true
+  },
+  "state": {
+  "type": "string",
+  "nullable": true
+  }
+  }
+  },
+  "AccountRiskLevel": {
+  "type": "string",
+  "enum": [
+  "High",
+  "Medium",
+  "Low"
+  ]
+  },
+  "InvoiceSettings": {
+  "properties": {
+  "city": {
+  "type": "string",
+  "nullable": true
+  },
+  "vatCode": {
+  "type": "string",
+  "nullable": true
+  },
+  "line2": {
+  "nullable": true,
+  "type": "string"
+  },
+  "line1": {
+  "nullable": true,
+  "type": "string"
+  },
+  "postal_code": {
+  "nullable": true,
+  "type": "string"
+  },
+  "state": {
+  "type": "string",
+  "nullable": true
+  },
+  "vatNumber": {
+  "nullable": true,
+  "type": "string"
+  },
+  "country": {
+  "nullable": true,
+  "type": "string"
+  }
+  },
+  "type": "object"
+  },
+  "ExportAPIAlertsResponse": {
+  "properties": {
+  "alerts": {
+  "type": "array",
+  "items": {
+  "$ref": "#/components/schemas/ExportAlert"
+  }
+  },
+  "per": {
+  "type": "integer",
+  "format": "int64"
+  },
+  "page": {
+  "type": "integer",
+  "format": "int64"
+  },
+  "total": {
+  "format": "int64",
+  "type": "integer"
+  }
+  },
+  "required": [
+  "alerts",
+  "page",
+  "per",
+  "total"
+  ],
+  "type": "object"
+  },
+  "PayshieldRetailerDTO": {
+  "properties": {
+  "user": {
+  "$ref": "#/components/schemas/UserDTO"
+  },
+  "rcode": {
+  "type": "string",
+  "nullable": true
+  },
+  "sites": {
+  "type": "array",
+  "items": {
+  "$ref": "#/components/schemas/PayshieldSiteDTO"
+  }
+  },
+  "merchant_id": {
+  "nullable": true,
+  "type": "string"
+  },
+  "source": {
+  "$ref": "#/components/schemas/ProviderSource"
+  },
+  "name": {
+  "nullable": true,
+  "type": "string"
+  },
+  "id": {
+  "type": "string",
+  "nullable": true
+  },
+  "verifiRiskLevel": {
+  "$ref": "#/components/schemas/VerifiRiskLevel"
+  },
+  "verifi_name": {
+  "nullable": true,
+  "type": "string"
+  }
+  },
+  "type": "object",
+  "required": [
+  "sites",
+  "user"
+  ]
+  },
+  "OrderUploadBodyOrder": {
+  "type": "object",
+  "required": [
+  "amount",
+  "currency",
+  "id",
+  "transactionDate"
+  ],
+  "properties": {
+  "bin": {
+  "nullable": true,
+  "type": "string",
+  "description": "First 6 digits of the card."
+  },
+  "gateway": {
+  "type": "string",
+  "description": "If multiple gateways are used, the gateway of the transaction. Used for analytics only.",
+  "nullable": true
+  },
+  "transactionDate": {
+  "type": "string",
+  "description": "The date of the charge either in yyyy-MM-dd'T'HH:mm:ssZ format or yyyy-MM-dd format."
+  },
+  "refunded": {
+  "nullable": true,
+  "description": "Whether the transaction has already been refunded.",
+  "type": "boolean"
+  },
+  "amount": {
+  "type": "integer",
+  "description": "The amount, in cents, of the order. For example, $19.99 would be 1999.",
+  "format": "int64"
+  },
+  "authCode": {
+  "type": "string",
+  "description": "The authorization code of the charge. Used for matching purposes.",
+  "nullable": true
+  },
+  "descriptor": {
+  "description": "The billing descriptor of the charge.",
+  "type": "string",
+  "nullable": true
+  },
+  "currency": {
+  "type": "string",
+  "description": "The 3 character currency (case insensitive). E.g. 'usd'."
+  },
+  "status": {
+  "description": "The 3 character currency (case insensitive). E.g. 'usd'.",
+  "type": "string",
+  "nullable": true
+  },
+  "id": {
+  "description": "The internal id of the order in your CRM.",
+  "type": "string"
+  },
+  "arn": {
+  "description": "The acquirer reference number of the charge, if available.",
+  "type": "string",
+  "nullable": true
+  },
+  "brand": {
+  "type": "string",
+  "description": "The brand of the card (case insensitive). visa, mastercard, amex, discover. Other values will default to unknown",
+  "nullable": true
+  },
+  "last4": {
+  "description": "Last 4 digits of the card.",
+  "nullable": true,
+  "type": "string"
+  }
+  }
+  },
+  "AgentSettingsBankTransferInfo": {
+  "type": "object",
+  "required": [
+  "enabled"
+  ],
+  "properties": {
+  "routingNumber": {
+  "type": "string",
+  "nullable": true
+  },
+  "accountNumber": {
+  "type": "string",
+  "nullable": true
+  },
+  "swiftCode": {
+  "nullable": true,
+  "type": "string"
+  },
+  "bankAddress": {
+  "type": "string",
+  "nullable": true
+  },
+  "iban": {
+  "type": "string",
+  "nullable": true
+  },
+  "enabled": {
+  "type": "boolean"
+  },
+  "bankName": {
+  "nullable": true,
+  "type": "string"
+  }
+  }
+  },
+  "VerifiRiskLevel": {
+  "type": "string",
+  "enum": [
+  "High",
+  "Medium",
+  "Low"
+  ]
+  },
+  "RuleGroup": {
+  "properties": {
+  "logicOperator": {
+  "type": "string"
+  }
+  },
+  "required": [
+  "logicOperator"
+  ],
+  "type": "object"
+  },
+  "OrderUploadResponse": {
+  "type": "object",
+  "properties": {
+  "message": {
+  "type": "string"
+  }
+  },
+  "required": [
+  "message"
+  ]
+  },
+  "CheckoutChampIntegration": {
+  "type": "object",
+  "properties": {
+  "password": {
+  "type": "string"
+  },
+  "enabled": {
+  "type": "boolean"
+  },
+  "username": {
+  "type": "string"
+  }
+  },
+  "required": [
+  "enabled",
+  "password",
+  "username"
+  ]
+  },
+  "AnnouncementDTOAnnouncementType": {
+  "enum": [
+  "Error",
+  "Warning",
+  "Success"
+  ],
+  "type": "string"
+  },
+  "RefundRequestBody": {
+  "type": "object",
+  "required": [
+  "alert_id"
+  ],
+  "properties": {
+  "alert_id": {
+  "type": "string"
+  },
+  "comments": {
+  "nullable": true,
+  "type": "string"
+  }
+  }
+  },
+  "SpreedlyIntegration": {
+  "properties": {
+  "env": {
+  "type": "string",
+  "nullable": true
+  },
+  "enabled": {
+  "nullable": true,
+  "type": "boolean"
+  },
+  "key": {
+  "nullable": true,
+  "type": "string"
+  }
+  },
+  "type": "object"
+  },
+  "StripeIntegration": {
+  "type": "object",
+  "properties": {
+  "account_id": {
+  "type": "string"
+  },
+  "testMode": {
+  "nullable": true,
+  "type": "boolean"
+  },
+  "appendDescriptor": {
+  "type": "string",
+  "nullable": true
+  },
+  "state": {
+  "type": "string",
+  "nullable": true
+  },
+  "useBillingDescriptors": {
+  "type": "boolean",
+  "nullable": true
+  },
+  "shouldAppendDescriptor": {
+  "type": "boolean",
+  "nullable": true
+  },
+  "user_id": {
+  "type": "string",
+  "nullable": true
+  },
+  "enabled": {
+  "type": "boolean"
+  }
+  },
+  "required": [
+  "account_id",
+  "enabled"
+  ]
+  },
+  "ExportAlert": {
+  "description": "Export alert details.",
+  "type": "object",
+  "required": [
+  "alertType",
+  "amount",
+  "createdAt",
+  "creditAppealed",
+  "id",
+  "subprovider",
+  "transactionDate"
+  ],
+  "properties": {
+  "arn": {
+  "nullable": true,
+  "type": "string",
+  "description": "Acquirer Reference Number, unique identifier for the transaction."
+  },
+  "amount": {
+  "description": "Transaction amount for the alert. $139.38 will be represented as 139.38",
+  "format": "double",
+  "type": "number"
+  },
+  "customerId": {
+  "description": "Unique identifier for the customer associated with the alert, if available.",
+  "nullable": true,
+  "type": "string"
+  },
+  "issuer": {
+  "nullable": true,
+  "description": "Issuer of the card (e.g., bank or financial institution).",
+  "type": "string"
+  },
+  "id": {
+  "description": "Id for the alert.",
+  "type": "string"
+  },
+  "creditNotes": {
+  "type": "string",
+  "description": "Additional notes or information regarding the credit status.",
+  "nullable": true
+  },
+  "acquirerAction": {
+  "description": "Actions taken by the acquirer in response to the alert. Only relevant for RDR and other acquirer side alerts - either Resolved or Declined.",
+  "type": "string",
+  "nullable": true
+  },
+  "resolvedByApi": {
+  "description": "Indicates if the alert was resolved via API.",
+  "nullable": true,
+  "type": "boolean"
+  },
+  "authCode": {
+  "description": "Authorization code for the transaction, if available.",
+  "nullable": true,
+  "type": "string"
+  },
+  "creditAppealed": {
+  "type": "boolean",
+  "description": "Indicates if the credit associated with the alert was appealed."
+  },
+  "transactionDate": {
+  "type": "string",
+  "description": "Date and time when the transaction took place.",
+  "format": "date-time"
+  },
+  "subprovider": {
+  "type": "string",
+  "description": "Specific sub-provider within the provider service."
+  },
+  "resolvedDate": {
+  "type": "string",
+  "description": "Date and time when the alert was resolved.",
+  "format": "date-time",
+  "nullable": true
+  },
+  "alertId": {
+  "description": "Unique identifier for the alert within the provider's system. Will match the id field.",
+  "type": "string",
+  "nullable": true
+  },
+  "invoicedAt": {
+  "format": "date-time",
+  "nullable": true,
+  "type": "string",
+  "description": "Date and time when the alert was invoiced."
+  },
+  "reasonCode": {
+  "description": "Reason code associated with the alert, often indicating the nature of the dispute.",
+  "nullable": true,
+  "type": "string"
+  },
+  "responseAction": {
+  "description": "Response action taken in response to the alert.",
+  "nullable": true,
+  "type": "string"
+  },
+  "createdAt": {
+  "type": "string",
+  "description": "Date and time when the alert was created.",
+  "format": "date-time"
+  },
+  "card": {
+  "nullable": true,
+  "type": "string",
+  "description": "The redacted card number, e.g., 424242****1234."
+  },
+  "externalOrder": {
+  "nullable": true,
+  "type": "string",
+  "description": "External charge id related to the alert."
+  },
+  "cardBrand": {
+  "nullable": true,
+  "type": "string",
+  "description": "The card network (e.g., Visa, Mastercard, Amex)."
+  },
+  "externalUrl": {
+  "nullable": true,
+  "type": "string",
+  "description": "URL linking to an external reference for the alert."
+  },
+  "alertType": {
+  "type": "string",
+  "description": "Type of alert, e.g., FRAUD, DISPUTE."
+  },
+  "site": {
+  "nullable": true,
+  "type": "string",
+  "description": "Merchant's website or site string associated with the alert."
+  },
+  "customerEmail": {
+  "description": "Customer's email address associated with the alert, if available.",
+  "nullable": true,
+  "type": "string"
+  },
+  "currency": {
+  "type": "string",
+  "nullable": true,
+  "description": "Currency code in ISO format (e.g., USD, EUR) for the transaction."
+  },
+  "creditStatus": {
+  "nullable": true,
+  "type": "string",
+  "description": "Status of the credit (if any) associated with the alert."
+  },
+  "descriptor": {
+  "type": "string",
+  "nullable": true,
+  "description": "Billing descriptor shown on the card statement."
+  },
+  "provider": {
+  "type": "string",
+  "description": "Provider associated with the alert. Possible values: ethoca, verifi",
+  "nullable": true
+  },
+  "merchantId": {
+  "nullable": true,
+  "description": "Identifier for the merchant within the system.",
+  "type": "string"
+  }
+  }
+  },
+  "OrderUploadBody": {
+  "type": "object",
+  "required": [
+  "orders"
+  ],
+  "properties": {
+  "orders": {
+  "items": {
+  "$ref": "#/components/schemas/OrderUploadBodyOrder"
+  },
+  "type": "array"
+  }
+  }
+  },
+  "SMSIntegration": {
+  "required": [
+  "enabled",
+  "phonenumber"
+  ],
+  "properties": {
+  "enabled": {
+  "type": "boolean"
+  },
+  "phonenumber": {
+  "type": "string"
+  }
+  },
+  "type": "object"
+  },
+  "ProviderSource": {
+  "type": "string",
+  "enum": [
+  "Banks",
+  "Ethoca",
+  "Verifi"
+  ]
+  },
+  "DiscordIntegration": {
+  "type": "object",
+  "properties": {
+  "enabled": {
+  "type": "boolean"
+  },
+  "webhook": {
+  "type": "string"
+  }
+  },
+  "required": [
+  "enabled",
+  "webhook"
+  ]
+  },
+  "PayshieldDescriptorDescriptorStatus": {
+  "enum": [
+  "Pending",
+  "Enrolled",
+  "Disabled",
+  "Surpressed",
+  "Processing",
+  "Rejected",
+  "InReview"
+  ],
+  "type": "string"
+  },
+  "KlaviyoIntegration": {
+  "type": "object",
+  "properties": {
+  "enabled": {
+  "type": "boolean"
+  },
+  "apiKey": {
+  "type": "string"
+  }
+  },
+  "required": [
+  "apiKey",
+  "enabled"
+  ]
+  },
+  "CBAccountDTO": {
+  "type": "object",
+  "properties": {
+  "id": {
+  "nullable": true,
+  "type": "string"
+  },
+  "email": {
+  "type": "string",
+  "nullable": true
+  }
+  }
+  },
+  "IntegrationSettings": {
+  "type": "object",
+  "properties": {
+  "klaviyoIntegration": {
+  "$ref": "#/components/schemas/KlaviyoIntegration"
+  },
+  "checkoutChampIntegration": {
+  "$ref": "#/components/schemas/CheckoutChampIntegration"
+  },
+  "smsIntegration": {
+  "$ref": "#/components/schemas/SMSIntegration"
+  },
+  "mamopayIntegration": {
+  "$ref": "#/components/schemas/MamopayIntegration"
+  },
+  "spreedlyIntegration": {
+  "$ref": "#/components/schemas/SpreedlyIntegration"
+  },
+  "nextIntegration": {
+  "$ref": "#/components/schemas/NextIntegration"
+  },
+  "stickyIntegration": {
+  "$ref": "#/components/schemas/StickyIntegration"
+  },
+  "skioIntegration": {
+  "$ref": "#/components/schemas/SkioIntegration"
+  },
+  "slackIntegration": {
+  "$ref": "#/components/schemas/SlackIntegration"
+  },
+  "shopifyIntegration": {
+  "$ref": "#/components/schemas/ShopifyIntegration"
+  },
+  "braintreeIntegration": {
+  "$ref": "#/components/schemas/BraintreeIntegration"
+  },
+  "discordIntegration": {
+  "$ref": "#/components/schemas/DiscordIntegration"
+  },
+  "whopIntegration": {
+  "$ref": "#/components/schemas/WhopIntegration"
+  },
+  "sealIntegration": {
+  "$ref": "#/components/schemas/SealIntegration"
+  },
+  "maverickIntegration": {
+  "$ref": "#/components/schemas/MaverickIntegration"
+  },
+  "stripeIntegration": {
+  "$ref": "#/components/schemas/StripeIntegration"
+  }
+  }
+  },
+  "AccountPermission": {
+  "enum": [
+  "manager",
+  "analyst",
+  "admin",
+  "refundAnalyst",
+  "any",
+  "unknown"
+  ],
+  "type": "string"
+  },
+  "PayshieldSiteDTO": {
+  "properties": {
+  "name": {
+  "type": "string"
+  },
+  "id": {
+  "type": "string",
+  "nullable": true
+  },
+  "descriptors": {
+  "items": {
+  "$ref": "#/components/schemas/PayshieldDescriptorDTO"
+  },
+  "type": "array"
+  },
+  "retailer": {
+  "$ref": "#/components/schemas/PayshieldRetailerDTO"
+  }
+  },
+  "type": "object",
+  "required": [
+  "descriptors",
+  "name",
+  "retailer"
+  ]
+  },
+  "UnenrollmentBody": {
+  "properties": {
+  "descriptor_id": {
+  "type": "string"
+  }
+  },
+  "required": [
+  "descriptor_id"
+  ],
+  "type": "object"
+  },
+  "DescriptorDetails": {
+  "type": "object",
+  "required": [
+  "type"
+  ],
+  "properties": {
+  "type": {
+  "type": "string"
+  }
+  }
+  },
+  "RutterTokenDTO": {
+  "type": "object",
+  "properties": {
+  "isReady": {
+  "type": "boolean"
+  },
+  "accessToken": {
+  "type": "string"
+  },
+  "platform": {
+  "type": "string"
+  },
+  "externalId": {
+  "nullable": true,
+  "type": "string"
+  },
+  "connectionId": {
+  "type": "string"
+  },
+  "id": {
+  "nullable": true,
+  "type": "string"
+  },
+  "storeUniqueName": {
+  "type": "string"
+  },
+  "status": {
+  "$ref": "#/components/schemas/RutterTokenDTOConnectionStatus"
+  },
+  "publicToken": {
+  "type": "string"
+  },
+  "platformToken": {
+  "type": "string",
+  "nullable": true
+  }
+  },
+  "required": [
+  "accessToken",
+  "connectionId",
+  "isReady",
+  "platform",
+  "publicToken",
+  "status",
+  "storeUniqueName"
+  ]
+  },
+  "NextIntegration": {
+  "properties": {
+  "store": {
+  "nullable": true,
+  "type": "string"
+  },
+  "status": {
+  "type": "string",
+  "nullable": true
+  },
+  "enabled": {
+  "type": "boolean",
+  "nullable": true
+  }
+  },
+  "type": "object"
+  },
+  "AgentSettings": {
+  "required": [
+  "bankTransferInfo",
+  "cryptoInfo"
+  ],
+  "properties": {
+  "cryptoInfo": {
+  "$ref": "#/components/schemas/AgentSettingsCryptoInfo"
+  },
+  "bankTransferInfo": {
+  "$ref": "#/components/schemas/AgentSettingsBankTransferInfo"
+  }
+  },
+  "type": "object"
+  },
+  "RuleAction": {
+  "type": "object",
+  "properties": {
+  "descriptor": {
+  "type": "string",
+  "nullable": true
+  }
+  }
+  },
+  "SealIntegration": {
+  "properties": {
+  "apiKey": {
+  "type": "string"
+  },
+  "enabled": {
+  "type": "boolean"
+  }
+  },
+  "required": [
+  "apiKey",
+  "enabled"
+  ],
+  "type": "object"
+  },
+  "AlertReasonCode": {
+  "type": "string",
+  "enum": [
+  "Resolved",
+  "ResolvedPartial",
+  "ResolvedCancelled",
+  "AccountCancelled",
+  "CancellationProcessed",
+  "UnmatchedGeneral",
+  "UnmatchedCannotFindTransaction",
+  "Duplicate",
+  "MIDLost",
+  "AlreadyRefunded",
+  "AlreadyChargeback",
+  "Ineligible",
+  "TDS",
+  "CannotCancel",
+  "MatchedWillShip",
+  "EscalateChargeback",
+  "ContactedShipper",
+  "WIP",
+  "Error",
+  "None",
+  "NotMyDescriptor",
+  "Unactioned",
+  ""
+  ]
+  },
+  "AgentDealDTO": {
+  "properties": {
+  "agentPayload": {
+  "type": "object",
+  "additionalProperties": {}
+  },
+  "createdAt": {
+  "format": "date-time",
+  "type": "string",
+  "nullable": true
+  },
+  "id": {
+  "type": "string",
+  "nullable": true
+  }
+  },
+  "type": "object",
+  "required": [
+  "agentPayload"
+  ]
+  },
+  "RutterTokenDTOConnectionStatus": {
+  "type": "string",
+  "enum": [
+  "active",
+  "inactive"
+  ]
+  },
+  "UserDTO": {
+  "required": [
+  "accounts",
+  "agentDeal",
+  "announcements",
+  "invitations",
+  "tokens"
+  ],
+  "properties": {
+  "internalCompany": {
+  "nullable": true,
+  "type": "string"
+  },
+  "agentDeal": {
+  "items": {
+  "$ref": "#/components/schemas/AgentDealDTO"
+  },
+  "type": "array"
+  },
+  "stripeId": {
+  "nullable": true,
+  "type": "string"
+  },
+  "isBilledForResolved": {
+  "type": "boolean",
+  "nullable": true
+  },
+  "invitations": {
+  "items": {
+  "$ref": "#/components/schemas/InvitationDTO"
+  },
+  "type": "array"
+  },
+  "referralCode": {
+  "type": "string",
+  "nullable": true
+  },
+  "hubspotId": {
+  "nullable": true,
+  "type": "string"
+  },
+  "name": {
+  "type": "string",
+  "nullable": true
+  },
+  "admin": {
+  "type": "boolean",
+  "nullable": true
+  },
+  "createdAt": {
+  "nullable": true,
+  "format": "date-time",
+  "type": "string"
+  },
+  "utmSource": {
+  "type": "string",
+  "nullable": true
+  },
+  "phonenumber": {
+  "nullable": true,
+  "type": "string"
+  },
+  "settings": {
+  "$ref": "#/components/schemas/UserSettingsDTO"
+  },
+  "pfStripeId": {
+  "nullable": true,
+  "type": "string"
+  },
+  "merchantId": {
+  "nullable": true,
+  "type": "string"
+  },
+  "announcements": {
+  "type": "array",
+  "items": {
+  "$ref": "#/components/schemas/AnnouncementDTO"
+  }
+  },
+  "id": {
+  "nullable": true,
+  "type": "string"
+  },
+  "internalId": {
+  "nullable": true,
+  "type": "string"
+  },
+  "isSalesAgent": {
+  "nullable": true,
+  "type": "boolean"
+  },
+  "email": {
+  "nullable": true,
+  "type": "string"
+  },
+  "accounts": {
+  "type": "array",
+  "items": {
+  "$ref": "#/components/schemas/CBAccountDTO"
+  }
+  },
+  "fromInvite": {
+  "type": "boolean",
+  "nullable": true
+  },
+  "company": {
+  "type": "string",
+  "nullable": true
+  },
+  "tokens": {
+  "type": "array",
+  "items": {
+  "$ref": "#/components/schemas/RutterTokenDTO"
+  }
+  },
+  "risk": {
+  "$ref": "#/components/schemas/AccountRiskLevel"
+  },
+  "svixId": {
+  "nullable": true,
+  "type": "string"
+  }
+  },
+  "type": "object"
+  },
+  "EmbedMerchantResponseDTO": {
+  "type": "object",
+  "properties": {
+  "merchants": {
+  "type": "array",
+  "items": {
+  "$ref": "#/components/schemas/PayshieldRetailerDTO"
+  }
+  }
+  },
+  "required": [
+  "merchants"
+  ]
+  },
+  "ExportAPIAlertResponse": {
+  "type": "object",
+  "properties": {
+  "alert": {
+  "$ref": "#/components/schemas/ExportAlert"
+  }
+  },
+  "required": [
+  "alert"
+  ]
+  },
+  "DescriptorType": {
+  "type": "string",
+  "enum": [
+  "Ethoca",
+  "CDRN",
+  "RDR",
+  "Discover",
+  "AMEX",
+  "JCB",
+  "Unknown",
+  ""
+  ]
+  },
+  "SlackIntegration": {
+  "properties": {
+  "channel": {
+  "type": "string"
+  },
+  "authCode": {
+  "type": "string"
+  },
+  "enabled": {
+  "type": "boolean"
+  }
+  },
+  "required": [
+  "authCode",
+  "channel",
+  "enabled"
+  ],
+  "type": "object"
+  },
+  "PayshieldDescriptorDTO": {
+  "required": [
+  "details",
+  "hasEmailSent",
+  "site",
+  "status",
+  "type"
+  ],
+  "type": "object",
+  "properties": {
+  "id": {
+  "nullable": true,
+  "type": "string"
+  },
+  "type": {
+  "$ref": "#/components/schemas/DescriptorType"
+  },
+  "hasEmailSent": {
+  "type": "boolean"
+  },
+  "details": {
+  "$ref": "#/components/schemas/DescriptorDetails"
+  },
+  "site": {
+  "$ref": "#/components/schemas/PayshieldSiteDTO"
+  },
+  "bankMid": {
+  "nullable": true,
+  "type": "string"
+  },
+  "status": {
+  "$ref": "#/components/schemas/PayshieldDescriptorDescriptorStatus"
+  }
+  }
+  },
+  "AgentSettingsCryptoInfo": {
+  "required": [
+  "token"
+  ],
+  "type": "object",
+  "properties": {
+  "token": {
+  "type": "string"
+  }
+  }
+  },
+  "InvitationDTOInvitationStatus": {
+  "type": "string",
+  "enum": [
+  "Pending",
+  "Accepted"
+  ]
+  },
+  "EmbedDescriptorsResponseDTO": {
+  "required": [
+  "descriptors"
+  ],
+  "type": "object",
+  "properties": {
+  "descriptors": {
+  "items": {
+  "$ref": "#/components/schemas/PayshieldDescriptorDTO"
+  },
+  "type": "array"
+  }
+  }
+  },
+  "Settings": {
+  "properties": {
+  "agentSettings": {
+  "$ref": "#/components/schemas/AgentSettings"
+  },
+  "apiKey": {
+  "type": "string"
+  },
+  "invoiceSettings": {
+  "$ref": "#/components/schemas/InvoiceSettings"
+  },
+  "descriptors": {
+  "items": {
+  "type": "string"
+  },
+  "nullable": true,
+  "type": "array"
+  },
+  "touched": {
+  "format": "int64",
+  "nullable": true,
+  "type": "integer"
+  },
+  "efwRule": {
+  "$ref": "#/components/schemas/Rule"
+  },
+  "paymentSource": {
+  "nullable": true,
+  "type": "string"
+  },
+  "descriptorRules": {
+  "nullable": true,
+  "items": {
+  "$ref": "#/components/schemas/Rule"
+  },
+  "type": "array"
+  },
+  "autoresolve": {
+  "nullable": true,
+  "type": "boolean"
+  },
+  "claritySettings": {
+  "$ref": "#/components/schemas/ClaritySettings"
+  },
+  "selectedAlerts": {
+  "type": "array",
+  "nullable": true,
+  "items": {
+  "type": "string"
+  }
+  },
+  "alertColumns": {
+  "nullable": true,
+  "type": "array",
+  "items": {
+  "type": "string"
+  }
+  },
+  "integrationSettings": {
+  "$ref": "#/components/schemas/IntegrationSettings"
+  },
+  "ethocaRule": {
+  "$ref": "#/components/schemas/Rule"
+  },
+  "webhooks": {
+  "items": {
+  "type": "string"
+  },
+  "type": "array"
+  },
+  "refundAPIEnabled": {
+  "type": "boolean",
+  "nullable": true
+  },
+  "accountBanned": {
+  "type": "boolean",
+  "nullable": true
+  },
+  "processor": {
+  "type": "string",
+  "nullable": true
+  },
+  "arns": {
+  "type": "array",
+  "items": {
+  "type": "string"
+  },
+  "nullable": true
+  },
+  "matchingThreshhold": {
+  "format": "double",
+  "type": "number",
+  "nullable": true
+  },
+  "cancelSubscription": {
+  "type": "boolean",
+  "nullable": true
+  },
+  "threshholdEnabled": {
+  "nullable": true,
+  "type": "boolean"
+  },
+  "webhookSecret": {
+  "type": "string",
+  "nullable": true
+  },
+  "refundAllFromCustomer": {
+  "type": "boolean",
+  "nullable": true
+  },
+  "emails": {
+  "items": {
+  "type": "string"
+  },
+  "type": "array"
+  },
+  "refundUrl": {
+  "type": "string",
+  "nullable": true
+  },
+  "mcc": {
+  "type": "string",
+  "nullable": true
+  },
+  "rdrNotifications": {
+  "type": "boolean",
+  "nullable": true
+  },
+  "addCustomerToBlockList": {
+  "nullable": true,
+  "type": "boolean"
+  },
+  "hasBetaFeatures": {
+  "nullable": true,
+  "type": "boolean"
+  },
+  "ruleset": {
+  "type": "string",
+  "nullable": true
+  }
+  },
+  "required": [
+  "apiKey",
+  "emails",
+  "webhooks"
+  ],
+  "type": "object"
+  },
+  "Rule": {
+  "properties": {
+  "action": {
+  "$ref": "#/components/schemas/RuleAction"
+  },
+  "rules": {
+  "items": {
+  "$ref": "#/components/schemas/RuleGroup"
+  },
+  "type": "array"
+  }
+  },
+  "required": [
+  "rules"
+  ],
+  "type": "object"
+  }
+  }
   },
   "tags": [
-    {
-      "name": "Sync Data"
-    },
-    {
-      "name": "Alerts"
-    },
-    {
-      "name": "Enrollment"
-    }
+  {
+  "name": "Credit Requests"
+  },
+  {
+  "name": "Sync Data"
+  },
+  {
+  "name": "Alerts"
+  },
+  {
+  "name": "Enrollment"
+  }
   ],
   "openapi": "3.0.1",
-  "info": {
-    "title": "Chargeblast API",
-    "version": "0.1.0"
+  "servers": [
+  {
+  "url": "https://api.chargeblast.com"
   }
-}
+  ],
+  "paths": {
+  "/api/v2/credit-request/create": {
+  "post": {
+  "summary": "Creates a credit request",
+  "description": "Creates a credit request for a rejected alert",
+  "operationId": "postApiV2Credit-requestCreate",
+  "responses": {
+  "200": {
+  "description": "OK",
+  "content": {
+  "application/json": {
+  "schema": {
+  "type": "integer",
+  "format": "int64"
+  }
+  }
+  }
+  }
+  },
+  "requestBody": {
+  "content": {
+  "application/json": {
+  "schema": {
+  "$ref": "#/components/schemas/RefundRequestBody"
+  }
+  }
+  },
+  "required": true
+  },
+  "tags": [
+  "Credit Requests"
+  ],
+  "parameters": [
+  {
+  "schema": {
+  "type": "string"
+  },
+  "name": "api_key",
+  "required": true,
+  "in": "query"
+  }
+  ]
+  }
+  },
+  "/api/v2/orders/upload": {
+  "post": {
+  "description": "Upload orders to the chargeblast system. This will allow you to match disputes and chargebacks to the orders you have uploaded. Amount should be in cents, e.g. $19.99 => amount = 1999",
+  "operationId": "orders-upload",
+  "summary": "Upload Orders",
+  "parameters": [
+  {
+  "required": true,
+  "in": "query",
+  "name": "api_key",
+  "schema": {
+  "type": "string"
+  }
+  }
+  ],
+  "requestBody": {
+  "content": {
+  "application/json": {
+  "schema": {
+  "$ref": "#/components/schemas/OrderUploadBody"
+  }
+  }
+  },
+  "required": true
+  },
+  "tags": [
+  "Sync Data"
+  ],
+  "responses": {
+  "200": {
+  "description": "OK",
+  "content": {
+  "application/json": {
+  "schema": {
+  "$ref": "#/components/schemas/OrderUploadResponse"
+  }
+  }
+  }
+  }
+  }
+  }
+  },
+  "/api/alerts": {
+  "get": {
+  "responses": {
+  "200": {
+  "content": {
+  "application/json": {
+  "schema": {
+  "items": {
+  "$ref": "#/components/schemas/ExportAlert"
+  },
+  "type": "array"
+  }
+  }
+  },
+  "description": "OK"
+  }
+  },
+  "parameters": [
+  {
+  "required": true,
+  "name": "api_key",
+  "schema": {
+  "type": "string"
+  },
+  "in": "query"
+  },
+  {
+  "required": false,
+  "name": "merchant_id",
+  "in": "query",
+  "schema": {
+  "nullable": true,
+  "type": "string"
+  }
+  }
+  ],
+  "description": "Get all the alerts from your chargeblast account.",
+  "summary": "Fetch Alerts",
+  "operationId": "alerts",
+  "tags": [
+  "Alerts"
+  ]
+  }
+  },
+  "/api/alert/{id}": {
+  "get": {
+  "operationId": "alert",
+  "summary": "Fetch an Alert",
+  "description": "Get all the alerts from your chargeblast account.",
+  "tags": [
+  "Alerts"
+  ],
+  "parameters": [
+  {
+  "schema": {
+  "type": "string"
+  },
+  "required": true,
+  "name": "api_key",
+  "in": "query"
+  },
+  {
+  "schema": {
+  "type": "string"
+  },
+  "name": "id",
+  "required": true,
+  "in": "path"
+  }
+  ],
+  "responses": {
+  "200": {
+  "description": "OK",
+  "content": {
+  "application/json": {
+  "schema": {
+  "$ref": "#/components/schemas/ExportAlert"
+  }
+  }
+  }
+  }
+  }
+  }
+  },
+  "/api/alerts/update/{id}": {
+  "post": {
+  "tags": [
+  "Alerts"
+  ],
+  "parameters": [
+  {
+  "schema": {
+  "type": "string"
+  },
+  "in": "query",
+  "required": true,
+  "name": "api_key"
+  },
+  {
+  "required": true,
+  "name": "id",
+  "schema": {
+  "type": "string"
+  },
+  "in": "path"
+  }
+  ],
+  "summary": "Update Alert",
+  "description": "Update the state of an alert to properly inform the banks of whether or not a refund will be issued. If an alert is left unactioned for 72 hours it will be automatically declined. For best results mark alerts as resolved within 24 hours of receiving them (some smaller banks will escalate quarantined transactions as soon as 24 hours within propogating an alert). If you attempt to update an already actioned alert, the request will fail.",
+  "responses": {
+  "200": {
+  "description": "OK",
+  "content": {
+  "application/json": {
+  "schema": {
+  "type": "integer",
+  "format": "int64"
+  }
+  }
+  }
+  }
+  },
+  "operationId": "alerts-update",
+  "requestBody": {
+  "required": true,
+  "content": {
+  "application/json": {
+  "schema": {
+  "$ref": "#/components/schemas/AlertUpdateBodyOpenAPI"
+  }
+  }
+  }
+  }
+  }
+  },
+  "/api/unenroll": {
+  "post": {
+  "responses": {
+  "200": {
+  "description": "OK",
+  "content": {
+  "application/json": {
+  "schema": {
+  "format": "int64",
+  "type": "integer"
+  }
+  }
+  }
+  }
+  },
+  "parameters": [
+  {
+  "required": true,
+  "name": "api_key",
+  "in": "query",
+  "schema": {
+  "type": "string"
+  }
+  }
+  ],
+  "description": "Pass in a given descriptor_id to unenroll merchant's descriptor. Ethoca alerts take 48 hours to confirm unenrollment, RDR ~2 weeks, CDRN ~24 hours.",
+  "tags": [
+  "Enrollment"
+  ],
+  "requestBody": {
+  "content": {
+  "application/json": {
+  "schema": {
+  "$ref": "#/components/schemas/UnenrollmentBody"
+  }
+  }
+  },
+  "required": true
+  },
+  "operationId": "unenroll",
+  "summary": "Unenroll Merchant"
+  }
+  },
+  "/api/enroll_merchant": {
+  "post": {
+  "tags": [
+  "Enrollment"
+  ],
+  "responses": {
+  "200": {
+  "description": "OK",
+  "content": {
+  "application/json": {
+  "schema": {
+  "type": "integer",
+  "format": "int64"
+  }
+  }
+  }
+  }
+  },
+  "parameters": [
+  {
+  "in": "query",
+  "name": "api_key",
+  "required": true,
+  "schema": {
+  "type": "string"
+  }
+  },
+  {
+  "in": "query",
+  "name": "merchant_id",
+  "required": false,
+  "schema": {
+  "nullable": true,
+  "type": "string"
+  }
+  }
+  ],
+  "requestBody": {
+  "content": {
+  "application/json": {
+  "schema": {
+  "$ref": "#/components/schemas/EmbedEnrollmentBody"
+  }
+  }
+  },
+  "required": true
+  },
+  "summary": "Enroll Merchant",
+  "description": "Enroll the merchant in a various alert program. If no merchant_id is specified a new merchant object will be automatically generated. For each alert program various info is required. For example, for Ethoca, only descriptors are. To see which info is required see [here](https://docs.chargeblast.io/reference/enrollment-criteria)",
+  "operationId": "enroll-merchant"
+  }
+  },
+  "/api/merchant": {
+  "get": {
+  "tags": [
+  "Enrollment"
+  ],
+  "parameters": [
+  {
+  "name": "api_key",
+  "in": "query",
+  "required": true,
+  "schema": {
+  "type": "string"
+  }
+  },
+  {
+  "schema": {
+  "nullable": true,
+  "type": "string"
+  },
+  "name": "merchant_id",
+  "required": false,
+  "in": "query"
+  }
+  ],
+  "responses": {
+  "200": {
+  "content": {
+  "application/json": {
+  "schema": {
+  "$ref": "#/components/schemas/PayshieldRetailerDTO"
+  }
+  }
+  },
+  "description": "OK"
+  }
+  },
+  "description": "Get an individual merchant from your chargeblast account.",
+  "summary": "Fetch Merchant",
+  "operationId": "merchant"
+  }
+  },
+  "/api/v2/alerts/update/{id}": {
+  "post": {
+  "responses": {
+  "200": {
+  "description": "OK",
+  "content": {
+  "application/json": {
+  "schema": {
+  "format": "int64",
+  "type": "integer"
+  }
+  }
+  }
+  }
+  },
+  "requestBody": {
+  "content": {
+  "application/json": {
+  "schema": {
+  "$ref": "#/components/schemas/AlertUpdateBodyOpenAPI"
+  }
+  }
+  },
+  "required": true
+  },
+  "tags": [
+  "Alerts"
+  ],
+  "operationId": "alerts-update",
+  "parameters": [
+  {
+  "in": "query",
+  "schema": {
+  "type": "string"
+  },
+  "name": "api_key",
+  "required": true
+  },
+  {
+  "schema": {
+  "type": "string"
+  },
+  "in": "path",
+  "required": true,
+  "name": "id"
+  }
+  ],
+  "description": "Update the state of an alert to properly inform the banks of whether or not a refund will be issued. If an alert is left unactioned for 72 hours it will be automatically declined. For best results mark alerts as resolved within 24 hours of receiving them (some smaller banks will escalate quarantined transactions as soon as 24 hours within propogating an alert). If you attempt to update an already actioned alert, the request will fail.",
+  "summary": "Update Alert"
+  }
+  },
+  "/api/v2/alerts": {
+  "get": {
+  "responses": {
+  "200": {
+  "content": {
+  "application/json": {
+  "schema": {
+  "$ref": "#/components/schemas/ExportAPIAlertsResponse"
+  }
+  }
+  },
+  "description": "OK"
+  }
+  },
+  "summary": "Fetch Alerts",
+  "tags": [
+  "Alerts"
+  ],
+  "description": "Get all the alerts from your chargeblast account.",
+  "operationId": "alerts",
+  "parameters": [
+  {
+  "in": "query",
+  "required": false,
+  "name": "page",
+  "description": "The starting page of the request. Default value of 0.",
+  "schema": {
+  "format": "int64",
+  "type": "integer",
+  "nullable": true
+  }
+  },
+  {
+  "description": "How many objects to request per page. Default value of 10.",
+  "schema": {
+  "type": "integer",
+  "format": "int64",
+  "nullable": true
+  },
+  "in": "query",
+  "name": "per",
+  "required": false
+  },
+  {
+  "schema": {
+  "type": "string"
+  },
+  "required": true,
+  "name": "api_key",
+  "description": "Your API key.",
+  "in": "query"
+  }
+  ]
+  }
+  },
+  "/api/merchants": {
+  "get": {
+  "tags": [
+  "Enrollment"
+  ],
+  "parameters": [
+  {
+  "required": true,
+  "name": "api_key",
+  "schema": {
+  "type": "string"
+  },
+  "in": "query"
+  }
+  ],
+  "responses": {
+  "200": {
+  "description": "OK",
+  "content": {
+  "application/json": {
+  "schema": {
+  "$ref": "#/components/schemas/EmbedMerchantResponseDTO"
+  }
+  }
+  }
+  }
+  },
+  "operationId": "merchants",
+  "description": "Get all the merchants from your chargeblast account.",
+  "summary": "Fetch Merchants"
+  }
+  },
+  "/api/v2/alert/{id}": {
+  "get": {
+  "tags": [
+  "Alerts"
+  ],
+  "responses": {
+  "200": {
+  "content": {
+  "application/json": {
+  "schema": {
+  "$ref": "#/components/schemas/ExportAPIAlertResponse"
+  }
+  }
+  },
+  "description": "OK"
+  }
+  },
+  "summary": "Fetch an Alert",
+  "parameters": [
+  {
+  "in": "query",
+  "required": true,
+  "schema": {
+  "type": "string"
+  },
+  "name": "api_key"
+  },
+  {
+  "in": "path",
+  "name": "id",
+  "required": true,
+  "schema": {
+  "type": "string"
+  }
+  }
+  ],
+  "description": "Get a specific alert.",
+  "operationId": "alert"
+  }
+  },
+  "/api/descriptors": {
+  "get": {
+  "responses": {
+  "200": {
+  "description": "OK",
+  "content": {
+  "application/json": {
+  "schema": {
+  "$ref": "#/components/schemas/EmbedDescriptorsResponseDTO"
+  }
+  }
+  }
+  }
+  },
+  "tags": [
+  "Enrollment"
+  ],
+  "summary": "Fetch Descriptors",
+  "description": "Fetch all the descriptors for your merchants.",
+  "operationId": "descriptors",
+  "parameters": [
+  {
+  "name": "api_key",
+  "required": true,
+  "in": "query",
+  "schema": {
+  "type": "string"
+  }
+  }
+  ]
+  }
+  }
+  }
+  }
