@@ -216,7 +216,9 @@ console.log(signature);
 ```
 
 The svix-signature header is composed of a list of space delimited signatures and their corresponding version identifiers. The signature list is most commonly of length one. Though there could be any number of signatures. For example:
-v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE= v1,bm9ldHUjKzFob2VudXRob2VodWUzMjRvdWVvdW9ldQo= v2,MzJsNDk4MzI0K2VvdSMjMTEjQEBAQDEyMzMzMzEyMwo=
+v1,bm9ldHUjKzFob2VudXRob2VodWUzMjRvdWVvdW9ldQo= v2,MzJsNDk4MzI0K2VvdSMjMTEjQEBAQDEyMzMzMzEyMwo=
+
+Make sure to remove the version prefix and delimiter (e.g. v1,) before verifying the signature. Use v1. In this example, you'd compare your signature against `bm9ldHUjKzFob2VudXRob2VodWUzMjRvdWVvdW9ldQo`.
 
 ### Types
 
