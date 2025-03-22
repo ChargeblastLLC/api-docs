@@ -742,7 +742,7 @@
           },
           "shippingAddress": {
             "$ref": "#/components/schemas/Address",
-            "description": "If a physical product, the shipping address of the customer"
+            "description": "If a physical product, the shipping address of the customer."
           }
         },
         "type": "object"
