@@ -751,40 +751,15 @@
       "Address": {
         "type": "object",
         "properties": {
-          "line3": {
+          "line1": {
             "type": "string",
             "nullable": true
           },
           "line2": {
             "type": "string",
             "nullable": true
-          },
-          "city": {
-            "type": "string",
-            "nullable": true
-          },
-          "countrySubdivision": {
-            "type": "string",
-            "nullable": true
-          },
-          "postalCode": {
-            "type": "string",
-            "nullable": true
-          },
-          "country": {
-            "type": "string",
-            "nullable": true
-          },
-          "latitude": {
-            "type": "string",
-            "nullable": true
-          },
-          "longitude": {
-            "type": "string",
-            "nullable": true
           }
-        },
-        "required": []
+        }
       },
 
       "PayshieldRetailerDTO": {
