@@ -452,7 +452,7 @@
             "description": "OK"
           }
         },
-        "operationId": "orders",
+        "operationId": "orders2",
         "parameters": [
           {
             "required": false,
