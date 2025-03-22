@@ -660,6 +660,30 @@
         "type": "string",
         "enum": ["Error", "Warning", "Success"]
       },
+      "APIOrdersResponse": {
+        "required": ["orders", "page", "per", "total"],
+        "properties": {
+          "total": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "page": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "per": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "orders": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "type": "object"
+      },
       "OrderUploadResponse": {
         "properties": {
           "message": {
