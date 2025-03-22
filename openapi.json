@@ -716,7 +716,7 @@
             "nullable": true
           },
           "status": {
-            "description": "The 3 character currency (case insensitive). E.g. 'usd'.",
+            "description": "The status of the transaction. Should be either 'succeeded' or 'failed'",
             "nullable": true,
             "type": "string"
           },
@@ -728,6 +728,16 @@
           "refunded": {
             "nullable": true,
             "description": "Whether the transaction has already been refunded.",
+            "type": "boolean"
+          },
+          "product_name": {
+            "nullable": true,
+            "description": "A brief name of what the consumer bought (i.e. Shoes) .",
+            "type": "boolean"
+          },
+          "product_description": {
+            "nullable": true,
+            "description": "A more detailed name of what the consumer bought (i.e. size XL Blue Shoes).",
             "type": "boolean"
           }
         },
