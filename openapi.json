@@ -733,12 +733,12 @@
           "productName": {
             "nullable": true,
             "description": "A brief name of what the consumer bought (i.e. Shoes) .",
-            "type": "boolean"
+            "type": "string"
           },
           "productDescription": {
             "nullable": true,
             "description": "A more detailed name of what the consumer bought (i.e. size XL Blue Shoes).",
-            "type": "boolean"
+            "type": "string"
           }
         },
         "type": "object"
