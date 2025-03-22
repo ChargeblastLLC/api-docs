@@ -741,19 +741,51 @@
             "type": "string"
           },
           "shippingAddress": {
-            "$ref": "#/components/schemas/Address"
+            "$ref": "#/components/schemas/Address",
+            "description": "If a physical product, the shipping address of the customer"
           }
         },
         "type": "object"
       },
       "Address": {
+        "type": "object",
         "properties": {
           "line1": {
-            "nullable": true,
-            "type": "string"
+            "type": "string",
+            "nullable": true
+          },
+          "line2": {
+            "type": "string",
+            "nullable": true
+          },
+          "city": {
+            "type": "string",
+            "nullable": true
+          },
+          "countrySubdivision": {
+            "type": "string",
+            "nullable": true
+          },
+          "postalCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "country": {
+            "type": "string",
+            "nullable": true
+          },
+          "latitude": {
+            "type": "string",
+            "nullable": true
+          },
+          "longitude": {
+            "type": "string",
+            "nullable": true
           }
-        }
+        },
+        "required": []
       },
+
       "PayshieldRetailerDTO": {
         "properties": {
           "sites": {
