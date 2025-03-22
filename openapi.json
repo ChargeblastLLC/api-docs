@@ -758,6 +758,30 @@
           "line2": {
             "type": "string",
             "nullable": true
+          },
+          "city": {
+            "type": "string",
+            "nullable": true
+          },
+          "countrySubdivision": {
+            "type": "string",
+            "nullable": true
+          },
+          "postalCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "country": {
+            "type": "string",
+            "nullable": true
+          },
+          "latitude": {
+            "type": "string",
+            "nullable": true
+          },
+          "longitude": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
