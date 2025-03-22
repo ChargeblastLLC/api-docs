@@ -486,7 +486,7 @@
             "in": "query"
           }
         ],
-        "description": "Get all the orders from your chargeblast account.",
+        "description": "Get all the orders from your chargeblast account. Receipt info is omitted from this endpoint.",
         "summary": "Fetch Orders"
       }
     },
