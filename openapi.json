@@ -730,12 +730,12 @@
             "description": "Whether the transaction has already been refunded.",
             "type": "boolean"
           },
-          "product_name": {
+          "productName": {
             "nullable": true,
             "description": "A brief name of what the consumer bought (i.e. Shoes) .",
             "type": "boolean"
           },
-          "product_description": {
+          "productDescription": {
             "nullable": true,
             "description": "A more detailed name of what the consumer bought (i.e. size XL Blue Shoes).",
             "type": "boolean"
