@@ -739,9 +739,20 @@
             "nullable": true,
             "description": "A more detailed name of what the consumer bought (i.e. size XL Blue Shoes).",
             "type": "string"
+          },
+          "shippingAddress": {
+            "$ref": "#/components/schemas/Address"
           }
         },
         "type": "object"
+      },
+      "Address": {
+        "properties": {
+          "line1": {
+            "nullable": true,
+            "type": "string"
+          }
+        }
       },
       "PayshieldRetailerDTO": {
         "properties": {
