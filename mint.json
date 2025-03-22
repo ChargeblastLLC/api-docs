@@ -87,7 +87,10 @@
     },
     {
       "group": "Sync Data",
-      "pages": ["api-reference/sync-data/upload-orders"]
+      "pages": [
+        "api-reference/sync-data/upload-orders",
+        "api-reference/sync-data/orders"
+      ]
     }
   ],
   "footerSocials": {
