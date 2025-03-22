@@ -437,7 +437,59 @@
         }
       }
     },
-
+    "/api/v2/orders": {
+      "get": {
+        "tags": ["Orders"],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIOrdersResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "operationId": "orders2",
+        "parameters": [
+          {
+            "required": false,
+            "schema": {
+              "format": "int64",
+              "type": "integer",
+              "nullable": true
+            },
+            "name": "page",
+            "in": "query",
+            "description": "The starting page of the request. Default value of 0."
+          },
+          {
+            "in": "query",
+            "required": false,
+            "schema": {
+              "nullable": true,
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "How many objects to request per page. Default value of 10.",
+            "name": "per"
+          },
+          {
+            "description": "Your API key.",
+            "name": "api_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ],
+        "description": "Get all the orders from your chargeblast account.",
+        "summary": "Fetch Orders"
+      }
+    },
     "/api/v2/orders/upload": {
       "post": {
         "responses": {
