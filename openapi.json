@@ -730,15 +730,33 @@
             "description": "Whether the transaction has already been refunded.",
             "type": "boolean"
           },
-          "productName": {
-            "nullable": true,
-            "description": "A brief name of what the consumer bought (i.e. Shoes) .",
-            "type": "string"
-          },
+          "receipt": {
+            "$ref": "#/components/schemas/Receipt",
+            "description": "Additional info on the transaction. Only required for digital receipts and compelling evidence (pre-dispute re-presentment).",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "Receipt": {
+        "type": "object",
+        "properties": {
           "productDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "productName": {
+            "type": "string",
+            "nullable": true
+          },
+          "customerEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "customerPhone": {
+            "type": "string",
             "nullable": true,
-            "description": "A more detailed name of what the consumer bought (i.e. size XL Blue Shoes).",
-            "type": "string"
+            "description": "Phone number if applicable, e.g. +14016993099. String in any ISO format is acceptable."
           },
           "shippingAddress": {
             "$ref": "#/components/schemas/Address",
@@ -749,10 +767,31 @@
             "$ref": "#/components/schemas/Address",
             "description": "The billing address of the customer.",
             "type": "object"
+          },
+          "name": {
+            "$ref": "#/components/schemas/Name",
+            "description": "The billing address of the customer.",
+            "type": "object"
           }
-        },
-        "type": "object"
+        }
       },
+
+      "Name": {
+        "type": "object",
+        "properties": {
+          "givenName": {
+            "type": "string",
+            "nullable": true,
+            "description": "First name, e.g. 'Elon' "
+          },
+          "familyName": {
+            "type": "string",
+            "nullable": true,
+            "description": "Last name, e.g. 'Musk' "
+          }
+        }
+      },
+
       "Address": {
         "type": "object",
         "properties": {
@@ -770,7 +809,8 @@
           },
           "countrySubdivision": {
             "type": "string",
-            "nullable": true
+            "nullable": true,
+            "description": "For US addresses, the state - two letter coded. E.g. CA"
           },
           "postalCode": {
             "type": "string",
@@ -778,7 +818,8 @@
           },
           "country": {
             "type": "string",
-            "nullable": true
+            "nullable": true,
+            "description": "The country spelled out, e.g. 'United States of America' or abbreviated 'USA'."
           },
           "latitude": {
             "type": "string",
