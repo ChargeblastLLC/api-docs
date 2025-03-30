@@ -747,7 +747,7 @@
           "productDescription": {
             "type": "string",
             "nullable": true,
-            "description": "The name of the product."
+            "description": "A more detailed description of the product."
           }
         }
       },
@@ -833,9 +833,11 @@
         "type": "object",
         "properties": {
           "lineItems": {
-            "$ref": "#/components/schemas/LineItem",
             "description": "Line items for the receipt.",
-            "type": "array"
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LineItem"
+            }
           },
           "customerEmail": {
             "type": "string",
