@@ -737,6 +737,20 @@
           }
         }
       },
+      "LineItem": {
+        "properties": {
+          "productName": {
+            "type": "string",
+            "nullable": true,
+            "description": "The name of the product."
+          },
+          "productDescription": {
+            "type": "string",
+            "nullable": true,
+            "description": "The name of the product."
+          }
+        }
+      },
       "OrderUploadBodyOrder": {
         "required": ["amount", "currency", "id", "transactionDate"],
         "properties": {
@@ -818,13 +832,10 @@
       "Receipt": {
         "type": "object",
         "properties": {
-          "productDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "productName": {
-            "type": "string",
-            "nullable": true
+          "lineItems": {
+            "$ref": "#/components/schemas/LineItem",
+            "description": "Line items for the receipt.",
+            "type": "array"
           },
           "customerEmail": {
             "type": "string",
