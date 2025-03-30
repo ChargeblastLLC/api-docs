@@ -741,7 +741,7 @@
         "properties": {
           "productName": {
             "type": "string",
-            "nullable": true,
+            "nullable": false,
             "description": "The name of the product."
           },
           "productDescription": {
@@ -755,13 +755,15 @@
             "description": "3 character ISO currency code. If nil, defaults to USD."
           },
           "quantity": {
-            "type": "int64",
+            "format": "int64",
+            "type": "integer",
             "nullable": true,
             "description": "The quantity of the line item (defaults to 1)."
           },
           "price": {
-            "type": "string",
-            "nullable": true,
+            "format": "int64",
+            "type": "integer",
+            "nullable": false,
             "description": "The total price (in cents) of the line item. For if you bought 5 socks at $2 each, this field would be 1000."
           }
         }
