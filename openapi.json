@@ -846,20 +846,69 @@
         },
         "type": "object"
       },
+      "MerchantContact": {
+        "type": "object",
+        "properties": {
+          "phoneForReceipt": {
+            "type": "string",
+            "nullable": true,
+            "description": "The phone number to appear on the digital receipt, for the merchant's contact."
+          },
+          "emailForReceipt": {
+            "type": "string",
+            "nullable": true,
+            "description": "The email address to appear on the digital receipt, for the merchant's contact."
+          },
+          "websiteForReceipt": {
+            "type": "string",
+            "nullable": true,
+            "description": "The website URL to appear on the digital receipt, for the merchant's contact."
+          },
+          "receiptAddress": {
+            "$ref": "#/components/schemas/Address",
+            "nullable": true,
+            "description": "The address to appear on the digital receipt, for the merchant's contact."
+          }
+        }
+      },
+
       "merchantInfo": {
         "type": "object",
         "properties": {
-          "line1": {
-            "type": "string",
-            "nullable": true
+          "merchantReceiptContact": {
+            "$ref": "#/components/schemas/MerchantContact",
+            "nullable": false,
+            "description": "Your business contact information. Mandatory field if you are passing in merchant level details for each order."
           },
-          "line2": {
+          "name": {
             "type": "string",
-            "nullable": true
+            "nullable": true,
+            "description": "The name of the merchant to appear on the digital receipt, e.g. 'Netflix'"
           },
-          "city": {
+          "description": {
             "type": "string",
-            "nullable": true
+            "nullable": true,
+            "description": "A brief description of the business, e.g. 'Media Streaming Business'"
+          },
+          "refundPolicyLink": {
+            "type": "string",
+            "nullable": true,
+            "description": "A url linking to a refund policy. Include https://, e.g. 'https://netflix.com/refund-policy'"
+          },
+          "cancellationPolicyLink": {
+            "type": "string",
+            "nullable": true,
+            "description": "A url linking to a cancel policy. Include https://, e.g. 'https://netflix.com/cancel-policy'"
+          },
+          "termsAndConditionsLink": {
+            "type": "string",
+            "nullable": true,
+            "description": "A url linking to a terms of service. Include https://, e.g. 'https://netflix.com/terms-of-service'"
+          },
+          "logoUrl": {
+            "type": "string",
+            "nullable": true,
+            "description": "A url linking to a logo of the business. For best results use square pngs (ideally 256x256, though other resolutions are supported)."
           }
         }
       },
