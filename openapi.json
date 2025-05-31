@@ -846,9 +846,33 @@
         },
         "type": "object"
       },
+      "merchantInfo": {
+        "type": "object",
+        "properties": {
+          "line1": {
+            "type": "string",
+            "nullable": true
+          },
+          "line2": {
+            "type": "string",
+            "nullable": true
+          },
+          "city": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
       "Receipt": {
         "type": "object",
         "properties": {
+          "merchantInfo": {
+            "$ref": "#/components/schemas/merchantInfo",
+            "description": "Override default merchant info",
+            "type": "object",
+            "nullable": true
+          },
+
           "lineItems": {
             "description": "Line items for the receipt.",
             "type": "array",
