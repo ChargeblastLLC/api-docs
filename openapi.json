@@ -20,6 +20,36 @@
     }
   ],
   "paths": {
+    "/api/v2/orders/{id}": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetOrder"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": ["Orders"],
+        "description": "Get a specific the order from your chargeblast account. Receipt info is included with this endpoint.",
+        "operationId": "orders",
+        "summary": "Fetch Order",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
     "/api/enroll_merchant": {
       "post": {
         "requestBody": {
@@ -912,12 +942,40 @@
           }
         }
       },
+      "CompellingEvidenceResult": {
+        "properties": {
+          "isEligible": {
+            "type": "boolean"
+          },
+          "explanation": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": ["isEligible"]
+      },
+      "GetOrder": {
+        "properties": {
+          "charge": {
+            "$ref": "#/components/schemas/CommonChargeDirect"
+          },
+          "compellingEvidence": {
+            "$ref": "#/components/schemas/CompellingEvidenceResult"
+          },
+          "digitalReceipt": {
+            "$ref": "#/components/schemas/OITransactionResponse"
+          }
+        },
+        "required": ["compellingEvidence"],
+        "type": "object"
+      },
       "Receipt": {
         "type": "object",
         "properties": {
           "merchantInfo": {
             "$ref": "#/components/schemas/merchantInfo",
-            "description": "Override default merchant info",
+            "description": "Override default merchant info. We recommend leaving this blank unless you are a merchant of record platform.",
             "type": "object",
             "nullable": true
           },
