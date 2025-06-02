@@ -76,6 +76,14 @@
       ]
     },
     {
+      "group": "Sync Data",
+      "pages": [
+        "api-reference/sync-data/upload-orders",
+        "api-reference/sync-data/get-orders",
+        "api-reference/sync-data/get-order"
+      ]
+    },
+    {
       "group": "Enrollment",
       "pages": [
         "api-reference/enrollment/fetch-merchants",
@@ -83,14 +91,6 @@
         "api-reference/enrollment/fetch-merchant",
         "api-reference/enrollment/enroll-merchant",
         "api-reference/enrollment/unenroll-merchant"
-      ]
-    },
-    {
-      "group": "Sync Data",
-      "pages": [
-        "api-reference/sync-data/upload-orders",
-        "api-reference/sync-data/get-orders",
-        "api-reference/sync-data/get-order"
       ]
     }
   ],

@@ -949,7 +949,8 @@
           },
           "explanation": {
             "nullable": true,
-            "type": "string"
+            "type": "string",
+            "description": "If the transaction is not eligible for compelling evidence, an explanation is provided."
           }
         },
         "type": "object",
