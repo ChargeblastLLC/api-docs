@@ -4,12 +4,14 @@ title: "RDR Action Endpoint"
 
 ## Overview
 
-To integrate with our system, you need to set up an endpoint that handles refund requests and returns a structured response. This endpoint will be used to action alerts, and it must respond with the specific structure defined below. The API key will be passed as a query parameter in the URL. Prior to implementing this endpoint, we recommend implementing the `/orders/upload` [endpoint](/reference/orders-upload), which will be used to perform the transaction matching logic.
+You are able to set up custom responses for RDR via API. This is intended only to be used by marketplace platforms that require sub-account level RDR responses.
+
+Note
 
 #### Endpoint Requirements
 
 **HTTP Method:** POST  
-**Query Parameter:** api_key (Your unique API key)
+**Header:** `X-API-Key` (Your unique API key)
 
 Your endpoint should accept a POST request with the API key included in the query string like this:  
 `https://your-domain.com/your-endpoint` with X-API-Key in the header.
@@ -24,30 +26,25 @@ The request body will include the necessary details for processing a refund. Thi
 
 Here's an example request body:
 
-json
-
-`{ 
-  "charge_id": "ch_xxxxxxxx", // corresponds to charge object in your database
-  "alert_id": "al_xxxxxxxx" 
+```json
+{
+  "action": "Resolved"
 }
-`
+```
 
 #### Response
 
 Your endpoint must return a response that conforms to the following payload:
 
-json
-
-`{  
-  "code": "Resolved"  
+```json
+{
+  "code": "Resolved"
 }
-`
+```
 
 The potential responses are:
 
-- Resolved - the alert was used to successfully refund a cardholder.
-- AlreadyChargeback - the transaction was already a dispute.
-- AlreadyRefunded - the transaction was already refunded prior to the alert being transmitted.
-- UnmatchedGeneral - a catch-all rejection code for alerts rejected for various other reasons.
+- Resolved - the RDR alert should be accepted - i.e. refunded by Visa.
+- Declined - the RDR alert should be rejected - i.e. turn into a chargeback.
 
-If there's any issue with the request (e.g., missing API key or invalid data), appropriate HTTP status codes should be returned along with a message explaining the issue.
+Return with a 200 status code in either scenario.

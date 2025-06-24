@@ -11,10 +11,10 @@ This endpoint is designed for FinTechs that have multiple processors. If you're 
 #### Endpoint Requirements
 
 **HTTP Method:** POST  
-**Query Parameter:** api_key (Your unique API key)
+**Header:** `X-API-Key` (Your unique API key)
 
-Your endpoint should accept a POST request with the API key included in the query string like this:  
-`https://your-domain.com/your-endpoint?api_key={{YOUR_API_KEY}}`
+Your endpoint should accept a POST request like this:  
+`https://your-domain.com/your-endpoint`
 
 You can set this URL in your account under developer settings:
 
