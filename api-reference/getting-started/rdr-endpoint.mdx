@@ -6,7 +6,12 @@ title: "RDR Action Endpoint"
 
 You are able to set up custom responses for RDR via API. This is intended only to be used by marketplace platforms that require sub-account level RDR responses.
 
-Note
+<Danger>
+  If your endpoint goes down or fails to respond, alerts cannot be retried and
+  you may receive chargebacks. To avoid this, please make sure your
+  implementation is reliable. If your endpoint is unresponsive or times out, we
+  will automatically apply a default safety ruleset with a limit of $150..
+</Danger>
 
 #### Endpoint Requirements
 
@@ -28,7 +33,14 @@ Here's an example request body:
 
 ```json
 {
-  "action": "Resolved"
+  "arn": "24112315071512011675836",
+  "type": "Fraud", // or "NotFraud"
+  "authCode": "013A3B",
+  "first6": "424242",
+  "last4": "1234",
+  "descriptor": "NIKE SHOES",
+  "currency": "USD",
+  "amount": "45.15" // amount (not in cents)
 }
 ```
 
