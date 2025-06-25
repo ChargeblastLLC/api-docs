@@ -10,7 +10,7 @@ You are able to set up custom responses for RDR via API. This is intended only t
   If your endpoint goes down or fails to respond, alerts cannot be retried and
   you may receive chargebacks. To avoid this, please make sure your
   implementation is reliable. If your endpoint is unresponsive or times out, we
-  will automatically apply a default safety ruleset with a limit of $150..
+  will automatically apply a default safety ruleset with a limit of $150.
 </Danger>
 
 #### Endpoint Requirements
@@ -27,7 +27,8 @@ You can set this URL in your account under developer settings:
 
 #### Request Body
 
-The request body will include the necessary details for processing a refund. This will be in JSON format (details of the request structure can be provided based on your specific requirements).
+The request body will include the necessary details for determining how to action the RDR alert.
+Note your endpoint need ony return an accepted/declined response - no refund is actually performed within your implementation. Refunds for RDR are performed directly via Visa in realtime based on your response. Your endpoint must respond in 1.5 seconds.
 
 Here's an example request body:
 
