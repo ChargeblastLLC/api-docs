@@ -12,15 +12,16 @@ This guide will help you implement the Chargeblast tracker snippet on your websi
 Add this snippet to your website's `<head>` section:
 
 ```html
-<script>
-  (function(c,b,a,r,i,t,o,n){
-    c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-    t=b.createElement(r);t.async=1;t.src=i;t.charset="utf-8";
-    o=b.getElementsByTagName(r)[0];o.parentNode.insertBefore(t,o);
-  })(window,document,"chargeblast","script","https://cdn.chargeblast.com/tracker.js");
-  
-  chargeblast('init', 'YOUR_API_KEY');
+<script defer 
+src="https://cdn.cgb.la/v1/scripts.js" 
+data-account="YOUR_ACCOUNT_ID" 
+id="chargeblast-script">
 </script>
+```
+
+Then make an API call somewhere to identify a user:
+```javascript
+Chargeblast.identify("hello@chargeblast.com")
 ```
 
 ## Overview
