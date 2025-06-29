@@ -3,13 +3,13 @@ title: "Tracker Snippet Guide"
 ---
 
 <Info>
-This is a message
+There are two paths to enriching charge data and making your transactions compelling evidence eligible. You can either implement the [upload-orders](https://docs.chargeblast.com/api-reference/sync-data/upload-orders) endpoint, or simply integrate the javascript snippet. 
 </Info>
 This guide will help you implement the Chargeblast tracker snippet on your website.
 
 ## Quick Start
 
-Add this snippet to your website's `<head>` section:
+Add this snippet to your website's `<head>` section. Your `account_id` starts with "acct_" and can be found under the [settings tab](https://app.chargeblast.com/settings) here.
 
 ```html
 <script defer 
@@ -24,18 +24,8 @@ Then make an API call somewhere to identify a user:
 Chargeblast.identify("hello@chargeblast.com")
 ```
 
-## Overview
+## Confirming It Worked
 
-The tracker snippet is a JavaScript code snippet that you add to your website to monitor for potential chargeback indicators and suspicious activity.
-
-## Implementation
-
-[Content to be added]
-
-## Configuration Options
-
-[Content to be added]
-
-## Best Practices
-
-[Content to be added] 
+Once your code is live, you will see the widget is installed successfully. You can verify the installation under the [digital receipts tab](https://app.chargeblast.com/clarity)
+ 
+ ![](/images/reference/ip_grabber.png)
