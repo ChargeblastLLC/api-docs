@@ -2,9 +2,26 @@
 title: "Tracker Snippet Guide"
 ---
 
-# Tracker Snippet Guide
-
+<Info>
+This is a message
+</Info>
 This guide will help you implement the Chargeblast tracker snippet on your website.
+
+## Quick Start
+
+Add this snippet to your website's `<head>` section:
+
+```html
+<script>
+  (function(c,b,a,r,i,t,o,n){
+    c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+    t=b.createElement(r);t.async=1;t.src=i;t.charset="utf-8";
+    o=b.getElementsByTagName(r)[0];o.parentNode.insertBefore(t,o);
+  })(window,document,"chargeblast","script","https://cdn.chargeblast.com/tracker.js");
+  
+  chargeblast('init', 'YOUR_API_KEY');
+</script>
+```
 
 ## Overview
 
