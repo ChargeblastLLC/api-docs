@@ -20,6 +20,50 @@
     }
   ],
   "paths": {
+"/api/v2/track": {
+"post": {
+"parameters": [
+{
+"in": "query",
+"name": "api_key",
+"required": true,
+"schema": {
+"type": "string"
+}
+}
+],
+"summary": "Upload IP Data",
+"description": "This is used to upload IP data. Not needed if you are implementing /orders/upload (instead pass IP data there) - only used if you are on a supported integration and want to board with compelling evidence.",
+"requestBody": {
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/TrackPayload"
+}
+}
+},
+"required": true
+},
+"operationId": "track",
+"responses": {
+"200": {
+"content": {
+"application/json": {
+"schema": {
+"type": "integer",
+"format": "int64"
+}
+}
+},
+"description": "OK"
+}
+},
+"tags": [
+"Sync Data"
+]
+}
+},
+
     "/api/v2/orders/{id}": {
       "get": {
         "responses": {
@@ -686,6 +730,21 @@
           }
         }
       },
+      "TrackPayload": {
+"required": [
+"email",
+"ip"
+],
+"type": "object",
+"properties": {
+"email": {
+"type": "string"
+},
+"ip": {
+"type": "string"
+}
+}
+},
       "AnnouncementDTOAnnouncementType": {
         "type": "string",
         "enum": ["Error", "Warning", "Success"]

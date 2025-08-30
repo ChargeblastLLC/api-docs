@@ -80,7 +80,9 @@
       "pages": [
         "api-reference/sync-data/upload-orders",
         "api-reference/sync-data/get-orders",
-        "api-reference/sync-data/get-order"
+        "api-reference/sync-data/get-order",
+        "api-reference/sync-data/track"
+
       ]
     },
     {
