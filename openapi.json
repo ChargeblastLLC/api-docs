@@ -24,12 +24,13 @@
       "post": {
         "parameters": [
           {
-            "in": "query",
-            "name": "api_key",
+            "name": "X-API-Key",
             "required": true,
+            "in": "header",
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Your API key. Sent in the `X-API-Key` header."
           }
         ],
         "summary": "Upload IP Data",
@@ -121,12 +122,13 @@
         "summary": "Enroll Merchant",
         "parameters": [
           {
+            "name": "X-API-Key",
+            "required": true,
+            "in": "header",
             "schema": {
               "type": "string"
             },
-            "name": "api_key",
-            "required": true,
-            "in": "query"
+            "description": "Your API key. Sent in the `X-API-Key` header."
           },
           {
             "name": "merchant_id",
@@ -147,12 +149,13 @@
         "tags": ["Enrollment"],
         "parameters": [
           {
+            "name": "X-API-Key",
+            "required": true,
+            "in": "header",
             "schema": {
               "type": "string"
             },
-            "name": "api_key",
-            "required": true,
-            "in": "query"
+            "description": "Your API key. Sent in the `X-API-Key` header."
           }
         ],
         "description": "Get all the merchants from your chargeblast account.",
@@ -195,12 +198,13 @@
         },
         "parameters": [
           {
-            "in": "query",
-            "name": "api_key",
+            "name": "X-API-Key",
             "required": true,
+            "in": "header",
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Your API key. Sent in the `X-API-Key` header."
           },
           {
             "in": "query",
@@ -234,12 +238,13 @@
         "operationId": "merchant",
         "parameters": [
           {
+            "name": "X-API-Key",
+            "required": true,
+            "in": "header",
             "schema": {
               "type": "string"
             },
-            "name": "api_key",
-            "in": "query",
-            "required": true
+            "description": "Your API key. Sent in the `X-API-Key` header."
           },
           {
             "schema": {
@@ -273,12 +278,13 @@
         "description": "Get a specific alert.",
         "parameters": [
           {
-            "name": "api_key",
-            "in": "query",
+            "name": "X-API-Key",
             "required": true,
+            "in": "header",
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Your API key. Sent in the `X-API-Key` header."
           },
           {
             "in": "path",
@@ -295,12 +301,13 @@
       "post": {
         "parameters": [
           {
-            "name": "api_key",
+            "name": "X-API-Key",
+            "required": true,
+            "in": "header",
             "schema": {
               "type": "string"
             },
-            "required": true,
-            "in": "query"
+            "description": "Your API key. Sent in the `X-API-Key` header."
           },
           {
             "in": "path",
@@ -360,12 +367,13 @@
         "summary": "Fetch an Alert",
         "parameters": [
           {
+            "name": "X-API-Key",
             "required": true,
-            "name": "api_key",
+            "in": "header",
             "schema": {
               "type": "string"
             },
-            "in": "query"
+            "description": "Your API key. Sent in the `X-API-Key` header."
           },
           {
             "name": "id",
@@ -398,12 +406,13 @@
         },
         "parameters": [
           {
+            "name": "X-API-Key",
+            "required": true,
+            "in": "header",
             "schema": {
               "type": "string"
             },
-            "in": "query",
-            "required": true,
-            "name": "api_key"
+            "description": "Your API key. Sent in the `X-API-Key` header."
           }
         ],
         "summary": "Unenroll Merchant",
@@ -450,12 +459,13 @@
         },
         "parameters": [
           {
+            "name": "X-API-Key",
+            "required": true,
+            "in": "header",
             "schema": {
               "type": "string"
             },
-            "in": "query",
-            "required": true,
-            "name": "api_key"
+            "description": "Your API key. Sent in the `X-API-Key` header."
           }
         ]
       }
@@ -477,12 +487,13 @@
         },
         "parameters": [
           {
+            "name": "X-API-Key",
             "required": true,
+            "in": "header",
             "schema": {
               "type": "string"
             },
-            "in": "query",
-            "name": "api_key"
+            "description": "Your API key. Sent in the `X-API-Key` header."
           },
           {
             "schema": {
@@ -549,13 +560,13 @@
             "name": "per"
           },
           {
-            "description": "Your API key.",
-            "name": "api_key",
+            "name": "X-API-Key",
             "required": true,
+            "in": "header",
             "schema": {
               "type": "string"
             },
-            "in": "query"
+            "description": "Your API key. Sent in the `X-API-Key` header."
           }
         ],
         "description": "Get all the orders from your chargeblast account. Receipt info is omitted from this endpoint.",
@@ -590,12 +601,13 @@
         "operationId": "orders-upload",
         "parameters": [
           {
-            "in": "query",
-            "name": "api_key",
+            "name": "X-API-Key",
             "required": true,
+            "in": "header",
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Your API key. Sent in the `X-API-Key` header."
           }
         ],
         "summary": "Upload Orders",
@@ -621,12 +633,13 @@
         "description": "Fetch all the descriptors for your merchants.",
         "parameters": [
           {
-            "in": "query",
+            "name": "X-API-Key",
+            "required": true,
+            "in": "header",
             "schema": {
               "type": "string"
             },
-            "name": "api_key",
-            "required": true
+            "description": "Your API key. Sent in the `X-API-Key` header."
           }
         ],
         "operationId": "descriptors"
