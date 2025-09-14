@@ -634,7 +634,49 @@
     },
     "/api/v2/alerts": {
       "get": {
-        "tags": ["Alerts"],
+        "parameters": [
+          {
+            "description": "The type of alerts to filter for, possible values: RDR, CDRN, Ethoca, TC40, SAFE",
+            "required": false,
+            "name": "filter",
+            "schema": {
+              "nullable": true,
+              "type": "string"
+            },
+            "in": "query"
+          },
+          {
+            "required": false,
+            "in": "query",
+            "description": "The starting page of the request. Default value of 0.",
+            "schema": {
+              "format": "int64",
+              "nullable": true,
+              "type": "integer"
+            },
+            "name": "page"
+          },
+          {
+            "name": "per",
+            "schema": {
+              "format": "int64",
+              "nullable": true,
+              "type": "integer"
+            },
+            "in": "query",
+            "required": false,
+            "description": "How many objects to request per page. Default value of 10."
+          },
+          {
+            "name": "X-API-Key",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Your API key. Sent in the `X-API-Key` header."
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -647,41 +689,9 @@
             }
           }
         },
-        "description": "Get all the alerts from your chargeblast account.",
-        "parameters": [
-          {
-            "schema": {
-              "format": "int64",
-              "nullable": true,
-              "type": "integer"
-            },
-            "in": "query",
-            "description": "The starting page of the request. Default value of 0.",
-            "required": false,
-            "name": "page"
-          },
-          {
-            "required": false,
-            "description": "How many objects to request per page. Default value of 10.",
-            "name": "per",
-            "in": "query",
-            "schema": {
-              "format": "int64",
-              "type": "integer",
-              "nullable": true
-            }
-          },
-          {
-            "schema": {
-              "type": "string"
-            },
-            "in": "query",
-            "name": "api_key",
-            "required": true,
-            "description": "Your API key."
-          }
-        ],
+        "tags": ["Alerts"],
         "summary": "Fetch Alerts",
+        "description": "Get all the alerts from your chargeblast account.",
         "operationId": "alerts"
       }
     }
