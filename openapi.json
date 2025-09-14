@@ -89,6 +89,15 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "X-API-Key",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Your API key. Sent in the `X-API-Key` header."
           }
         ]
       }
