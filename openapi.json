@@ -26,6 +26,28 @@
                 "summary": "Fetch Deflection Logs",
                 "parameters": [
                     {
+                        "name": "page",
+                        "required": false,
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64",
+                            "nullable": true
+                        },
+                        "description": "The starting page of the request. Default value of 0."
+                    },
+                    {
+                        "name": "per",
+                        "required": false,
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64",
+                            "nullable": true
+                        },
+                        "description": "How many objects to request per page. Default value of 10."
+                    },
+                    {
                         "name": "X-API-Key",
                         "required": true,
                         "in": "header",
