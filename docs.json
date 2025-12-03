@@ -1,98 +1,142 @@
 {
-  "$schema": "https://mintlify.com/docs.json",
-  "theme": "palm",
-  "name": "Chargeblast",
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
-  "favicon": "/favicon.png",
-  "colors": {
-    "primary": "#7d5fff",
-    "light": "#9d89ff",
-    "dark": "#7d5fff"
-  },
-  "fonts": {
-    "family": "Poppins",
-    "weight": 600
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Contact sales",
-        "href": "https://meetings.hubspot.com/chargeblast/learn-about-chargeblast"
-      },
-      {
-        "label": "Log In",
-        "href": "https://app.chargeblast.com/dashboard"
-      },
-      {
-        "label": "Help Center",
-        "href": "https://www.chargeblast.com/help"
-      },
-      {
-        "label": "Blog",
-        "href": "https://www.chargeblast.com/blog"
+    "$schema": "https://mintlify.com/docs.json",
+    "theme": "maple",
+    "name": "Example Co.",
+    "description": "Example Co. is a company that provides example content and placeholder text.",
+    "colors": {
+      "primary": "#3B82F6",
+      "light": "#F8FAFC",
+      "dark": "#0F172A"
+    },
+    "navigation": {
+      "dropdowns": [
+        {
+          "dropdown": "Documentation",
+          "icon": "book",
+          "description": "How to use the Example Co. product",
+          "groups": [
+            {
+              "group": "Getting started",
+              "pages": [
+                "index",
+                "quickstart"
+              ]
+            },
+            {
+              "group": "Customization",
+              "pages": [
+                "settings",
+                "users",
+                "features"
+              ]
+            },
+            {
+              "group": "Billing",
+              "pages": [
+                "billing/overview",
+                "billing/payments",
+                "billing/subscriptions"
+              ]
+            }
+          ]
+        },
+        {
+          "dropdown": "Changelog",
+          "icon": "history",
+          "description": "Updates and changes",
+          "pages": [
+            "changelog"
+          ]
+        }
+      ]
+    },
+    "logo": {
+      "light": "/logo-light.svg",
+      "dark": "/logo-dark.svg",
+      "href": "https://example.com"
+    },
+    "navbar": {
+      "links": [
+        {
+          "label": "Community",
+          "href": "https://example.com/community"
+        }
+      ],
+      "primary": {
+        "type": "button",
+        "label": "Get Started",
+        "href": "https://example.com/start"
       }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Sign Up",
-      "href": "https://app.chargeblast.com/auth/registration"
-    }
-  },
-  "navigation": {
-    "groups": [
-      {
-        "group": "Welcome",
-        "pages": [
-          "reference/welcome-to-chargeblast"
-        ]
+    },
+    "footer": {
+      "socials": {
+        "x": "https://x.com/example",
+        "linkedin": "https://www.linkedin.com/company/example",
+        "github": "https://github.com/example",
+        "slack": "https://example.com/community"
       },
-      {
-        "group": "Platform",
-        "pages": [
-          "api-reference/getting-started/guide",
-          "api-reference/introduction/authorization",
-          "api-reference/webhooks/setup",
-          "api-reference/getting-started/refund-endpoint"
-        ]
+      "links": [
+        {
+          "header": "Resources",
+          "items": [
+            {
+              "label": "Customers",
+              "href": "https://example.com/customers"
+            },
+            {
+              "label": "Enterprise",
+              "href": "https://example.com/enterprise"
+            },
+            {
+              "label": "Request Preview",
+              "href": "https://example.com/preview"
+            }
+          ]
+        },
+        {
+          "header": "Company",
+          "items": [
+            {
+              "label": "Careers",
+              "href": "https://example.com/careers"
+            },
+            {
+              "label": "Blog",
+              "href": "https://example.com/blog"
+            },
+            {
+              "label": "Privacy Policy",
+              "href": "https://example.com/legal/privacy"
+            }
+          ]
+        }
+      ]
+    },
+    "integrations": {
+      "ga4": {
+        "measurementId": "G-XXXXXXXXXX"
       },
-      {
-        "group": "Alerts",
-        "pages": [
-          "api-reference/alerts/fetch-an-alert",
-          "api-reference/alerts/update-alert",
-          "api-reference/alerts/fetch-alerts",
-          "api-reference/credit-requests/create"
-        ]
+      "telemetry": {
+        "enabled": true
       },
-      {
-        "group": "Deflections",
-        "pages": [
-          "api-reference/deflections/logs",
-          "api-reference/sync-data/upload-orders",
-          "api-reference/sync-data/get-orders",
-          "api-reference/sync-data/get-order",
-          "api-reference/sync-data/track"
-        ]
-      },
-      {
-        "group": "Enrollment",
-        "pages": [
-          "api-reference/enrollment/fetch-merchants",
-          "api-reference/enrollment/fetch-descriptors",
-          "api-reference/enrollment/fetch-merchant",
-          "api-reference/enrollment/enroll-merchant",
-          "api-reference/enrollment/unenroll-merchant"
-        ]
+      "cookies": {
+        "key": "example_cookie_key",
+        "value": "example_cookie_value"
       }
-    ]
-  },
-  "footer": {
-    "socials": {
-      "x": "https://twitter.com/chargeblast",
-      "linkedin": "https://www.linkedin.com/company/chargeblast"
+    },
+    "contextual": {
+      "options": [
+        "copy",
+        "view",
+        "chatgpt",
+        "claude"
+      ]
+    },
+    "errors": {
+      "404": {
+        "redirect": false,
+        "title": "I can't be found",
+        "description": "What ever **happened** to this _page_?"
+      }
     }
   }
-}
