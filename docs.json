@@ -12,10 +12,7 @@
     "light": "#9d89ff",
     "dark": "#7d5fff"
   },
-  "fonts": {
-    "family": "Poppins",
-    "weight": 500
-  },
+ 
   "navbar": {
     "links": [
       {
