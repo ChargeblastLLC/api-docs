@@ -76,13 +76,13 @@
       ]
     },
     {
-      "group": "Sync Data",
+      "group": "Deflections",
       "pages": [
+        "api-reference/deflections/logs",
         "api-reference/sync-data/upload-orders",
         "api-reference/sync-data/get-orders",
         "api-reference/sync-data/get-order",
         "api-reference/sync-data/track"
-
       ]
     },
     {
@@ -94,7 +94,8 @@
         "api-reference/enrollment/enroll-merchant",
         "api-reference/enrollment/unenroll-merchant"
       ]
-    }
+    },
+
   ],
   "footerSocials": {
     "x": "https://twitter.com/chargeblast",
