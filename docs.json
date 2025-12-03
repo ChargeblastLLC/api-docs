@@ -3,8 +3,8 @@
   "theme": "palm",
   "name": "Chargeblast",
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "light": "/images/logo/logo-light-mode.png",
+    "dark": "/images/logo/logo-light-mode.png"
   },
   "favicon": "/favicon.png",
   "colors": {
