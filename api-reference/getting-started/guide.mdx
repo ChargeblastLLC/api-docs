@@ -2,7 +2,7 @@
 title: "API Overview"
 ---
 
-There are multiple ways to programmatically integrate Chargeblast. This guide is intended for resellers, SaaS tools, payment aggregators, and other merchant of merchant businesses. If you are a merchant yourself, please see our [webhooks](/reference/webhooks), which should be sufficient for most use cases.
+There are multiple ways to programmatically integrate Chargeblast. This guide is intended for resellers, SaaS tools, payment aggregators, and other merchant of merchant businesses. If you are a merchant yourself, please see our [webhooks](/api-reference/webhooks/setup), which should be sufficient for most use cases.
 
 If you are using only payment processors that are supported via our [integration directory ](https://www.chargeblast.com/integrations)you can integrate directly via our integrations page and use our workflow builder to set up refund rules.
 
@@ -12,8 +12,8 @@ The integration path depends on whether you'd like to use our matching algorithm
 
 #### Client-side matching
 
-- Implement [webhook](/reference/webhooks) to receive alert
-- Perform alert to transaction matching internally, refunding cardholder if desired and then update the alert via the [/update/alert](/reference/alerts-update) endpoint
+- Implement [webhook](/api-reference/webhooks/setup) to receive alert
+- Perform alert to transaction matching internally, refunding cardholder if desired and then update the alert via the [/update/alert](/api-reference/alerts/update-alert) endpoint
 
 #### Chargeblast matching
 
