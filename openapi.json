@@ -960,7 +960,7 @@
                     "hasDeflectElements": {
                         "type": "boolean",
                         "nullable": true,
-                        "description": "Indicates whether the transaction has deflection elements available."
+                        "description": "Indicates whether the transaction has all of the required deflection elements available (e.g. IP address, customer.email, etc.)."
                     },
                     "deflectElementsMissing": {
                         "type": "string",
