@@ -1,5 +1,9 @@
 {
     "$schema": "https://mintlify.com/docs.json",
-    "theme": "palm"
+  "theme": "palm",
+  "name": "Your Docs",
+  "colors": {
+    "primary": "#ff0000"
+  }
   
   }
