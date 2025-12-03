@@ -832,8 +832,9 @@
                 "type": "object",
                 "properties": {
                     "endDate": {
+                        "type": "string",
                         "nullable": true,
-                        "type": "string"
+                        "description": "The end date of the logs to fetch in ISO8601 format, e.g. '2025-12-03T23:59:59Z'."
                     },
                     "gateway": {
                         "type": "string",
@@ -842,7 +843,8 @@
                     },
                     "startDate": {
                         "type": "string",
-                        "nullable": true
+                        "nullable": true,
+                        "description": "The start date of the logs to fetch in ISO8601 format, e.g. '2025-01-01T00:00:00Z'."
                     },
                     "status": {
                         "nullable": true,
@@ -862,7 +864,7 @@
                     "logs": {
                         "type": "array",
                         "items": {
-                            "type": "string"
+                            "$ref": "#/components/schemas/ClarityLog"
                         }
                     },
                     "total": {
@@ -878,6 +880,122 @@
                         "format": "int64"
                     }
                 }
+            },
+            "ClarityLog": {
+                "type": "object",
+                "description": "A deflection log entry containing the request and response data.",
+                "required": [
+                    "request",
+                    "response"
+                ],
+                "properties": {
+                    "request": {
+                        "$ref": "#/components/schemas/ClarityLogRequest",
+                        "description": "The original request data sent for deflection lookup."
+                    },
+                    "response": {
+                        "$ref": "#/components/schemas/ClarityLogResponseData",
+                        "description": "The response data from the deflection lookup."
+                    }
+                }
+            },
+            "ClarityLogRequest": {
+                "type": "object",
+                "description": "The request payload for a deflection lookup.",
+                "properties": {
+                    "arn": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "The Acquirer Reference Number (ARN) of the transaction."
+                    },
+                    "descriptor": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "The billing descriptor associated with the transaction."
+                    },
+                    "transactionDate": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "The date of the transaction."
+                    },
+                    "amount": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true,
+                        "description": "The transaction amount."
+                    },
+                    "currency": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "The 3-character ISO currency code (e.g., USD, EUR)."
+                    },
+                    "bin": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "The first 6 digits of the card number (Bank Identification Number)."
+                    },
+                    "last4": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "The last 4 digits of the card number."
+                    },
+                    "type": {
+                        "$ref": "#/components/schemas/ClarityType",
+                        "nullable": true,
+                        "description": "The type of deflection request."
+                    }
+                }
+            },
+            "ClarityLogResponseData": {
+                "type": "object",
+                "description": "The response from a deflection lookup.",
+                "required": [
+                    "status"
+                ],
+                "properties": {
+                    "status": {
+                        "$ref": "#/components/schemas/ClarityStatus",
+                        "description": "The status of the deflection lookup."
+                    },
+                    "hasDeflectElements": {
+                        "type": "boolean",
+                        "nullable": true,
+                        "description": "Indicates whether the transaction has deflection elements available."
+                    },
+                    "deflectElementsMissing": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Description of which deflection elements are missing, if any."
+                    },
+                    "chargeId": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "The matched charge ID from your system."
+                    },
+                    "gateway": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "The payment gateway associated with the matched transaction."
+                    }
+                }
+            },
+            "ClarityType": {
+                "type": "string",
+                "description": "The type of deflection request.",
+                "enum": [
+                    "RDR",
+                    "CDRN",
+                    "Ethoca"
+                ]
+            },
+            "ClarityStatus": {
+                "type": "string",
+                "description": "The status of a deflection lookup.",
+                "enum": [
+                    "Matched",
+                    "Unmatched",
+                    "Error"
+                ]
             },
             "OrderUploadBody": {
                 "type": "object",
