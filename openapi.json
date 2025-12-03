@@ -983,9 +983,8 @@
                 "type": "string",
                 "description": "The type of deflection request.",
                 "enum": [
-                    "RDR",
-                    "CDRN",
-                    "Ethoca"
+                    "OI",
+                    "Clarity"
                 ]
             },
             "ClarityStatus": {
