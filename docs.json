@@ -10,101 +10,89 @@
   "colors": {
     "primary": "#7d5fff",
     "light": "#9d89ff",
-    "dark": "#7d5fff",
-    "anchors": {
-      "from": "#9d89ff",
-      "to": "#7d5ffe"
+    "dark": "#7d5fff"
+  },
+  "fonts": {
+    "family": "Poppins",
+    "weight": 600
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Contact sales",
+        "href": "https://meetings.hubspot.com/chargeblast/learn-about-chargeblast"
+      },
+      {
+        "label": "Log In",
+        "href": "https://app.chargeblast.com/dashboard"
+      },
+      {
+        "label": "Help Center",
+        "href": "https://www.chargeblast.com/help"
+      },
+      {
+        "label": "Blog",
+        "href": "https://www.chargeblast.com/blog"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Sign Up",
+      "href": "https://app.chargeblast.com/auth/registration"
     }
   },
-  "font": {
-    "headings": {
-      "family": "Poppins",
-      "weight": 600
-    }
+  "navigation": {
+    "groups": [
+      {
+        "group": "Welcome",
+        "pages": [
+          "reference/welcome-to-chargeblast"
+        ]
+      },
+      {
+        "group": "Platform",
+        "pages": [
+          "api-reference/getting-started/guide",
+          "api-reference/introduction/authorization",
+          "api-reference/webhooks/setup",
+          "api-reference/getting-started/refund-endpoint"
+        ]
+      },
+      {
+        "group": "Alerts",
+        "pages": [
+          "api-reference/alerts/fetch-an-alert",
+          "api-reference/alerts/update-alert",
+          "api-reference/alerts/fetch-alerts",
+          "api-reference/credit-requests/create"
+        ]
+      },
+      {
+        "group": "Deflections",
+        "pages": [
+          "api-reference/deflections/logs",
+          "api-reference/sync-data/upload-orders",
+          "api-reference/sync-data/get-orders",
+          "api-reference/sync-data/get-order",
+          "api-reference/sync-data/track"
+        ]
+      },
+      {
+        "group": "Enrollment",
+        "pages": [
+          "api-reference/enrollment/fetch-merchants",
+          "api-reference/enrollment/fetch-descriptors",
+          "api-reference/enrollment/fetch-merchant",
+          "api-reference/enrollment/enroll-merchant",
+          "api-reference/enrollment/unenroll-merchant"
+        ]
+      }
+    ]
   },
-  "modeToggle": {
-    "default": "light",
-    "isHidden": true
-  },
-  "background": {
-    "style": "gradient"
-  },
-  "topbarLinks": [
-    {
-      "name": "Contact sales",
-      "url": "https://meetings.hubspot.com/chargeblast/learn-about-chargeblast"
-    },
-    {
-      "name": "Log In",
-      "url": "https://app.chargeblast.com/dashboard"
+  "footer": {
+    "socials": {
+      "x": "https://twitter.com/chargeblast",
+      "linkedin": "https://www.linkedin.com/company/chargeblast"
     }
-  ],
-  "topbarCtaButton": {
-    "name": "Sign Up",
-    "url": "https://app.chargeblast.com/auth/registration",
-    "arrow": false,
-    "style": "roundedRectangle"
-  },
-  "anchors": [
-    {
-      "name": "Help Center",
-      "icon": "headset",
-      "url": "https://www.chargeblast.com/help"
-    },
-    {
-      "name": "Blog",
-      "icon": "newspaper",
-      "url": "https://www.chargeblast.com/blog"
-    }
-  ],
-  "navigation": [
-    {
-      "group": "Welcome",
-      "pages": [
-        "reference/welcome-to-chargeblast"
-      ]
-    },
-    {
-      "group": "Platform",
-      "pages": [
-        "api-reference/getting-started/guide",
-        "api-reference/introduction/authorization",
-        "api-reference/webhooks/setup",
-        "api-reference/getting-started/refund-endpoint"
-      ]
-    },
-    {
-      "group": "Alerts",
-      "pages": [
-        "api-reference/alerts/fetch-an-alert",
-        "api-reference/alerts/update-alert",
-        "api-reference/alerts/fetch-alerts",
-        "api-reference/credit-requests/create"
-      ]
-    },
-    {
-      "group": "Deflections",
-      "pages": [
-        "api-reference/deflections/logs",
-        "api-reference/sync-data/upload-orders",
-        "api-reference/sync-data/get-orders",
-        "api-reference/sync-data/get-order",
-        "api-reference/sync-data/track"
-      ]
-    },
-    {
-      "group": "Enrollment",
-      "pages": [
-        "api-reference/enrollment/fetch-merchants",
-        "api-reference/enrollment/fetch-descriptors",
-        "api-reference/enrollment/fetch-merchant",
-        "api-reference/enrollment/enroll-merchant",
-        "api-reference/enrollment/unenroll-merchant"
-      ]
-    }
-  ],
-  "footerSocials": {
-    "x": "https://twitter.com/chargeblast",
-    "linkedin": "https://www.linkedin.com/company/chargeblast"
   }
 }
