@@ -22,7 +22,7 @@ iconType: solid
 We offer 3 types of alerts: Ethoca (Mastercard), CDRN (Visa) and RDR (Visa). You can sign up for all 3 alert types, however depending on your merchant risk level, this may be overkill.
 
 - **Ethoca:** Ethoca is the premier alert offered and has the best coverage of all the alert types. This Mastercard service also front runs VISA's products, so if multiple alert products are used, the Ethoca alerts will come in first. Ethoca will cover both Mastercard and VISA transactions, though focuses mostly on Mastercard transactions (around 95% coverage for MC, and 30% for VISA). Ethoca alerts require merchant-side refunding. With additional configs, the Ethoca feed can be deployed on Amex/Discover transactions.
-- **CDRN:** CDRN is a legacy product offered by VISA, however, is still in operation. CDRN focuses on VISA related transactions and requires merchant-side refunding. They are also the most expensive alert.
+- **CDRN:** CDRN is an issuer based product offered by VISA. CDRN focuses on VISA related transactions though will still deploy for Mastercard and other schemes.
 - **RDR:** RDR is the more modern dispute resolution product offered by VISA. Unlike CDRN and Ethoca, RDR is an issuer side product, meaning the acquirer (for example Stripe) will be responsible for refunding the transactions. No action is acquired by the merchant for RDR.
 
 Our recommendation for the highest risk merchants is to subscribe to all three products, wherein you will get the best coverage, and be able to accept the widest range of payments. For medium risk merchants, our recommendation would be to use RDR and Ethoca.
