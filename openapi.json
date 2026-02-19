@@ -1580,7 +1580,7 @@
                     "action_at_expiration": {
                         "type": "boolean",
                         "default": false,
-                        "description": "When set to true, the alert will be actioned at the point of expiration rather than immediately. If the alert is actioned with a different reason code before the expiration date, this action is disregarded. Intended for sending unidentified alert updates where a manual search process is also implemented."
+                        "description": "When set to true, the alert will be actioned at the point of expiration rather than immediately. If the alert is actioned with a different reason code before the expiration date, this action is disregarded. Intended for sending unidentified alert updates where a manual search process is also implemented. Note: If the action code is 'resolved', this field will be disregarded and the alert will be actioned as resolved immediately."
                     }
                 },
                 "required": [
