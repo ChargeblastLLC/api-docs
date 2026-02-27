@@ -1262,6 +1262,11 @@
                         "$ref": "#/components/schemas/Receipt",
                         "description": "Additional info on the transaction. Only required for digital receipts and compelling evidence (pre-dispute re-presentment).",
                         "type": "object"
+                    },
+                    "network_id": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "The network transaction identifier. Sometimes known as network_transaction_identifier. Example values: 'MAHAQMP03' (Mastercard), '306054697896273' (Visa)."
                     }
                 },
                 "type": "object"
