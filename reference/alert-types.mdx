@@ -1,0 +1,56 @@
+---
+title: "Alert Types"
+description: "A guide to all alert networks and data sources (subproviders) in Chargeblast."
+icon: "bell"
+---
+
+## Overview
+
+The `subprovider` field on alerts indicates the alert network or data source. Understanding these helps you route and handle alerts appropriately.
+
+## Alert Networks
+
+These are the primary alert products that require action to prevent chargebacks.
+
+| Value | Description |
+|-------|-------------|
+| `Ethoca` | Mastercard's Ethoca alert network. Provides early dispute notification with the best coverage, especially for Mastercard transactions (~95% MC, ~30% Visa). Requires merchant-side refunding. |
+| `CDRN` | Visa's Cardholder Dispute Resolution Network. Issuer-based alert product focused on Visa transactions, though it also covers Mastercard and other schemes. |
+| `RDR` | Visa's Rapid Dispute Resolution. Acquirer-side product where refunds are processed automatically by the acquirer — no merchant action required. |
+
+## Card Network Alerts
+
+Alerts from specific card networks.
+
+| Value | Description |
+|-------|-------------|
+| `Discover` | Alerts from Discover card network. |
+| `AMEX` | Alerts from American Express network. |
+| `JCB` | Alerts from JCB (Japan Credit Bureau) network. |
+
+## Fraud Reports (Informational)
+
+These are fraud reporting feeds that provide visibility into fraud claims. They are **informational only** and do not require action — no chargeback will result from these reports alone.
+
+| Value | Description |
+|-------|-------------|
+| `TC40` | Visa fraud reporting system. TC40 reports are filed by issuers when a cardholder claims fraud. Use these to identify potentially fraudulent customers or transactions. |
+| `TC15` | Visa fraud confirmation reports. Filed when fraud is confirmed on a transaction. |
+| `SAFE` | Mastercard's System to Avoid Fraud Effectively. Similar to TC40, these are fraud reports filed by issuers. |
+
+## Other Values
+
+| Value | Description |
+|-------|-------------|
+| `Cancel` | Cancellation-related alert or notification. |
+| `Unknown` | The subprovider could not be determined. |
+
+## Recommendations
+
+<Info>
+For maximum chargeback prevention, we recommend subscribing to **Ethoca**, **CDRN**, and **RDR**. Ethoca front-runs other alert types by ~7 days, so merchants with high resolve rates will see minimal duplicate alerts.
+</Info>
+
+<Note>
+**TC40**, **TC15**, and **SAFE** reports are useful for fraud analytics and identifying bad actors, but they don't require refunds or alert actioning.
+</Note>

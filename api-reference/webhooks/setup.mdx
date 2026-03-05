@@ -137,7 +137,9 @@ api: https://yourwebsite.com/webhook/endpoint
   name="subprovider"
   type="string"
   placeholder="Ethoca"
-></ResponseField>
+>
+The alert network or source. See [Alert Types](/reference/alert-types) for all possible values.
+</ResponseField>
 <ResponseField
   name="transactionDate"
   type="string"
@@ -228,3 +230,10 @@ There is currently the following webhook types:
 - `alert.created`: transmitted when an alert is first created.
 - `alert.updated`: transmitted when an alert's status is updated. Use this if you require `externalOrder` the field.
 - `alert.refunded`: transmitted when an alert triggers a transaction to be refunded.
+
+---
+
+### Related
+
+- [Alert Types](/reference/alert-types) — Full list of alert networks and subprovider values
+- [Reason Codes](/reference/reason-codes) — Codes used when actioning alerts
