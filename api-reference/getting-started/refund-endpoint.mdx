@@ -2,6 +2,10 @@
 title: "Refund Endpoint"
 ---
 
+<Warning>
+**Deprecated:** This integration method is largely deprecated. We strongly recommend using the [Update Alert](/api-reference/alerts/update-alert) endpoint to action alerts instead.
+</Warning>
+
 ## Overview
 
 One method for integrating with our system, is to expose a refund endpoint which returns a structured response. This endpoint will be used to action alerts, and it must respond with the specific structure defined below. The API key will be passed as a query parameter in the URL. Prior to implementing this endpoint, we recommend implementing the `/orders/upload` [endpoint](/reference/sync-data/upload-orders), which will be used to perform the transaction matching logic.

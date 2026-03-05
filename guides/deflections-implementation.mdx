@@ -148,23 +148,67 @@ The more fields you provide, the higher your deflection rate. FPT requires all f
         Set your lookup endpoint URL in the Chargeblast dashboard under developer settings.
       </Step>
       <Step title="Return Qualifying Data">
-        Your response must include the qualifying fields for deflection eligibility:
+        Your response must include a `receipt` object with the qualifying fields for deflection eligibility:
         
         ```json
         {
           "matched": true,
           "orderId": "order_123",
-          "customerEmail": "customer@example.com",
-          "customerPhone": "+1234567890",
-          "ip": "192.168.1.1",
-          "billingAddress": {
-            "line1": "123 Main St",
-            "city": "San Francisco",
-            "state": "CA",
-            "postalCode": "94102",
-            "country": "US"
-          },
-          "description": "Premium Subscription - Annual"
+          "ip": "73.162.214.93",
+          "receipt": {
+            "merchantInfo": {
+              "merchantReceiptContact": {
+                "phoneForReceipt": "+1-888-555-1234",
+                "emailForReceipt": "support@acmeinc.com",
+                "websiteForReceipt": "https://acmeinc.com",
+                "receiptAddress": {
+                  "line1": "100 Market Street",
+                  "line2": "Suite 400",
+                  "city": "San Francisco",
+                  "countrySubdivision": "CA",
+                  "postalCode": "94105",
+                  "country": "US"
+                }
+              },
+              "name": "Acme Inc",
+              "description": "Premium software subscriptions",
+              "refundPolicyLink": "https://acmeinc.com/refunds",
+              "cancellationPolicyLink": "https://acmeinc.com/cancel",
+              "termsAndConditionsLink": "https://acmeinc.com/terms",
+              "logoUrl": "https://acmeinc.com/logo.png"
+            },
+            "lineItems": [
+              {
+                "productName": "Premium Plan - Annual",
+                "productDescription": "12-month subscription to Premium features",
+                "currency": "USD",
+                "quantity": 1,
+                "price": 9999
+              }
+            ],
+            "customerEmail": "john.smith@gmail.com",
+            "customerPhone": "+1-415-555-7890",
+            "shippingAddress": {
+              "line1": "456 Oak Avenue",
+              "line2": "Apt 2B",
+              "city": "San Francisco",
+              "countrySubdivision": "CA",
+              "postalCode": "94102",
+              "country": "US"
+            },
+            "billingAddress": {
+              "line1": "456 Oak Avenue",
+              "line2": "Apt 2B",
+              "city": "San Francisco",
+              "countrySubdivision": "CA",
+              "postalCode": "94102",
+              "country": "US"
+            },
+            "name": {
+              "givenName": "John",
+              "familyName": "Smith"
+            }
+          }
         }
         ```
       </Step>
@@ -175,6 +219,34 @@ The more fields you provide, the higher your deflection rate. FPT requires all f
     </Warning>
   </Tab>
 </Tabs>
+
+---
+
+## Handling Deflected Transactions
+
+When a transaction is deflected, Visa has already blocked the chargeback using compelling evidence. **You should not refund deflected transactions** — the cardholder's dispute has been resolved in your favor.
+
+### Poll Deflection Logs
+
+Regularly poll the [Deflection Logs](/api-reference/deflections/logs) endpoint to get a list of deflected transactions:
+
+```bash
+GET /api/v3/deflections/logs
+```
+
+This returns transactions where chargebacks were successfully blocked via CE3.0 or FPT.
+
+### Guard Against Refunds
+
+Before processing any refund (whether from an alert, customer request, or internal process), check if the transaction has been deflected:
+
+1. **Store deflected transaction IDs** — Maintain a local cache of deflected order IDs from the deflection logs
+2. **Check before refunding** — Before issuing any refund, verify the transaction ID is not in your deflected list
+3. **Skip refunds for deflected transactions** — If a transaction was deflected, the dispute is already resolved; issuing a refund would be unnecessary
+
+<Warning>
+Refunding a deflected transaction means you lose the sale unnecessarily. The deflection already prevented the chargeback — there's no reason to refund.
+</Warning>
 
 ---
 

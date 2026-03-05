@@ -14,8 +14,11 @@ Chargeblast offers three services that can each be implemented via **Push Data**
 | Service | Push Data | Pull Data |
 |---------|-----------|-----------|
 | **Alerts** | Upload orders → we match → webhook with order ID | Receive raw alerts → you match → update alert |
-| **Digital Receipts** | Upload orders with receipt data → we respond to queries | Expose lookup endpoint → you respond in real-time |
-| **Deflections** | Upload orders with CE3.0/FPT fields → automatic blocking | Expose lookup endpoint → you return evidence |
+| **Digital Receipts & Deflections** | Upload orders with receipt data → we respond to queries | Expose lookup endpoint → you respond in real-time |
+
+<Note>
+**Digital Receipts and Deflections share the exact same implementation.** The only difference is the data you upload — if you include qualifying fields (merchant contact phone, IP address, customer email, and for FPT: billing/shipping address), your transactions become eligible for automatic deflection via Compelling Evidence 3.0 and First Party Trust. Without these fields, you still get Digital Receipts.
+</Note>
 
 ## Detailed Guides
 

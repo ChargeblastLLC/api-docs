@@ -36,9 +36,7 @@ For information on **RDR** (Visa's acquirer-side product), see the [RDR Endpoint
        - `alert.updated` — Alert status changed (includes `externalOrder`)
        - `alert.refunded` — Alert triggered a refund
 
-    4. **Action alerts** via one of two methods:
-       - Expose a [Refund Endpoint](/api-reference/getting-started/refund-endpoint) for automatic processing
-       - Call the [Update Alert](/api-reference/alerts/update-alert) endpoint manually
+    4. **Action alerts** by calling the [Update Alert](/api-reference/alerts/update-alert) endpoint with the appropriate reason code.
 
     ### Implementation Steps
 
@@ -53,12 +51,22 @@ For information on **RDR** (Visa's acquirer-side product), see the [RDR Endpoint
       <Step title="Set Up Webhooks">
         Configure your [webhook URL](/api-reference/webhooks/setup) in the Chargeblast dashboard to receive alert notifications.
       </Step>
-      <Step title="(Optional) Expose Refund Endpoint">
-        For fully automated refunds, expose a [Refund Endpoint](/api-reference/getting-started/refund-endpoint) that Chargeblast calls when alerts match.
+      <Step title="Process Refunds & Update Alerts">
+        When you receive an `alert.created` or `alert.updated` webhook with a matched `externalOrder`, process the refund in your payment system and then call the [Update Alert](/api-reference/alerts/update-alert) endpoint:
         
-        Alternatively, process refunds manually and call the [Update Alert](/api-reference/alerts/update-alert) endpoint.
+        ```bash
+        POST /api/v2/alerts/update/{id}
+        
+        {
+          "result": "Resolved"
+        }
+        ```
       </Step>
     </Steps>
+    
+    <Note>
+    **Strongly recommended:** Use the [Update Alert](/api-reference/alerts/update-alert) endpoint to action alerts. The [Refund Endpoint](/api-reference/getting-started/refund-endpoint) approach (where Chargeblast calls your server) is largely deprecated.
+    </Note>
 
     <Info>
     With push data integration, alert webhooks include matched order IDs, making it easy to identify which transaction to refund.
@@ -129,4 +137,4 @@ For information on **RDR** (Visa's acquirer-side product), see the [RDR Endpoint
 
 - [Reason Codes Reference](/reference/reason-codes) — Full list of codes and when to use them
 - [RDR Endpoint](/api-reference/getting-started/rdr-endpoint) — Visa's acquirer-side dispute resolution
-- [Refund Endpoint](/api-reference/getting-started/refund-endpoint) — Automated refund processing
+- [Refund Endpoint](/api-reference/getting-started/refund-endpoint) — Legacy automated refund processing (deprecated)
