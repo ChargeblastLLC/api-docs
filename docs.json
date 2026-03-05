@@ -12,7 +12,6 @@
     "light": "#9d89ff",
     "dark": "#7d5fff"
   },
- 
   "navbar": {
     "links": [
       {
@@ -47,31 +46,45 @@
         ]
       },
       {
+        "group": "Guides",
+        "pages": [
+          "guides/implementation-overview",
+          "guides/alerts-implementation",
+          "guides/deflections-implementation",
+          "guides/tracker-snippet"
+        ]
+      },
+      {
         "group": "Platform",
         "pages": [
-          "api-reference/getting-started/guide",
           "api-reference/introduction/authorization",
-          "api-reference/webhooks/setup",
-          "api-reference/getting-started/refund-endpoint"
+          "api-reference/webhooks/setup"
         ]
       },
       {
         "group": "Alerts",
         "pages": [
+          "api-reference/alerts/fetch-alerts",
           "api-reference/alerts/fetch-an-alert",
           "api-reference/alerts/update-alert",
-          "api-reference/alerts/fetch-alerts",
+          "reference/reason-codes",
           "api-reference/credit-requests/create"
         ]
       },
       {
-        "group": "Deflections",
+        "group": "Digital Receipts & Deflections",
         "pages": [
-          "api-reference/deflections/logs",
           "api-reference/sync-data/upload-orders",
           "api-reference/sync-data/get-orders",
           "api-reference/sync-data/get-order",
-          "api-reference/sync-data/track"
+          "api-reference/sync-data/track",
+          "api-reference/deflections/logs"
+        ]
+      },
+      {
+        "group": "RDR",
+        "pages": [
+          "api-reference/getting-started/rdr-endpoint"
         ]
       },
       {
