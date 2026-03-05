@@ -35,14 +35,14 @@ These are fraud reporting feeds that provide visibility into fraud claims. They 
 | Value | Description |
 |-------|-------------|
 | `TC40` | Visa fraud reporting system. TC40 reports are filed by issuers when a cardholder claims fraud. Use these to identify potentially fraudulent customers or transactions. |
-| `TC15` | Visa fraud confirmation reports. Filed when fraud is confirmed on a transaction. |
+| `TC15` | Visa non-fraud chargeback reports. Similar to TC40 but for non-fraud disputes. Typically used for VAMP (Visa Acquirer Monitoring Program) reporting purposes. All TC15 alerts are sent with resolved status and do not require merchant action. |
 | `SAFE` | Mastercard's System to Avoid Fraud Effectively. Similar to TC40, these are fraud reports filed by issuers. |
 
 ## Other Values
 
 | Value | Description |
 |-------|-------------|
-| `Cancel` | Cancellation-related alert or notification. |
+| `Cancel` | Cancellation-related alert. Requires subscription/service cancellation only — no refund needed. |
 | `Unknown` | The subprovider could not be determined. |
 
 ## Recommendations
@@ -52,5 +52,5 @@ For maximum chargeback prevention, we recommend subscribing to **Ethoca**, **CDR
 </Info>
 
 <Note>
-**TC40**, **TC15**, and **SAFE** reports are useful for fraud analytics and identifying bad actors, but they don't require refunds or alert actioning.
+**TC40**, **TC15**, and **SAFE** reports are useful for fraud analytics and reporting, but they don't require refunds or alert actioning.
 </Note>
