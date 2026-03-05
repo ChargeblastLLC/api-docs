@@ -1,93 +1,52 @@
 ---
 title: "Reason Codes"
-description: "A comprehensive guide to all reason codes used when updating alerts or responding to RDR requests."
+description: "A guide to all reason codes used when actioning CDRN/Ethoca alerts via the update alerts endpoint."
 ---
 
 ## Overview
 
-Reason codes are used to communicate the outcome of an alert to the card networks. Selecting the correct reason code ensures accurate reporting and helps prevent future chargebacks.
+Reason codes are used to communicate the outcome of an alert to the card networks. When you receive a CDRN or Ethoca alert, you action it by updating the alert with one of the reason codes below. Selecting the correct reason code ensures accurate reporting and helps prevent future chargebacks.
+
+<Note>
+Every alert arrives with a status (reason_code) of `WIP` (Work In Progress). This is the default state on receipt and is **not** a reason code to be used in the update endpoint.
+</Note>
 
 ## Resolved Codes
 
-These codes indicate the alert has been successfully handled and a refund will be issued.
+These are special reason codes that instruct the issuing bank to **not** move forward with a chargeback. When one of these codes is sent, a standard operating procedure (SOP) is followed at the issuer level which prevents a dispute from being filed.
 
 | Code | Description |
 |------|-------------|
-| `Resolved` | The alert has been resolved and a full refund will be issued to the cardholder. This is the most common resolution. |
-| `ResolvedPartial` | The alert has been resolved with a partial refund. Use when only a portion of the transaction amount is being refunded. |
-| `ResolvedCancelled` | The alert has been resolved and the associated subscription or service has been cancelled along with issuing a refund. |
-
-## Cancellation Codes
-
-These codes indicate the customer's account or subscription has been cancelled.
-
-| Code | Description |
-|------|-------------|
-| `AccountCancelled` | The customer's account has been cancelled. Use when the primary action is account termination. |
-| `CancellationProcessed` | A cancellation request has been processed for the customer. |
-| `CannotCancel` | The subscription or service cannot be cancelled (e.g., already fulfilled, non-refundable terms). |
-
-## Unmatched Codes
-
-These codes indicate the alert could not be matched to a transaction in your system.
-
-| Code | Description |
-|------|-------------|
-| `UnmatchedGeneral` | The alert could not be matched to any transaction in your records for a general/unspecified reason. |
-| `UnmatchedCannotFindTransaction` | The specific transaction referenced in the alert cannot be found in your system. |
-| `NotMyDescriptor` | The billing descriptor on the alert does not belong to your merchant account. |
-
-## Already Actioned Codes
-
-These codes indicate the transaction has already been handled through other means.
-
-| Code | Description |
-|------|-------------|
-| `AlreadyRefunded` | The transaction has already been refunded prior to receiving the alert. |
-| `AlreadyChargeback` | The transaction has already resulted in a chargeback. |
-| `Duplicate` | This alert is a duplicate of one that has already been processed. |
+| `Resolved` | The alert has been resolved and a refund will be issued to the cardholder. This is the most common resolution and tells the issuer to stop the chargeback process. |
+| `AlreadyRefunded` | The transaction was refunded **prior** to the alert being transmitted. This tells the issuer a refund is already in place, so no chargeback should be filed. This code is eligible for credit. |
 
 ## Decline Codes
 
-These codes indicate the alert is being declined and no refund will be issued.
+Decline codes indicate the alert is being declined and no refund will be issued. **Declining an alert will result in a chargeback**, so use these codes carefully.
 
 | Code | Description |
 |------|-------------|
-| `EscalateChargeback` | The merchant is declining the alert and accepting that it will escalate to a chargeback. Use when you have evidence to fight the dispute. |
-| `Ineligible` | The transaction is not eligible for a refund (e.g., outside refund policy, terms of service violation). |
-| `TDS` | Transaction Dispute Service - the alert is being declined due to 3D Secure authentication or other verification. |
-| `MIDLost` | The Merchant ID associated with this transaction has been lost or terminated. |
+| `UnmatchedCannotFindTransaction` * | The specific transaction referenced in the alert cannot be found in your system. Not eligible for credit. |
+| `AlreadyChargeback` * | The transaction has already resulted in a chargeback, so there is no need to refund via the alert. Not eligible for credit. |
+| `Ineligible` * | A generic decline code indicating the alert is not eligible for a refund. The main use case is when you simply do not want to refund the cardholder, but the alert is otherwise valid. Not eligible for credit. |
+| `MIDLost` | The Merchant ID (processing account) associated with this transaction has been lost or terminated. Not eligible for credit. |
+| `TDS` | Transaction was 3D Secure (3DS) verified. Occasionally you may want to decline fraud-coded alerts on 3DS-authenticated transactions. Not eligible for credit. |
+| `EscalateChargeback` | The merchant is declining the alert and accepting that it will escalate to a chargeback. Use when you have evidence to fight the dispute. Not eligible for credit. |
+| `NotMyDescriptor` | The billing descriptor on the alert does not belong to your merchant account. Not eligible for credit. **⚠️ Monitored** — If alerts are actioned with this code, the descriptor may be automatically unenrolled. Use with caution; most implementations will not use this code. |
 
-## Status Codes
-
-These codes indicate the current processing status of an alert.
-
-| Code | Description |
-|------|-------------|
-| `MatchedWillShip` | The order has been matched and will be shipped. Use for physical goods that are in fulfillment. |
-| `ContactedShipper` | The shipper has been contacted regarding the order (e.g., to cancel or redirect shipment). |
-| `WIP` | Work In Progress - the alert is currently being investigated or processed. |
-| `Unactioned` | The alert has not yet been actioned. This is the default state for new alerts. |
-
-## Other Codes
-
-| Code | Description |
-|------|-------------|
-| `Error` | An error occurred while processing the alert. |
-| `None` | No specific reason code applies. |
+<Info>
+\* These are the most commonly implemented decline codes.
+</Info>
 
 ## Best Practices
 
 <Info>
-For best results, action alerts as `Resolved` within 24 hours of receiving them. Some banks escalate alerts to chargebacks as quickly as 24 hours after the alert is created.
+For best results, action alerts as `Resolved` within 48 hours of receiving them. Some banks escalate alerts to chargebacks as quickly as 48 hours after the alert is created.
 </Info>
 
-<Warning>
-If an alert is left unactioned for 72 hours, it will be automatically declined and may result in a chargeback.
-</Warning>
+### Notes
 
-### Choosing the Right Code
-
-1. **When in doubt, use `Resolved`** - If you're issuing a refund, `Resolved` is almost always the correct choice.
-2. **Use specific codes when applicable** - Codes like `AlreadyRefunded` or `Duplicate` help improve your metrics and provide better data to card networks.
-3. **Only use decline codes when necessary** - Declining alerts will result in chargebacks, which negatively impact your chargeback ratio.
+1. **Only use decline codes when necessary** — Declining alerts will result in chargebacks, which negatively impact your chargeback ratio.
+2. **Be careful with decline codes** — Once you action an alert, you cannot reliably "re-action" it. Make sure the decline code is correct before submitting.
+3. **When in doubt, use `Resolved`** — If you're issuing a refund, `Resolved` is almost always the correct choice.
+4. **Use `AlreadyRefunded` when applicable** — If the transaction was already refunded before the alert arrived, this code provides better data to card networks and is eligible for credit.
