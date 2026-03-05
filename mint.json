@@ -58,8 +58,7 @@
       "pages": [
         "guides/implementation-overview",
         "guides/alerts-implementation",
-        "guides/deflections-implementation",
-        "guides/tracker-snippet"
+        "guides/deflections-implementation"
       ]
     },
     {
