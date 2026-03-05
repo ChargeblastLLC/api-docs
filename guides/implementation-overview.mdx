@@ -1,0 +1,82 @@
+---
+title: "Implementation Overview"
+description: "Understand the three Chargeblast services and two integration paths to choose the right implementation for your business."
+sidebarTitle: "Implementation Overview"
+icon: "map"
+---
+
+## Overview
+
+Chargeblast offers three core services that work together to prevent chargebacks:
+
+<CardGroup cols={3}>
+  <Card title="Alerts" icon="bell" href="/guides/alerts-implementation">
+    Intercept disputes before they become chargebacks via CDRN (Visa) and Ethoca (Mastercard).
+  </Card>
+  <Card title="Digital Receipts" icon="receipt" href="/guides/deflections-implementation">
+    Show transaction details to cardholders when they check their statements, reducing "friendly fraud."
+  </Card>
+  <Card title="Deflections" icon="shield-check" href="/guides/deflections-implementation">
+    Automatically prevent chargebacks using Compelling Evidence 3.0 (CE3.0) and First Party Trust (FPT).
+  </Card>
+</CardGroup>
+
+---
+
+## Two Integration Paths
+
+Every Chargeblast service can be implemented one of two ways, depending on your technical requirements:
+
+<Tabs>
+  <Tab title="Push Data (Recommended)">
+    **You send transaction data to Chargeblast. We handle matching.**
+
+    This is the simplest integration path. You either:
+    - Connect via a [supported payment processor](https://www.chargeblast.com/integrations) (Stripe, Braintree, etc.)
+    - Upload transaction data via the [Upload Orders](/api-reference/sync-data/upload-orders) endpoint
+
+    Chargeblast performs all matching logic automatically. Alert webhooks arrive with matched `externalOrder` IDs, and deflection queries are handled entirely on our side.
+
+    <Info>
+    **Best for:** Most merchants, platforms using supported PSPs, businesses that want minimal implementation effort.
+    </Info>
+  </Tab>
+  <Tab title="Pull Data">
+    **Chargeblast forwards requests to you. You handle matching.**
+
+    This path gives you full control over matching logic. You:
+    - Listen for `alert.created` webhooks or poll the [Fetch Alerts](/api-reference/alerts/fetch-alerts) endpoint
+    - Expose lookup endpoints that Chargeblast calls in real-time (1.5s SLA for deflections)
+
+    You're responsible for matching alerts/queries to transactions in your system.
+
+    <Info>
+    **Best for:** Platforms with complex multi-processor setups, businesses requiring custom matching logic, resellers/aggregators.
+    </Info>
+  </Tab>
+</Tabs>
+
+---
+
+## Quick Comparison
+
+| Aspect | Push Data | Pull Data |
+|--------|-----------|-----------|
+| **Matching Logic** | Handled by Chargeblast | Handled by you |
+| **Implementation Effort** | Low | Medium-High |
+| **Real-time Requirements** | None | 1.5s SLA for deflections |
+| **Supported PSPs** | Required (or upload orders) | Not required |
+| **Flexibility** | Standard matching | Custom matching logic |
+
+---
+
+## Service-Specific Guides
+
+<CardGroup cols={2}>
+  <Card title="Alerts Implementation" icon="bell" href="/guides/alerts-implementation">
+    Learn how to implement CDRN and Ethoca alerts using either push or pull data paths.
+  </Card>
+  <Card title="Deflections Implementation" icon="shield-check" href="/guides/deflections-implementation">
+    Learn how to implement Digital Receipts, CE3.0, and First Party Trust.
+  </Card>
+</CardGroup>

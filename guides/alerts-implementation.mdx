@@ -1,0 +1,132 @@
+---
+title: "Alerts Implementation"
+description: "Learn how to implement CDRN (Visa) and Ethoca (Mastercard) alerts to intercept disputes before they become chargebacks."
+sidebarTitle: "Alerts"
+icon: "bell"
+---
+
+## Overview
+
+Alerts notify you when a cardholder contacts their bank to dispute a transaction. By actioning alerts quickly (typically within 48 hours), you can issue a refund and prevent the dispute from escalating into a chargeback.
+
+Chargeblast supports two alert networks:
+- **Ethoca** (Mastercard) — Best coverage, front-runs other alert types
+- **CDRN** (Visa) — Issuer-based Visa product
+
+<Note>
+For information on **RDR** (Visa's acquirer-side product), see the [RDR Endpoint](/api-reference/getting-started/rdr-endpoint) documentation. RDR is handled automatically at the acquirer level and requires a separate implementation.
+</Note>
+
+---
+
+## Choose Your Integration Path
+
+<Tabs>
+  <Tab title="Push Data (Recommended)">
+    ### How It Works
+
+    1. **Connect your transaction data** via one of two methods:
+       - [Supported payment processor](https://www.chargeblast.com/integrations) (Stripe, Braintree, etc.)
+       - [Upload Orders](/api-reference/sync-data/upload-orders) endpoint
+
+    2. **Chargeblast matches alerts to your transactions** automatically using card details, amounts, and dates.
+
+    3. **Receive webhooks** with matched `externalOrder` IDs:
+       - `alert.created` — New alert received
+       - `alert.updated` — Alert status changed (includes `externalOrder`)
+       - `alert.refunded` — Alert triggered a refund
+
+    4. **Action alerts** via one of two methods:
+       - Expose a [Refund Endpoint](/api-reference/getting-started/refund-endpoint) for automatic processing
+       - Call the [Update Alert](/api-reference/alerts/update-alert) endpoint manually
+
+    ### Implementation Steps
+
+    <Steps>
+      <Step title="Connect Transaction Data">
+        Either connect a [supported PSP](https://www.chargeblast.com/integrations) or implement the [Upload Orders](/api-reference/sync-data/upload-orders) endpoint to push transaction data.
+        
+        ```bash
+        POST /api/v2/orders/upload
+        ```
+      </Step>
+      <Step title="Set Up Webhooks">
+        Configure your [webhook URL](/api-reference/webhooks/setup) in the Chargeblast dashboard to receive alert notifications.
+      </Step>
+      <Step title="(Optional) Expose Refund Endpoint">
+        For fully automated refunds, expose a [Refund Endpoint](/api-reference/getting-started/refund-endpoint) that Chargeblast calls when alerts match.
+        
+        Alternatively, process refunds manually and call the [Update Alert](/api-reference/alerts/update-alert) endpoint.
+      </Step>
+    </Steps>
+
+    <Info>
+    With push data integration, alert webhooks include matched order IDs, making it easy to identify which transaction to refund.
+    </Info>
+  </Tab>
+
+  <Tab title="Pull Data">
+    ### How It Works
+
+    1. **Receive raw alerts** via webhooks or polling — alerts arrive without matched order IDs.
+
+    2. **You perform matching** using card details (BIN, last 4), amounts, dates, and auth codes.
+
+    3. **Action alerts** by calling the [Update Alert](/api-reference/alerts/update-alert) endpoint with the appropriate [reason code](/reference/reason-codes).
+
+    ### Implementation Steps
+
+    <Steps>
+      <Step title="Set Up Webhooks or Polling">
+        Either configure [webhooks](/api-reference/webhooks/setup) for `alert.created` events, or poll the [Fetch Alerts](/api-reference/alerts/fetch-alerts) endpoint periodically.
+      </Step>
+      <Step title="Implement Matching Logic">
+        Build logic to match incoming alerts to transactions in your system using:
+        - Card BIN (first 6 digits) and last 4 digits
+        - Transaction amount and currency
+        - Transaction date
+        - Auth code (if available)
+        - ARN (Acquirer Reference Number, if available)
+      </Step>
+      <Step title="Process Refunds">
+        When a match is found, process the refund in your payment system.
+      </Step>
+      <Step title="Update Alert Status">
+        Call the [Update Alert](/api-reference/alerts/update-alert) endpoint with the appropriate [reason code](/reference/reason-codes):
+        
+        ```bash
+        POST /api/v2/alerts/update/{id}
+        
+        {
+          "result": "Resolved"
+        }
+        ```
+      </Step>
+    </Steps>
+
+    <Warning>
+    For best results, action alerts within 48 hours. Unactioned alerts may escalate to chargebacks.
+    </Warning>
+  </Tab>
+</Tabs>
+
+---
+
+## API Reference
+
+| Endpoint | Description |
+|----------|-------------|
+| [Upload Orders](/api-reference/sync-data/upload-orders) | Push transaction data for matching |
+| [Fetch Alerts](/api-reference/alerts/fetch-alerts) | Poll for alerts |
+| [Fetch Alert](/api-reference/alerts/fetch-an-alert) | Get a specific alert |
+| [Update Alert](/api-reference/alerts/update-alert) | Action an alert with a reason code |
+| [Webhooks](/api-reference/webhooks/setup) | Receive real-time alert notifications |
+| [Reason Codes](/reference/reason-codes) | Full list of reason codes |
+
+---
+
+## Related
+
+- [Reason Codes Reference](/reference/reason-codes) — Full list of codes and when to use them
+- [RDR Endpoint](/api-reference/getting-started/rdr-endpoint) — Visa's acquirer-side dispute resolution
+- [Refund Endpoint](/api-reference/getting-started/refund-endpoint) — Automated refund processing

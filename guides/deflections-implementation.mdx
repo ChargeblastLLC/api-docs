@@ -1,0 +1,196 @@
+---
+title: "Digital Receipts & Deflections"
+description: "Learn how to implement Digital Receipts, Compelling Evidence 3.0 (CE3.0), and First Party Trust (FPT) to prevent chargebacks before they happen."
+sidebarTitle: "Digital Receipts & Deflections"
+icon: "shield-check"
+---
+
+## Overview
+
+Digital Receipts and Deflections work together to prevent chargebacks **before** they're filed. Unlike alerts (which intercept disputes in progress), these services stop disputes from starting.
+
+### Digital Receipts
+
+When cardholders check their bank statement and don't recognize a charge, they see enriched transaction details — merchant name, logo, purchase description, and contact information. This reduces "What is this charge?" confusion that leads to friendly fraud.
+
+### Deflections
+
+Deflections automatically block chargebacks using Visa's pre-dispute programs:
+
+<CardGroup cols={2}>
+  <Card title="Compelling Evidence 3.0 (CE3.0)" icon="file-certificate">
+    When a cardholder disputes a transaction, Visa checks if the same device, IP address, or email was used for previous undisputed purchases. If compelling evidence exists, the chargeback is blocked automatically.
+  </Card>
+  <Card title="First Party Trust (FPT)" icon="user-check">
+    Similar to CE3.0, but also uses billing/shipping address matching for even stronger fraud prevention.
+  </Card>
+</CardGroup>
+
+<Info>
+Digital Receipts and Deflections share the same implementation process. The difference is which qualifying fields you provide — if certain fields are present, transactions become eligible for CE3.0/FPT deflection.
+</Info>
+
+---
+
+## Qualifying Fields for Deflection
+
+To enable deflections, you must provide certain data fields with your transactions:
+
+| Field | CE3.0 | FPT | Description |
+|-------|-------|-----|-------------|
+| Merchant Contact Phone | ✓ | ✓ | Customer service phone number |
+| IP Address | ✓ | ✓ | Customer's IP at time of purchase |
+| Customer Email | ✓ | ✓ | Email address used for the order |
+| Billing or Shipping Address | — | ✓ | Full address for FPT matching |
+
+<Note>
+The more fields you provide, the higher your deflection rate. FPT requires all fields including address; CE3.0 requires phone, IP, and email.
+</Note>
+
+---
+
+## Choose Your Integration Path
+
+<Tabs>
+  <Tab title="Push Data (Recommended)">
+    ### How It Works
+
+    1. **Send enriched transaction data** via one of two methods:
+       - [Supported payment processor](https://www.chargeblast.com/integrations) with receipt data
+       - [Upload Orders](/api-reference/sync-data/upload-orders) endpoint with the `receipt` object
+       - [Tracker Snippet](/guides/tracker-snippet) for IP capture on web
+
+    2. **Chargeblast handles all lookups** — when Visa queries for transaction data or compelling evidence, we respond automatically using your uploaded data.
+
+    3. **Monitor deflection logs** via the [Deflection Logs](/api-reference/deflections/logs) endpoint to see blocked chargebacks.
+
+    ### Implementation Steps
+
+    <Steps>
+      <Step title="Connect Transaction Data with Receipt Info">
+        Upload transactions via the [Upload Orders](/api-reference/sync-data/upload-orders) endpoint, including the `receipt` object with qualifying fields:
+        
+        ```json
+        {
+          "orders": [{
+            "id": "order_123",
+            "amount": 1999,
+            "currency": "usd",
+            "transactionDate": "2024-01-15T10:30:00Z",
+            "bin": "424242",
+            "last4": "4242",
+            "ip": "192.168.1.1",
+            "receipt": {
+              "customerEmail": "customer@example.com",
+              "customerPhone": "+1234567890",
+              "billingAddress": {
+                "line1": "123 Main St",
+                "city": "San Francisco",
+                "state": "CA",
+                "postalCode": "94102",
+                "country": "US"
+              },
+              "description": "Premium Subscription - Annual",
+              "merchantName": "Acme Inc",
+              "merchantUrl": "https://acme.com"
+            }
+          }]
+        }
+        ```
+      </Step>
+      <Step title="(Optional) Add Tracker Snippet">
+        For automatic IP capture on web transactions, add the [Tracker Snippet](/guides/tracker-snippet) to your checkout page:
+        
+        ```html
+        <script defer 
+          src="https://cdn.cgb.la/v1/scripts.js" 
+          data-account="YOUR_ACCOUNT_ID" 
+          id="chargeblast-script">
+        </script>
+        ```
+        
+        Then identify the user:
+        ```javascript
+        Chargeblast.identify("customer@example.com")
+        ```
+      </Step>
+      <Step title="Monitor Deflections">
+        Use the [Deflection Logs](/api-reference/deflections/logs) endpoint to track blocked chargebacks.
+      </Step>
+    </Steps>
+
+    <Info>
+    With push data integration, Chargeblast automatically responds to Visa queries — no real-time endpoint required.
+    </Info>
+  </Tab>
+
+  <Tab title="Pull Data">
+    ### How It Works
+
+    1. **Chargeblast forwards lookup queries** to your endpoint in real-time when Visa requests transaction data or compelling evidence.
+
+    2. **You perform matching** and return the enriched transaction data.
+
+    3. **You must respond within 1.5 seconds** — this is a hard SLA requirement from Visa.
+
+    ### Implementation Steps
+
+    <Steps>
+      <Step title="Expose a Lookup Endpoint">
+        Create an endpoint that accepts POST requests with transaction lookup queries. Chargeblast will call this endpoint with card and transaction details.
+        
+        Your endpoint must:
+        - Accept transaction identifiers (BIN, last4, amount, date)
+        - Return enriched receipt data within **1.5 seconds**
+        - Handle matching logic on your side
+      </Step>
+      <Step title="Configure Endpoint in Dashboard">
+        Set your lookup endpoint URL in the Chargeblast dashboard under developer settings.
+      </Step>
+      <Step title="Return Qualifying Data">
+        Your response must include the qualifying fields for deflection eligibility:
+        
+        ```json
+        {
+          "matched": true,
+          "orderId": "order_123",
+          "customerEmail": "customer@example.com",
+          "customerPhone": "+1234567890",
+          "ip": "192.168.1.1",
+          "billingAddress": {
+            "line1": "123 Main St",
+            "city": "San Francisco",
+            "state": "CA",
+            "postalCode": "94102",
+            "country": "US"
+          },
+          "description": "Premium Subscription - Annual"
+        }
+        ```
+      </Step>
+    </Steps>
+
+    <Warning>
+    **1.5 Second SLA** — If your endpoint doesn't respond in time, the lookup fails and the transaction won't be eligible for deflection or digital receipt display. Ensure your matching logic is optimized for speed.
+    </Warning>
+  </Tab>
+</Tabs>
+
+---
+
+## API Reference
+
+| Endpoint | Description |
+|----------|-------------|
+| [Upload Orders](/api-reference/sync-data/upload-orders) | Push transaction data with receipt info |
+| [Track](/api-reference/sync-data/track) | Push IP/session data |
+| [Deflection Logs](/api-reference/deflections/logs) | View blocked chargebacks |
+| [Get Orders](/api-reference/sync-data/get-orders) | Retrieve uploaded orders |
+
+---
+
+## Related
+
+- [Tracker Snippet Guide](/guides/tracker-snippet) — Automatic IP capture for web transactions
+- [Implementation Overview](/guides/implementation-overview) — Compare all services and integration paths
+- [Alerts Implementation](/guides/alerts-implementation) — Handle disputes that weren't deflected
