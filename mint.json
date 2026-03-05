@@ -72,7 +72,8 @@
         "api-reference/alerts/fetch-an-alert",
         "api-reference/alerts/update-alert",
         "api-reference/alerts/fetch-alerts",
-        "api-reference/credit-requests/create"
+        "api-reference/credit-requests/create",
+        "reference/reason-codes"
       ]
     },
     {
