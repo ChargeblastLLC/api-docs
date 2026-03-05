@@ -34,7 +34,6 @@
     "arrow": false,
     "style": "roundedRectangle"
   },
-
   "anchors": [
     {
       "name": "Help Center",
@@ -49,26 +48,20 @@
   ],
   "navigation": [
     {
-      "group": "",
-      "pages": ["reference/welcome-to-chargeblast"]
+      "group": "Welcome",
+      "pages": [
+        "reference/welcome-to-chargeblast"
+      ]
     },
-
     {
       "group": "Guides",
       "pages": [
-        {
-          "group": "Implementation",
-          "icon": "rocket",
-          "pages": [
-            "guides/implementation-overview",
-            "guides/alerts-implementation",
-            "guides/deflections-implementation"
-          ]
-        },
+        "guides/implementation-overview",
+        "guides/alerts-implementation",
+        "guides/deflections-implementation",
         "guides/tracker-snippet"
       ]
     },
-
     {
       "group": "Platform",
       "pages": [
@@ -76,50 +69,40 @@
         "api-reference/webhooks/setup"
       ]
     },
-
     {
-      "group": "API Reference",
+      "group": "Alerts",
       "pages": [
-        {
-          "group": "Alerts",
-          "icon": "bell",
-          "pages": [
-            "api-reference/alerts/fetch-alerts",
-            "api-reference/alerts/fetch-an-alert",
-            "api-reference/alerts/update-alert",
-            "reference/reason-codes",
-            "api-reference/credit-requests/create"
-          ]
-        },
-        {
-          "group": "Digital Receipts & Deflections",
-          "icon": "shield-check",
-          "pages": [
-            "api-reference/sync-data/upload-orders",
-            "api-reference/sync-data/get-orders",
-            "api-reference/sync-data/get-order",
-            "api-reference/sync-data/track",
-            "api-reference/deflections/logs"
-          ]
-        },
-        {
-          "group": "RDR",
-          "icon": "credit-card",
-          "pages": [
-            "api-reference/getting-started/rdr-endpoint"
-          ]
-        },
-        {
-          "group": "Enrollment",
-          "icon": "building",
-          "pages": [
-            "api-reference/enrollment/fetch-merchants",
-            "api-reference/enrollment/fetch-descriptors",
-            "api-reference/enrollment/fetch-merchant",
-            "api-reference/enrollment/enroll-merchant",
-            "api-reference/enrollment/unenroll-merchant"
-          ]
-        }
+        "api-reference/alerts/fetch-alerts",
+        "api-reference/alerts/fetch-an-alert",
+        "api-reference/alerts/update-alert",
+        "reference/reason-codes",
+        "api-reference/credit-requests/create"
+      ]
+    },
+    {
+      "group": "Digital Receipts & Deflections",
+      "pages": [
+        "api-reference/sync-data/upload-orders",
+        "api-reference/sync-data/get-orders",
+        "api-reference/sync-data/get-order",
+        "api-reference/sync-data/track",
+        "api-reference/deflections/logs"
+      ]
+    },
+    {
+      "group": "RDR",
+      "pages": [
+        "api-reference/getting-started/rdr-endpoint"
+      ]
+    },
+    {
+      "group": "Enrollment",
+      "pages": [
+        "api-reference/enrollment/fetch-merchants",
+        "api-reference/enrollment/fetch-descriptors",
+        "api-reference/enrollment/fetch-merchant",
+        "api-reference/enrollment/enroll-merchant",
+        "api-reference/enrollment/unenroll-merchant"
       ]
     }
   ],
