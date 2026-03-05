@@ -74,6 +74,7 @@
         "api-reference/alerts/fetch-alerts",
         "api-reference/alerts/fetch-an-alert",
         "api-reference/alerts/update-alert",
+        "reference/alert-types",
         "reference/reason-codes",
         "api-reference/credit-requests/create"
       ]
