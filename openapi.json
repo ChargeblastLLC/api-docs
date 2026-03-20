@@ -270,6 +270,16 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/EmbedMerchantResponseDTO"
+                                },
+                                "example": {
+                                    "page": 1,
+                                    "total": 1,
+                                    "merchants": [
+                                        {
+                                            "name": "sandbox-merchant-1",
+                                            "id": "cb_xxxxxxxxxxxxx"
+                                        }
+                                    ]
                                 }
                             }
                         },

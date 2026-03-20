@@ -5,18 +5,3 @@ openapi: get /api/v2/merchants
 Returns all merchants for your Chargeblast account. The response is **paginated** using the `page` and `per` query parameters.
 
 Each merchant in the response includes a **name** and **id**. The `name` is set during onboarding and, for multi-merchant accounts, corresponds to the individual merchant name (typically the DBA or billing descriptor). The merchant **id** returned here is the same value as the `merchantId` in the [webhook alert payload](/api-reference/webhooks/setup#body)—use it to associate incoming alerts with the correct merchant.
-
-**Example response:**
-
-```json
-{
-    "page": 1,
-    "total": 1,
-    "merchants": [
-        {
-            "name": "sandbox-merchant-1",
-            "id": "cb_xxxxxxxxxxxxx"
-        }
-    ]
-}
-```
