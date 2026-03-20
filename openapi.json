@@ -237,9 +237,31 @@
                             "type": "string"
                         },
                         "description": "Your API key. Sent in the `X-API-Key` header."
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "format": "int64",
+                            "type": "integer",
+                            "nullable": true
+                        },
+                        "name": "page",
+                        "in": "query",
+                        "description": "The starting page of the request. Default value of 1."
+                    },
+                    {
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "nullable": true,
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "description": "How many merchants to return per page. Default value of 10.",
+                        "name": "per"
                     }
                 ],
-                "description": "Get all the merchants from your chargeblast account.",
+                "description": "Get all the merchants from your chargeblast account. Response is paginated. The `name` field is set during onboarding of the merchant and corresponds to the individual name of the merchant for multi-merchant accounts (usually associated with the DBA or billing descriptor).",
                 "summary": "Fetch Merchants",
                 "operationId": "merchants",
                 "responses": {
@@ -1027,15 +1049,45 @@
             },
             "EmbedMerchantResponseDTO": {
                 "required": [
-                    "merchants"
+                    "merchants",
+                    "page",
+                    "total"
                 ],
                 "type": "object",
                 "properties": {
+                    "page": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "The current page number."
+                    },
+                    "total": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "The total number of merchants."
+                    },
                     "merchants": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/PayshieldRetailerDTO"
-                        }
+                            "$ref": "#/components/schemas/MerchantListItem"
+                        },
+                        "description": "The list of merchants for the current page."
+                    }
+                }
+            },
+            "MerchantListItem": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "The unique Chargeblast identifier for the merchant (e.g. cb_xxxxxxxxxxxxx)."
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Set during onboarding of the merchant. For multi-merchant accounts, this is the individual merchant name, usually associated with the DBA or billing descriptor."
                     }
                 }
             },
