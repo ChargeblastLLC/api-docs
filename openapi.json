@@ -223,7 +223,7 @@
                 "operationId": "enroll-merchant"
             }
         },
-        "/api/merchants": {
+        "/api/v2/merchants": {
             "get": {
                 "tags": [
                     "Enrollment"
