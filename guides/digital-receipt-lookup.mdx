@@ -25,7 +25,13 @@ In Chargeblast (Developer settings):
    - **Lookup key** — sent as plaintext in `X-Digital-Receipt-Lookup-Key`.
    - **Lookup signature key** — used only on your side to verify **`X-Digital-Receipt-Signature`** (HMAC; see [HMAC-SHA256 signature](#4-hmac-sha256-signature-algorithm)).
 
-Use **Send test webhook** in the UI to exercise your endpoint and inspect the exact cURL, timing, and validation hints.
+### Testing in the app
+
+The Chargeblast app includes **developer tooling** so you can validate your integration without waiting for live issuer traffic. You can **send test lookup events** to your URL, **replay** earlier requests to iterate on matching and receipt JSON, and review timing, headers, and validation feedback in one place—so you can confirm HMAC handling, response shape, and SLA before production lookups hit your endpoint.
+
+Use **Send test webhook** (and related controls in the same area) to drive those runs and inspect the exact **cURL**, payloads, and hints the UI surfaces.
+
+![](/images/reference/lookup_test.png)
 
 ---
 
