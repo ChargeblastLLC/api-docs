@@ -1,8 +1,8 @@
 ---
 title: "Digital receipt lookup (merchant HTTPS endpoint)"
 description: "Implement the pull integration: Chargeblast POSTs lookup criteria to your HTTPS endpoint; you return a receipt payload (200) or not found (404)."
-sidebarTitle: "Digital receipt lookup"
 icon: "plug"
+hidden: true
 ---
 
 This guide describes **digital receipt lookup** when Chargeblast **forwards lookup traffic to your HTTPS endpoint** instead of resolving from stored order data (for example, **GET `/orders/:id`** and related consumer-clarity lookup flows).
@@ -39,6 +39,12 @@ Use **Send test webhook** in the UI to exercise your endpoint and inspect the ex
 | `X-Event-Type` | `digital_receipt.lookup` |
 | `X-Digital-Receipt-Lookup-Key` | Your **lookup key** (plaintext shared secret). |
 | `X-Digital-Receipt-Signature` | **HMAC-SHA256** of the **exact raw request body**, encoded as **lowercase hexadecimal** (no `0x` prefix). See [HMAC-SHA256 signature](#4-hmac-sha256-signature-algorithm). |
+
+### Where the digest is (no separate timestamp)
+
+- **The digest is the header value** `X-Digital-Receipt-Signature`. It is **not** in the JSON body. The string is exactly **64 characters** (`0`–`9`, `a`–`f`): the hex encoding of the 32-byte HMAC-SHA256 output. There is no separate `Digest` field, body field, or second signature—if you do not see a digest, check **request headers**, not the body. (The dashboard **Send test webhook** cURL includes the same header.)
+- **There is no timestamp header** (for example no `X-Digital-Receipt-Timestamp`) and **nothing is prepended or appended** to the body before HMAC. The MAC uses **only** the **lookup signature key** (UTF-8, as the HMAC key) and the **raw POST body bytes** (as the message). **You do not need a timestamp** to compute or verify the signature: re-read the **exact** body bytes from the request, run the same HMAC with your stored secret, and compare to the header (prefer **constant-time** comparison).
+- **Replay:** The signature **does not** by itself prevent replay of a captured valid request. Mitigate with **HTTPS**, **rotating keys**, **idempotent** handlers, and your own rate limiting as needed.
 
 Chargeblast **always sends both** the lookup key header and the signature header. **Your server** decides whether to enforce one or both (see [Using only the lookup key](#5-using-only-the-lookup-key-weaker-authentication)).
 
@@ -87,7 +93,7 @@ This is **not** a bare SHA-256 hash of the body. It is **HMAC-SHA256**:
 
 `signature = HMAC-SHA256(secret, bodyUTF8)`
 
-as defined in RFC 2104, using SHA-256 as the hash function (FIPS-compatible HMAC-SHA256).
+as defined in RFC 2104, using SHA-256 as the hash function (FIPS-compatible HMAC-SHA256). There is **no timestamp** in the scheme: verification is **only** key + raw body → hex MAC → compare to `X-Digital-Receipt-Signature` (see [Where the digest is](#where-the-digest-is-no-separate-timestamp)).
 
 ### 4.1 Steps (normative for interoperability)
 
@@ -95,6 +101,7 @@ as defined in RFC 2104, using SHA-256 as the hash function (FIPS-compatible HMAC
 2. Let **`body`** be the **raw HTTP request body** as received (the same bytes as in `Content-Length`). Treat it as a UTF-8 string only if you know it is valid UTF-8 JSON; the HMAC is over **those bytes**.
 3. Compute **`HMAC_SHA256(secret_utf8, body_bytes)`** using the standard library for your language (see examples below).
 4. Encode the 32-byte MAC as **lowercase hex** (64 characters): each byte as two hex digits `00`–`ff`, no separators, no `0x`.
+5. Compare that string to **`X-Digital-Receipt-Signature`** using **constant-time** equality when possible. Do **not** expect a timestamp header or a `t=` / `v1=` style signed prefix—those are **not** used here.
 
 ### 4.2 Reference implementation (Chargeblast server)
 
@@ -102,23 +109,15 @@ The server uses Swift **CryptoKit**-style HMAC:
 
 - Key material: `SymmetricKey(data: Data(secret.utf8))`
 - Message: `Data(body.utf8)` where `body` is the **exact JSON string** used as the POST body
-- Output: hex string via `%02hhx` per byte (lowercase)
+- Output: hex string via `%02hhx` per byte (lowercase), set as the **`X-Digital-Receipt-Signature`** header value
 
-### 4.3 Example: Python 3
+### 4.3 Examples (Node.js, Python, Go)
 
-```python
-import hmac
-import hashlib
+Use the **raw** body buffer from your HTTP framework (**before** JSON parsing) as the HMAC message. Compare the computed hex to the header with constant-time equality when available.
 
-def digital_receipt_signature(secret: str, body: bytes) -> str:
-    return hmac.new(secret.encode("utf-8"), body, hashlib.sha256).hexdigest()
-```
+<CodeGroup>
 
-Compare with **constant-time** equality if possible (e.g. `hmac.compare_digest`).
-
-### 4.4 Example: Node.js
-
-```javascript
+```javascript digital_receipt_signature.js
 const crypto = require("crypto");
 
 function digitalReceiptSignature(secret, bodyBuffer) {
@@ -126,11 +125,15 @@ function digitalReceiptSignature(secret, bodyBuffer) {
 }
 ```
 
-Use the **raw** body buffer from the HTTP framework (before JSON parsing) for signing.
+```python digital_receipt_signature.py
+import hmac
+import hashlib
 
-### 4.5 Example: Go
+def digital_receipt_signature(secret: str, body: bytes) -> str:
+    return hmac.new(secret.encode("utf-8"), body, hashlib.sha256).hexdigest()
+```
 
-```go
+```go digital_receipt_signature.go
 import (
     "crypto/hmac"
     "crypto/sha256"
@@ -144,12 +147,17 @@ func DigitalReceiptSignature(secret string, body []byte) string {
 }
 ```
 
-### 4.6 Verification checklist (signature mismatches)
+</CodeGroup>
+
+In Python, compare with `hmac.compare_digest(computed, header_value)`.
+
+### 4.4 Verification checklist (signature mismatches)
 
 - Using the **signature** secret, not the lookup key.
 - HMAC is over **raw body bytes**, not pretty-printed JSON.
 - Same **sorted-key** canonical form as the sender (or read body as sent and do not reserialize before verifying).
 - Compare hex **case-insensitively** if your stack emits uppercase (Chargeblast sends lowercase).
+- Expecting a **timestamp** or signed-prefix scheme—**none** is sent; only the header + body HMAC applies.
 
 ---
 
@@ -224,7 +232,7 @@ A response can be **structurally valid** (decodes to a receipt) but still **fail
 - **`order.transactionDetails.deviceIpAddress`** (or IP propagated via account fields in the mapped model) is **important for CE** but **not** part of the minimal required-field list above.
 - Other CE-related gaps are derived from the mapped receipt shape (merchant descriptors, product description, customer identifiers, delivery address, etc.).
 
-The Chargeblast **developer test** UI merges structural and CE gaps into one list; any field that is missing **only for CE** is labeled with the suffix **` (required for compelling evidence)`** in that tooling.
+The Chargeblast **developer test** API merges structural and CE gaps into one list. CE-only gaps may appear in payloads with the suffix **` (required for compelling evidence)`**; in the **Send test webhook** UI, those paths are shown with a **\*** and a short legend instead of that full suffix.
 
 ---
 

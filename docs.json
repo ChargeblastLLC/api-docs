@@ -50,8 +50,7 @@
         "pages": [
           "guides/implementation-overview",
           "guides/alerts-implementation",
-          "guides/deflections-implementation",
-          "guides/digital-receipt-lookup"
+          "guides/deflections-implementation"
         ]
       },
       {
@@ -75,7 +74,6 @@
       {
         "group": "Digital Receipts & Deflections",
         "pages": [
-          "guides/digital-receipt-lookup",
           "api-reference/sync-data/upload-orders",
           "api-reference/sync-data/get-orders",
           "api-reference/sync-data/get-order",
