@@ -1,0 +1,323 @@
+---
+title: "Digital receipt lookup (merchant HTTPS endpoint)"
+description: "Implement the pull integration: Chargeblast POSTs lookup criteria to your HTTPS endpoint; you return a receipt payload (200) or not found (404)."
+sidebarTitle: "Digital receipt lookup"
+icon: "plug"
+---
+
+This guide describes **digital receipt lookup** when Chargeblast **forwards lookup traffic to your HTTPS endpoint** instead of resolving from stored order data (for example, **GET `/orders/:id`** and related consumer-clarity lookup flows).
+
+You implement a **POST** handler that accepts a JSON body (search criteria for the transaction), optionally authenticates the caller, and returns either a **receipt payload** (HTTP **200**) or **not found** (HTTP **404**).
+
+<Info>
+This is the **pull** path described under [Digital Receipts & Deflections](/guides/deflections-implementation) (Pull Data). Return to that page for the high-level implementation steps and qualifying fields for deflection.
+</Info>
+
+---
+
+## 1. Enabling the feature
+
+In Chargeblast (Developer settings):
+
+1. Set **Digital receipt lookup URL** to your host and path **without** the `https://` prefix (for example `api.example.com/v1/chargeblast/digital_receipt_lookup`). Chargeblast calls **`https://{that value}`**.
+2. Turn the toggle **on**.
+3. Note two secrets (both can be rotated independently):
+   - **Lookup key** — sent as plaintext in `X-Digital-Receipt-Lookup-Key`.
+   - **Lookup signature key** — used only on your side to verify **`X-Digital-Receipt-Signature`** (HMAC; see [HMAC-SHA256 signature](#4-hmac-sha256-signature-algorithm)).
+
+Use **Send test webhook** in the UI to exercise your endpoint and inspect the exact cURL, timing, and validation hints.
+
+---
+
+## 2. Request method, URL, and headers
+
+| Item | Value |
+|------|--------|
+| Method | `POST` |
+| URL | `https://{your configured host path}` |
+| `Content-Type` | `application/json` |
+| `X-Event-Type` | `digital_receipt.lookup` |
+| `X-Digital-Receipt-Lookup-Key` | Your **lookup key** (plaintext shared secret). |
+| `X-Digital-Receipt-Signature` | **HMAC-SHA256** of the **exact raw request body**, encoded as **lowercase hexadecimal** (no `0x` prefix). See [HMAC-SHA256 signature](#4-hmac-sha256-signature-algorithm). |
+
+Chargeblast **always sends both** the lookup key header and the signature header. **Your server** decides whether to enforce one or both (see [Using only the lookup key](#5-using-only-the-lookup-key-weaker-authentication)).
+
+---
+
+## 3. Request body (wire format)
+
+The JSON is derived from Chargeblast’s internal **Order Insight–style search object**, with a few rules that matter for **correct HMAC verification**.
+
+### 3.1 Removed keys (never present on the wire)
+
+These keys are stripped before serialization:
+
+- `isSpoofed`
+- `insightId`
+- `verifiEntityInfo`
+- `transactionRequestId`
+- `paymentDescriptorContact`
+- `linkedInsightId`
+
+### 3.2 Amount fields
+
+- The nested object **`destinationAmount`** is **removed**.
+- Its **`amount`** and **`currency`** are copied to the **top level** as **`amount`** and **`currency`**.
+- **`transactionAmount`** is **removed** from the wire object.
+
+So the merchant-visible body uses top-level **`amount`** / **`currency`** (major units, e.g. `20.5` and `"USD"`), not `transactionAmount` / `destinationAmount`.
+
+### 3.3 JSON serialization (critical for HMAC)
+
+The body is built as **compact JSON** with:
+
+- **`JSONSerialization` with `.sortedKeys`** — keys are in **sorted order** at every object level.
+- UTF-8 encoding.
+
+**You must verify the HMAC over the exact byte sequence Chargeblast sent** (the raw HTTP body). If you re-parse and re-serialize JSON (different key order, spacing, or number formatting), the signature will **not** match even with the correct secret.
+
+### 3.4 Typical fields you will see
+
+All are JSON values; many are optional depending on the source transaction. Common fields include (camelCase as encoded):
+
+| Field | Notes |
+|--------|--------|
+| `source` | Channel / source string when present |
+| `cardBin` | First 6 of PAN when present |
+| `cardLast4` | Last 4 when present |
+| `paymentType` | e.g. card network label |
+| `token` | When present |
+| `transactionDate` | ISO-8601-style string when present |
+| `amount` | **Number**, major currency units (after flattening) |
+| `currency` | **String**, e.g. `"USD"` |
+| `arn` | Acquirer reference when present |
+| `authCode` | When present |
+| `terminalId`, `acquirerBin`, `cardAcceptorId`, `mcsn`, `purchaseIdentifier`, `transactionId`, `transactionType`, `cardExpirationDate`, `paymentDescriptor`, `mcc`, `posEntryModeCode`, `eci` | Optional strings / values as applicable |
+
+Exact presence depends on the upstream lookup request.
+
+---
+
+## 4. HMAC-SHA256 signature algorithm
+
+This is **not** a bare SHA-256 hash of the body. It is **HMAC-SHA256**:
+
+`signature = HMAC-SHA256(secret, bodyUTF8)`
+
+as defined in RFC 2104, using SHA-256 as the hash function (FIPS-compatible HMAC-SHA256).
+
+### 4.1 Steps (normative for interoperability)
+
+1. Let **`secret`** be the **lookup signature key** string from Chargeblast settings (UTF-8 bytes).
+2. Let **`body`** be the **raw HTTP request body** as received (the same bytes as in `Content-Length`). Treat it as a UTF-8 string only if you know it is valid UTF-8 JSON; the HMAC is over **those bytes**.
+3. Compute **`HMAC_SHA256(secret_utf8, body_bytes)`** using the standard library for your language (see examples below).
+4. Encode the 32-byte MAC as **lowercase hex** (64 characters): each byte as two hex digits `00`–`ff`, no separators, no `0x`.
+
+### 4.2 Reference implementation (Chargeblast server)
+
+The server uses Swift **CryptoKit**-style HMAC:
+
+- Key material: `SymmetricKey(data: Data(secret.utf8))`
+- Message: `Data(body.utf8)` where `body` is the **exact JSON string** used as the POST body
+- Output: hex string via `%02hhx` per byte (lowercase)
+
+### 4.3 Example: Python 3
+
+```python
+import hmac
+import hashlib
+
+def digital_receipt_signature(secret: str, body: bytes) -> str:
+    return hmac.new(secret.encode("utf-8"), body, hashlib.sha256).hexdigest()
+```
+
+Compare with **constant-time** equality if possible (e.g. `hmac.compare_digest`).
+
+### 4.4 Example: Node.js
+
+```javascript
+const crypto = require("crypto");
+
+function digitalReceiptSignature(secret, bodyBuffer) {
+  return crypto.createHmac("sha256", secret).update(bodyBuffer).digest("hex");
+}
+```
+
+Use the **raw** body buffer from the HTTP framework (before JSON parsing) for signing.
+
+### 4.5 Example: Go
+
+```go
+import (
+    "crypto/hmac"
+    "crypto/sha256"
+    "encoding/hex"
+)
+
+func DigitalReceiptSignature(secret string, body []byte) string {
+    mac := hmac.New(sha256.New, []byte(secret))
+    mac.Write(body)
+    return hex.EncodeToString(mac.Sum(nil))
+}
+```
+
+### 4.6 Verification checklist (signature mismatches)
+
+- Using the **signature** secret, not the lookup key.
+- HMAC is over **raw body bytes**, not pretty-printed JSON.
+- Same **sorted-key** canonical form as the sender (or read body as sent and do not reserialize before verifying).
+- Compare hex **case-insensitively** if your stack emits uppercase (Chargeblast sends lowercase).
+
+---
+
+## 5. Using only the lookup key (weaker authentication)
+
+**Recommended:** verify **`X-Digital-Receipt-Signature`** with your **signature secret** **and** require **`X-Digital-Receipt-Lookup-Key`** to equal your **lookup key**. That way:
+
+- Possession of the **lookup key** alone is not enough to forge payloads without knowing the **signature secret** (and without breaking HMAC).
+- The body cannot be tampered with in transit without invalidating the MAC (assuming the secret stays private).
+
+**Simpler / weaker option:** you may **only** check that **`X-Digital-Receipt-Lookup-Key`** matches your configured lookup key and **skip** HMAC verification.
+
+| Approach | Pros | Cons |
+|----------|------|------|
+| Lookup key **only** | Easiest to implement; no crypto code. | Anyone who learns the single secret can impersonate Chargeblast to your endpoint if they can reach it. No integrity check on the body (rely on TLS only). |
+| Lookup key **+** HMAC | Stronger authentication and **body integrity**. | Must use raw body bytes and correct HMAC-SHA256 hex. |
+
+Chargeblast **still sends** both headers; skipping signature verification is **your** policy choice.
+
+---
+
+## 6. Response: HTTP status
+
+| Status | Meaning | Body |
+|--------|---------|------|
+| **200**–**299** | Transaction **found** (success). | JSON receipt — either **minimal merchant shape** or full **Order Insight `receipt`** document (see below). |
+| **404** | Transaction **not** found. | Body may be empty; Chargeblast treats this as “not found” without parsing JSON. |
+| Other | Treated as errors by Chargeblast for production lookup flows; use **200** / **404** for normal outcomes. |
+
+You do **not** need a top-level `response` wrapper. **`responseStatus` in JSON is optional** for minimal shape; found vs not found is primarily driven by **HTTP status** (200 vs 404). Optional `responseStatus` can still be used for cases like multiple matches when you encode that in your contract.
+
+---
+
+## 7. Minimal successful JSON (top-level keys)
+
+Chargeblast accepts a minimal object with top-level **`order`**, **`merchantProfile`**, and **`accountProfile`** (and optional **`responseStatus`**).
+
+### 7.1 Required for a valid minimal receipt (decode succeeds)
+
+These are enforced for the **minimal** path (structural validation). Amounts are **strings** in the merchant JSON (e.g. `"15.00"`), not necessarily the same type as the inbound `amount` number.
+
+| Path | Requirement |
+|------|---------------|
+| `order.merchantOrderId` | Non-empty after trim |
+| `order.orderDateTime` | Non-empty after trim |
+| `order.total` | Non-empty after trim |
+| `order.currencyCode` | Non-empty after trim (ISO-like currency code) |
+| `order.orderItems` | At least **one** item |
+| `order.orderItems[0].productName` **or** `productDescription` | At least one non-empty after trim |
+| `merchantProfile.name` | Non-empty after trim |
+| `merchantProfile.merchantReceiptContact.phoneForReceipt` | Non-empty after trim |
+| `merchantProfile.merchantReceiptContact.websiteForReceipt` | Non-empty after trim |
+| `accountProfile.email` **or** `accountProfile.phone` | At least one non-empty after trim |
+
+### 7.2 Optional on the minimal path (but useful)
+
+| Path | Notes |
+|------|--------|
+| `order.subtotal` | Defaults to `order.total` if omitted or blank |
+| `order.orderPhone` | Optional |
+| `order.transactionDetails.deviceIpAddress` | **Not required** for a minimal valid receipt |
+| `merchantProfile.merchantReceiptContact.emailForReceipt` | Optional |
+| `merchantProfile.logoUrl`, `description`, policy links, `termsAndConditionsLink`, etc. | Optional |
+| `accountProfile.name` (`givenName` / `familyName`) | Optional |
+| `accountProfile.accountBillingAddress` (`city`, `country`, `postalCode`) | Optional |
+| `accountProfile.accountCreationIpAddress` | Optional; can supply IP here if not under `order.transactionDetails` |
+
+### 7.3 Compelling evidence (CE) vs “valid receipt”
+
+A response can be **structurally valid** (decodes to a receipt) but still **fail compelling-evidence rules** used for disputes. In particular:
+
+- **`order.transactionDetails.deviceIpAddress`** (or IP propagated via account fields in the mapped model) is **important for CE** but **not** part of the minimal required-field list above.
+- Other CE-related gaps are derived from the mapped Order Insight shape (merchant descriptors, product description, customer identifiers, delivery address, etc.).
+
+The Chargeblast **developer test** UI merges structural and CE gaps into one list; any field that is missing **only for CE** is labeled with the suffix **` (required for compelling evidence)`** in that tooling.
+
+---
+
+## 8. Full Order Insight-style response
+
+Instead of the minimal `{ order, merchantProfile, accountProfile }` shape, you may return JSON that decodes as an **Order Insight-style** payload with a top-level **`receipt`** (and related merchant/customer/device objects). Chargeblast branches on the presence of top-level keys (`order` vs `receipt`) when decoding.
+
+Use this when you already emit OI-compatible receipts from another system.
+
+---
+
+## 9. Example minimal body (illustrative)
+
+```json
+{
+  "order": {
+    "merchantOrderId": "ord_123",
+    "orderDateTime": "2026-01-15T10:07:20Z",
+    "total": "15.00",
+    "subtotal": "15.00",
+    "currencyCode": "USD",
+    "orderPhone": "+13612221788",
+    "orderItems": [
+      {
+        "id": "line_1",
+        "quantity": "1",
+        "productName": "Subscription",
+        "productPrice": "15.00"
+      }
+    ],
+    "transactionDetails": {
+      "deviceIpAddress": "203.0.113.10"
+    }
+  },
+  "merchantProfile": {
+    "name": "Example Co",
+    "merchantReceiptContact": {
+      "emailForReceipt": "support@example.com",
+      "phoneForReceipt": "+18005550100",
+      "websiteForReceipt": "https://example.com"
+    }
+  },
+  "accountProfile": {
+    "name": { "givenName": "Jane", "familyName": "Doe" },
+    "email": "jane@example.com",
+    "accountBillingAddress": {
+      "city": "Austin",
+      "country": "US",
+      "postalCode": "78701"
+    }
+  }
+}
+```
+
+---
+
+## 10. Idempotency and side effects
+
+Treat lookups as **read-only** from Chargeblast’s perspective: avoid charging customers or mutating state solely on receipt of `digital_receipt.lookup` unless that matches your own product design.
+
+---
+
+## 11. SLA and deflection eligibility
+
+<Warning>
+**1.5 second SLA** — If your endpoint does not respond in time, the lookup fails and the transaction may not be eligible for deflection or digital receipt display. Optimize matching logic for speed; see [Digital Receipts & Deflections](/guides/deflections-implementation).
+</Warning>
+
+---
+
+## Related
+
+- [Digital Receipts & Deflections](/guides/deflections-implementation) — Pull vs push, qualifying fields, monitoring
+- [Deflection Logs](/api-reference/deflections/logs) — Poll blocked chargebacks
+- [Implementation Overview](/guides/implementation-overview) — Compare integration paths
+
+---
+
+_Describes behavior aligned with the Chargeblast application at the time of writing; verify against production if you depend on exact API guarantees._
