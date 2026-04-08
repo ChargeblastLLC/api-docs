@@ -46,26 +46,25 @@ Chargeblast **always sends both** the lookup key header and the signature header
 
 ## 3. Request body (wire format)
 
-The JSON is derived from Chargeblast’s internal **Order Insight–style search object**, with a few rules that matter for **correct HMAC verification**.
+The JSON body is derived from Chargeblast’s **internal search object** for digital receipt lookups. It is a **single normalized payload** for **Visa, Mastercard, Discover, and Amex** search requests—implement **one** matching path regardless of network.
 
-### 3.1 Removed keys (never present on the wire)
+### 3.1 Primary keys for matching (always present)
 
-These keys are stripped before serialization:
+These fields are **guaranteed** on every lookup. Use them as the primary keys when resolving the transaction in your system:
 
-- `isSpoofed`
-- `insightId`
-- `verifiEntityInfo`
-- `transactionRequestId`
-- `paymentDescriptorContact`
-- `linkedInsightId`
+| Field | Notes |
+|--------|--------|
+| `cardBin` | First six digits of the PAN |
+| `cardLast4` | Last four digits of the PAN |
+| `currency` | Transaction currency (e.g. `"USD"`) |
+| `arn` | Acquirer reference number |
+| `authCode` | Authorization code |
+| `transactionDate` | Transaction timestamp (ISO-8601-style string) |
+| `descriptor` | Billing / payment descriptor for the charge |
 
-### 3.2 Amount fields
+### 3.2 `source`
 
-- The nested object **`destinationAmount`** is **removed**.
-- Its **`amount`** and **`currency`** are copied to the **top level** as **`amount`** and **`currency`**.
-- **`transactionAmount`** is **removed** from the wire object.
-
-So the merchant-visible body uses top-level **`amount`** / **`currency`** (major units, e.g. `20.5` and `"USD"`), not `transactionAmount` / `destinationAmount`.
+The **`source`** field indicates **where the lookup was initiated**—for example a **call center**, an **issuer banking or mobile app**, or another channel. Network and product determine the exact values; use it for logging, routing, or extra context alongside the guaranteed match keys above.
 
 ### 3.3 JSON serialization (critical for HMAC)
 
@@ -76,25 +75,9 @@ The body is built as **compact JSON** with:
 
 **You must verify the HMAC over the exact byte sequence Chargeblast sent** (the raw HTTP body). If you re-parse and re-serialize JSON (different key order, spacing, or number formatting), the signature will **not** match even with the correct secret.
 
-### 3.4 Typical fields you will see
+### 3.4 Other fields (optional)
 
-All are JSON values; many are optional depending on the source transaction. Common fields include (camelCase as encoded):
-
-| Field | Notes |
-|--------|--------|
-| `source` | Channel / source string when present |
-| `cardBin` | First 6 of PAN when present |
-| `cardLast4` | Last 4 when present |
-| `paymentType` | e.g. card network label |
-| `token` | When present |
-| `transactionDate` | ISO-8601-style string when present |
-| `amount` | **Number**, major currency units (after flattening) |
-| `currency` | **String**, e.g. `"USD"` |
-| `arn` | Acquirer reference when present |
-| `authCode` | When present |
-| `terminalId`, `acquirerBin`, `cardAcceptorId`, `mcsn`, `purchaseIdentifier`, `transactionId`, `transactionType`, `cardExpirationDate`, `paymentDescriptor`, `mcc`, `posEntryModeCode`, `eci` | Optional strings / values as applicable |
-
-Exact presence depends on the upstream lookup request.
+Additional keys may appear depending on the transaction (for example `amount`, `paymentType`, `token`, `terminalId`, `acquirerBin`, `cardAcceptorId`, `mcsn`, `purchaseIdentifier`, `transactionId`, `transactionType`, `cardExpirationDate`, `mcc`, `posEntryModeCode`, `eci`). Treat them as **supplemental** for matching or display—not substitutes for the guaranteed fields in [Primary keys for matching](#31-primary-keys-for-matching-always-present).
 
 ---
 
@@ -192,11 +175,11 @@ Chargeblast **still sends** both headers; skipping signature verification is **y
 
 | Status | Meaning | Body |
 |--------|---------|------|
-| **200**–**299** | Transaction **found** (success). | JSON receipt — either **minimal merchant shape** or full **Order Insight `receipt`** document (see below). |
+| **200**–**299** | Transaction **found** (success). | JSON receipt in the **minimal merchant shape** (`order`, `merchantProfile`, `accountProfile`); see [Minimal successful JSON](#7-minimal-successful-json-top-level-keys). |
 | **404** | Transaction **not** found. | Body may be empty; Chargeblast treats this as “not found” without parsing JSON. |
 | Other | Treated as errors by Chargeblast for production lookup flows; use **200** / **404** for normal outcomes. |
 
-You do **not** need a top-level `response` wrapper. **`responseStatus` in JSON is optional** for minimal shape; found vs not found is primarily driven by **HTTP status** (200 vs 404). Optional `responseStatus` can still be used for cases like multiple matches when you encode that in your contract.
+You do **not** need a top-level `response` wrapper. **`responseStatus` in JSON is optional** for minimal shape; found vs not found is primarily driven by **HTTP status** (200 vs 404).
 
 ---
 
@@ -239,21 +222,13 @@ These are enforced for the **minimal** path (structural validation). Amounts are
 A response can be **structurally valid** (decodes to a receipt) but still **fail compelling-evidence rules** used for disputes. In particular:
 
 - **`order.transactionDetails.deviceIpAddress`** (or IP propagated via account fields in the mapped model) is **important for CE** but **not** part of the minimal required-field list above.
-- Other CE-related gaps are derived from the mapped Order Insight shape (merchant descriptors, product description, customer identifiers, delivery address, etc.).
+- Other CE-related gaps are derived from the mapped receipt shape (merchant descriptors, product description, customer identifiers, delivery address, etc.).
 
 The Chargeblast **developer test** UI merges structural and CE gaps into one list; any field that is missing **only for CE** is labeled with the suffix **` (required for compelling evidence)`** in that tooling.
 
 ---
 
-## 8. Full Order Insight-style response
-
-Instead of the minimal `{ order, merchantProfile, accountProfile }` shape, you may return JSON that decodes as an **Order Insight-style** payload with a top-level **`receipt`** (and related merchant/customer/device objects). Chargeblast branches on the presence of top-level keys (`order` vs `receipt`) when decoding.
-
-Use this when you already emit OI-compatible receipts from another system.
-
----
-
-## 9. Example minimal body (illustrative)
+## 8. Example minimal body (illustrative)
 
 ```json
 {
@@ -298,13 +273,13 @@ Use this when you already emit OI-compatible receipts from another system.
 
 ---
 
-## 10. Idempotency and side effects
+## 9. Idempotency and side effects
 
 Treat lookups as **read-only** from Chargeblast’s perspective: avoid charging customers or mutating state solely on receipt of `digital_receipt.lookup` unless that matches your own product design.
 
 ---
 
-## 11. SLA and deflection eligibility
+## 10. SLA and deflection eligibility
 
 <Warning>
 **1.5 second SLA** — If your endpoint does not respond in time, the lookup fails and the transaction may not be eligible for deflection or digital receipt display. Optimize matching logic for speed; see [Digital Receipts & Deflections](/guides/deflections-implementation).

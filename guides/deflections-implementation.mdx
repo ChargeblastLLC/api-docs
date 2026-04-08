@@ -133,13 +133,13 @@ The more fields you provide, the higher your deflection rate. FPT requires all f
 
     3. **You must respond within 1.5 seconds** — a hard SLA for deflection and receipt flows.
 
-    For request headers, HMAC verification, wire-format rules, required fields, and an Order Insight–style alternative response, see the full guide: **[Digital receipt lookup (merchant HTTPS endpoint)](/guides/digital-receipt-lookup)**.
+    For request headers, HMAC verification, wire-format rules, and required response fields, see the full guide: **[Digital receipt lookup (merchant HTTPS endpoint)](/guides/digital-receipt-lookup)**.
 
     ### Implementation Steps
 
     <Steps>
       <Step title="Implement the HTTPS POST handler">
-        Build your endpoint per the [digital receipt lookup guide](/guides/digital-receipt-lookup): verify `X-Digital-Receipt-Lookup-Key` and/or `X-Digital-Receipt-Signature`, read the **raw body** for HMAC, match on fields such as `cardBin`, `cardLast4`, `amount`, `currency`, `transactionDate`, `arn`, etc.
+        Build your endpoint per the [digital receipt lookup guide](/guides/digital-receipt-lookup): verify `X-Digital-Receipt-Lookup-Key` and/or `X-Digital-Receipt-Signature`, read the **raw body** for HMAC, and match primarily on **`cardBin`**, **`cardLast4`**, **`currency`**, **`arn`**, **`authCode`**, **`transactionDate`**, and **`descriptor`** (all guaranteed on the wire).
       </Step>
       <Step title="Configure URL and secrets in Chargeblast">
         In Developer settings, set **Digital receipt lookup URL** (host and path without `https://`), enable the toggle, and store your **lookup key** and **lookup signature key**. Use **Send test webhook** to validate your integration.
@@ -188,7 +188,6 @@ The more fields you provide, the higher your deflection rate. FPT requires all f
         }
         ```
 
-        You can instead return a full **Order Insight-style** document with a top-level **`receipt`** key; see the [detailed guide](/guides/digital-receipt-lookup#8-full-order-insight-style-response).
       </Step>
     </Steps>
 
@@ -241,7 +240,7 @@ Refunding a deflected transaction means you lose the sale unnecessarily. The def
 
 ## Related
 
-- [Digital receipt lookup (HTTPS)](/guides/digital-receipt-lookup) — Full pull-method spec: POST body, headers, HMAC, minimal vs Order Insight responses
+- [Digital receipt lookup (HTTPS)](/guides/digital-receipt-lookup) — Full pull-method spec: POST body, headers, HMAC, minimal receipt JSON
 - [Tracker Snippet Guide](/guides/tracker-snippet) — Automatic IP capture for web transactions
 - [Implementation Overview](/guides/implementation-overview) — Compare all services and integration paths
 - [Alerts Implementation](/guides/alerts-implementation) — Handle disputes that weren't deflected
