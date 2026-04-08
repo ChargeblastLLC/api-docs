@@ -1,13 +1,13 @@
 ---
-title: "Digital receipt lookup (merchant HTTPS endpoint)"
-description: "Implement the pull integration: Chargeblast POSTs lookup criteria to your HTTPS endpoint; you return a receipt payload (200) or not found (404)."
+title: "Digital receipt lookup pull guide"
+description: "Use the pull path when you want Chargeblast to ask your own systems for receipt details in real time—ideal if you already resolve orders behind an API such as GET /orders/:id instead of sending everything to us up front."
 icon: "plug"
 hidden: true
 ---
 
-This guide describes **digital receipt lookup** when Chargeblast **forwards lookup traffic to your HTTPS endpoint** instead of resolving from stored order data (for example, **GET `/orders/:id`** and related consumer-clarity lookup flows).
+This guide covers **digital receipt lookup** on the **pull** path: when someone looks up a charge, Chargeblast **calls your HTTPS endpoint** and your application returns the receipt information, rather than Chargeblast reading it from data you have already stored with us (similar to how you might serve an order from **GET `/orders/:id`** in your own API).
 
-You implement a **POST** handler that accepts a JSON body (search criteria for the transaction), optionally authenticates the caller, and returns either a **receipt payload** (HTTP **200**) or **not found** (HTTP **404**).
+You will expose an endpoint that receives each lookup request, optionally checks that the call really came from Chargeblast, finds the matching transaction in your systems, and answers with **found** (success) or **not found**—the following sections spell out headers, security, and the exact JSON shape.
 
 <Info>
 This is the **pull** path described under [Digital Receipts & Deflections](/guides/deflections-implementation) (Pull Data). Return to that page for the high-level implementation steps and qualifying fields for deflection.
@@ -223,13 +223,12 @@ These are enforced for the **minimal** path (structural validation). Amounts are
 | `merchantProfile.logoUrl`, `description`, policy links, `termsAndConditionsLink`, etc. | Optional |
 | `accountProfile.name` (`givenName` / `familyName`) | Optional |
 | `accountProfile.accountBillingAddress` (`city`, `country`, `postalCode`) | Optional |
-| `accountProfile.accountCreationIpAddress` | Optional; can supply IP here if not under `order.transactionDetails` |
 
 ### 7.3 Compelling evidence (CE) vs “valid receipt”
 
 A response can be **structurally valid** (decodes to a receipt) but still **fail compelling-evidence rules** used for disputes. In particular:
 
-- **`order.transactionDetails.deviceIpAddress`** (or IP propagated via account fields in the mapped model) is **important for CE** but **not** part of the minimal required-field list above.
+- **`order.transactionDetails.deviceIpAddress`** is **important for CE** but **not** part of the minimal required-field list above.
 - Other CE-related gaps are derived from the mapped receipt shape (merchant descriptors, product description, customer identifiers, delivery address, etc.).
 
 The Chargeblast **developer test** API merges structural and CE gaps into one list. CE-only gaps may appear in payloads with the suffix **` (required for compelling evidence)`**; in the **Send test webhook** UI, those paths are shown with a **\*** and a short legend instead of that full suffix.
@@ -292,6 +291,8 @@ Treat lookups as **read-only** from Chargeblast’s perspective: avoid charging 
 <Warning>
 **1.5 second SLA** — If your endpoint does not respond in time, the lookup fails and the transaction may not be eligible for deflection or digital receipt display. Optimize matching logic for speed; see [Digital Receipts & Deflections](/guides/deflections-implementation).
 </Warning>
+
+If response times **repeatedly breach** this SLA, Chargeblast **emails the account owner** to flag that lookup latency is **consistently** over the allowed window—so you can fix performance or capacity before more lookups fail.
 
 ---
 

@@ -46,7 +46,7 @@ Every Chargeblast service can be implemented one of two ways, depending on your 
 
     This path gives you full control over matching logic. You:
     - Listen for `alert.created` webhooks or poll the [Fetch Alerts](/api-reference/alerts/fetch-alerts) endpoint
-    - For digital receipts and deflections, implement the [digital receipt lookup HTTPS endpoint](/guides/digital-receipt-lookup) (POST, authenticated with lookup key and optional HMAC; **1.5s SLA**)
+    - For digital receipts and deflections, follow the [digital receipt lookup pull guide](/guides/digital-receipt-lookup) (secured requests to your endpoint, **1.5s SLA**)
 
     You're responsible for matching alerts/queries to transactions in your system.
 
