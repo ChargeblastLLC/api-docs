@@ -23,7 +23,7 @@ Unlike other PSPs, Stripe does not expose transaction ARNs. ARNs are unique iden
 The fastest way to search for a transaction in Stripe is by searching for a transaction by typing last4:xxxx into the search bar:
 
 <Frame>
-  <img src="/images/reference/b55f606-Screenshot_2023-07-05_at_10.09.56_PM.png"/>
+  <img src="/images/reference/stripe-search-last4-payments.png"/>
 </Frame>
 
 Then look for a transaction that matches the date, amount, and currency type for the alert. Most, _but not all_, of the Ethoca alerts will be for Mastercard transactions.
@@ -33,9 +33,9 @@ Then look for a transaction that matches the date, amount, and currency type for
 Occasionally Stripe will mask the card number so when you search for the transaction by last 4 digits, no corresponding transaction will show up. When this happens, it is best to fall back on issuer name to match the corresponding transaction. We recommend searching instead by dollar amount, and transaction date, and then sorting through transactions to find one that matches the issuer for the alert, like [this](https://dashboard.stripe.com/payments?status%5B0%5D=successful&amount=1199&created%5Bgte%5D=1688184000&created%5Blte%5D=1688270399):
 
 <Frame>
-  <img src="/images/reference/05b5a4a-Screenshot_2023-07-05_at_10.21.24_PM.png"/>
+  <img src="/images/reference/stripe-payments-filter-by-amount-date.png"/>
 </Frame>
 
 <Frame caption='Clicking into the payment shows the issuer, in this case "Commonwealth Bank of Australia"'>
-  <img src="/images/reference/c7e54bb-Screenshot_2023-07-05_at_10.23.35_PM.png" alt='Clicking into the payment shows the issuer, in this case "Commonwealth Bank of Australia"'/>
+  <img src="/images/reference/stripe-payment-issuer-commonwealth-example.png" alt='Clicking into the payment shows the issuer, in this case "Commonwealth Bank of Australia"'/>
 </Frame>
