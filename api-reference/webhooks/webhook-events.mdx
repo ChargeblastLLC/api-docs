@@ -1,6 +1,6 @@
 ---
 title: "Webhook event types"
-description: "Alert webhook event types, when each fires, and which alert categories apply."
+description: "Alert webhook event types, when each fires, and which alert types apply."
 icon: "webhook"
 hidden: true
 ---
@@ -8,7 +8,7 @@ hidden: true
 When alert webhooks are configured for your account, Chargeblast delivers notifications to your endpoint. Each request includes the headers and signing scheme described in [Webhooks](/api-reference/webhooks/setup), including **`X-Event-Type`**, whose value is one of the event types below.
 
 <Info>
-**`alertCategory`** on supported payloads is limited to **Ethoca**, **CDRN**, **RDR**, and **TC40** for the events in this reference—unless otherwise noted per event.
+**`alertCategory`** reflects the alert type (for example **Ethoca**, **CDRN**, **RDR**, **TC40**). Which types each webhook event supports is defined in the table—some events omit certain types by design.
 </Info>
 
 For payload field definitions and authentication, see [Webhooks](/api-reference/webhooks/setup).
@@ -21,10 +21,10 @@ For payload field definitions and authentication, see [Webhooks](/api-reference/
 |------------|----------------------|--------------|-------|
 | `alert.created` | Ethoca, CDRN, RDR, TC40 | A new alert exists and a “created” notification is emitted. | Includes provider ingest, Verifi/RDR notification paths where enabled, and manual replay/test. |
 | `alert.updated` | Ethoca, CDRN, RDR, TC40 | The alert was updated in a way that should notify subscribers **and** it already has a matched charge. | **Not sent** if there is no matched charge id (unmatched alerts skip this event). |
-| `alert.refunded` | Ethoca, CDRN, RDR, TC40 | The system treats the alert as refunded (or, on some Verifi paths, ingested already resolved/refunded). | Can arrive shortly after `alert.created` when an alert is delivered already resolved. |
-| `alert.matched` | Ethoca, CDRN, RDR, TC40 | The alert gains or changes its **confirmed** link to a charge. | Payload includes **match** details; same charge re-saved does not re-fire. |
-| `alert.will_expire` | Ethoca, CDRN | Scheduled job finds **WIP** alerts in this age window (**8–48 hours** after creation), with match data but **no** matched charge yet. | **RDR** and **TC40** are not selected by this job. **At most once per alert** (deduped). Slack “expiring” uses the same rules. |
-| `alert.within_refund_rules` | Ethoca, CDRN, RDR, TC40 | Refund automation rules passed, or an **RDR** alert **resolved** on the usage-billing path. | **Ethoca, CDRN, TC40:** refund-rules engine. **RDR:** Stripe usage / billing path only (rules engine skips RDR). No dedupe—repeated flows could send again. |
+| `alert.refunded` | Ethoca, CDRN, RDR | The system treats the alert as refunded (or, on some Verifi paths, ingested already resolved/refunded). | **Does not apply to TC40.** Can arrive shortly after `alert.created` when an alert is delivered already resolved. |
+| `alert.matched` | Ethoca, CDRN, RDR, TC40 | The alert is **confirmed matched** to a **single** charge. | Payload includes **match** details; same charge re-saved does not re-fire. |
+| `alert.will_expire` | Ethoca, CDRN | Fires approximately **46–48 hours before** the alert expires, for eligible **WIP** alerts that still need attention (for example match data present but no matched charge yet). | **RDR** and **TC40** are not selected for this event. **At most once per alert** (deduped). |
+| `alert.within_refund_rules` | Ethoca, CDRN, RDR | Fires when an alert is **within** your configured **automation rules** (rules engine evaluation). | **Does not apply to TC40.** Not every delivery implies a later `alert.refunded`—a refund attempt can still **fail** downstream. No dedupe—repeated flows could send again. |
 
 ---
 
@@ -40,19 +40,19 @@ Fires when an alert change should notify subscribers **and** the alert **already
 
 ### `alert.refunded`
 
-Fires when Chargeblast treats the alert as **refunded**, including cases where Verifi delivers the alert **already resolved/refunded**. Can appear in quick succession after `alert.created` when the inbound state is pre-resolved.
+Fires when Chargeblast treats the alert as **refunded**, including cases where Verifi delivers the alert **already resolved/refunded**. Can appear in quick succession after `alert.created` when the inbound state is pre-resolved. **Not emitted for TC40.**
 
 ### `alert.matched`
 
-Fires when the alert **gains or changes** its **confirmed** association to a charge. The payload includes **match** metadata. Saving the **same** matched charge again without a meaningful change does **not** emit another `alert.matched`.
+Fires when the alert is **confirmed matched** to a **single** charge. The payload includes **match** metadata. Saving the **same** matched charge again without a meaningful change does **not** emit another `alert.matched`.
 
 ### `alert.will_expire`
 
-**Ethoca and CDRN only** for this scheduled path. A background job selects **WIP** alerts that are **8–48 hours** after creation, have match-related data, but still have **no** matched charge id—giving you a heads-up before escalation risk. **RDR** and **TC40** are **not** included in this job. Each alert is notified **at most once** (deduped). The same selection rules drive Slack **expiring** notifications.
+**Ethoca and CDRN only.** A scheduled job emits this approximately **46–48 hours before** the alert expires, for eligible **WIP** alerts that still need attention (for example match-related data exists but there is still **no** matched charge id). **RDR** and **TC40** are **not** included. Each alert receives this event **at most once** (deduped).
 
 ### `alert.within_refund_rules`
 
-Fires when **refund automation rules** succeed for **Ethoca, CDRN, and TC40** (refund-rules engine). For **RDR**, this event is used when an alert is **resolved** on the **Stripe usage / billing** path—the general rules engine **skips** RDR. There is **no deduplication**; the same alert could theoretically receive this event again if the qualifying flow runs more than once.
+Fires when an alert is **within** your configured **automation rules** after the rules engine evaluates it—**Ethoca, CDRN, and RDR** only; **not TC40.** There is **no deduplication**; the same alert could receive this event again if the qualifying flow runs more than once. **Not every** `alert.within_refund_rules` is followed by `alert.refunded`; the refund step can still **fail** (or never run) even when this event fires.
 
 ---
 

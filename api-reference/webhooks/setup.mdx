@@ -227,7 +227,7 @@ Make sure to remove the version prefix and delimiter (e.g. v1,) before verifying
 
 ### Types
 
-Chargeblast emits several **`X-Event-Type`** values (for example `alert.created`, `alert.updated`, `alert.refunded`, `alert.matched`, `alert.will_expire`, `alert.within_refund_rules`). Which categories apply, when each event fires, and deduping behavior are documented here:
+Chargeblast emits several **`X-Event-Type`** values (for example `alert.created`, `alert.updated`, `alert.refunded`, `alert.matched`, `alert.will_expire`, `alert.within_refund_rules`). Which **alert types** each event supports, when each fires, and deduping behavior are documented here:
 
 **[Webhook event types](/api-reference/webhooks/webhook-events)**
 
@@ -235,6 +235,6 @@ Chargeblast emits several **`X-Event-Type`** values (for example `alert.created`
 
 ### Related
 
-- [Webhook event types](/api-reference/webhooks/webhook-events) — Full event-type reference (Ethoca, CDRN, RDR, TC40)
+- [Webhook event types](/api-reference/webhooks/webhook-events) — Full event-type reference (which of Ethoca, CDRN, RDR, TC40 apply per event)
 - [Alert Types](/reference/alert-types) — Full list of alert networks and subprovider values
 - [Reason Codes](/reference/reason-codes) — Codes used when actioning alerts
