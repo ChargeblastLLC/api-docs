@@ -227,15 +227,14 @@ Make sure to remove the version prefix and delimiter (e.g. v1,) before verifying
 
 ### Types
 
-There is currently the following webhook types:
+Chargeblast emits several **`X-Event-Type`** values (for example `alert.created`, `alert.updated`, `alert.refunded`, `alert.matched`, `alert.will_expire`, `alert.within_refund_rules`). Which categories apply, when each event fires, and deduping behavior are documented here:
 
-- `alert.created`: transmitted when an alert is first created.
-- `alert.updated`: transmitted when an alert's status is updated. Use this if you require `externalOrder` the field.
-- `alert.refunded`: transmitted when an alert triggers a transaction to be refunded.
+**[Webhook event types](/api-reference/webhooks/webhook-events)**
 
 ---
 
 ### Related
 
+- [Webhook event types](/api-reference/webhooks/webhook-events) — Full event-type reference (Ethoca, CDRN, RDR, TC40)
 - [Alert Types](/reference/alert-types) — Full list of alert networks and subprovider values
 - [Reason Codes](/reference/reason-codes) — Codes used when actioning alerts
