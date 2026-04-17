@@ -5,3 +5,7 @@ openapi: get /api/v2/alerts
 <Info>
 The `subprovider` field indicates the alert network. See [Alert Types](/reference/alert-types) for all possible values and descriptions.
 </Info>
+
+<Info>
+Each alert may include optional **`attributes`**: a dictionary of string keys and string values (for example `order_number`, `processor_id`). The same field appears on [webhook](/api-reference/webhooks/setup#body) payloads when present.
+</Info>
