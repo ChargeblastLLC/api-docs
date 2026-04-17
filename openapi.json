@@ -3000,6 +3000,18 @@
                         "nullable": true,
                         "type": "string"
                     },
+                    "attributes": {
+                        "type": "object",
+                        "nullable": true,
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "description": "Optional string key-value metadata associated with the alert. Included on webhook payloads and when fetching alerts via the API when present.",
+                        "example": {
+                            "order_number": "#1533",
+                            "processor_id": "proc_b381c83a9bc8a93"
+                        }
+                    },
                     "transactionDate": {
                         "type": "string",
                         "description": "Date and time when the transaction took place.",

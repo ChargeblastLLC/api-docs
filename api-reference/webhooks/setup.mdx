@@ -42,6 +42,13 @@ api: https://yourwebsite.com/webhook/endpoint
 ></ResponseField>
 <ResponseField name="amount" type="float" placeholder="100.65"></ResponseField>
 <ResponseField
+  name="attributes"
+  type="object"
+  placeholder='{"order_number": "#1533", "processor_id": "proc_b381c83a9bc8a93"}'
+>
+Dictionary of string keys and string values for optional metadata on the alert (for example order number, processor id). Same field appears on webhook payloads and on alert objects returned from the Alerts API.
+</ResponseField>
+<ResponseField
   name="arn"
   type="string"
   placeholder="821335542740000055890525"
@@ -155,6 +162,10 @@ The alert network or source. See [Alert Types](/reference/alert-types) for all p
     "alertId": "al_genericId123",
     "alertType": "FRAUD",
     "amount": 500.00,
+    "attributes": {
+        "order_number": "#1533",
+        "processor_id": "proc_b381c83a9bc8a93"
+    },
     "arn": "12345678901234567890123",
     "authCode": "ABC123",
     "card": "123456xxxxxxx7890",
