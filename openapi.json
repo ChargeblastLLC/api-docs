@@ -172,33 +172,12 @@
         },
         "/api/enroll_merchant": {
             "post": {
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/EmbedEnrollmentBody"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "integer",
-                                    "format": "int64"
-                                }
-                            }
-                        },
-                        "description": "OK"
-                    }
-                },
                 "tags": [
                     "Enrollment"
                 ],
                 "summary": "Enroll Merchant",
+                "operationId": "enroll-merchant",
+                "description": "Enroll a merchant in an alert or refund program. Send a `program` discriminator with that program's fields. `ethoca` and `cdrn` require `descriptors`. `rdr` requires at least one of `arns`, `bins`, or `caids`. `amex` and `discover` require legal name, DBA, address, and their SE identifiers. Omit `merchant_id` in the body to create a new merchant (its id is returned), or pass one to enroll an existing merchant.",
                 "parameters": [
                     {
                         "name": "X-API-Key",
@@ -208,19 +187,39 @@
                             "type": "string"
                         },
                         "description": "Your API key. Sent in the `X-API-Key` header."
-                    },
-                    {
-                        "name": "merchant_id",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "nullable": true
-                        },
-                        "in": "query"
                     }
                 ],
-                "description": "Enroll the merchant in a various alert program. If no merchant_id is specified a new merchant object will be automatically generated. For each alert program various info is required. For example, for Ethoca, only descriptors are. To see which info is required see [here](https://docs.chargeblast.io/reference/enrollment-criteria)",
-                "operationId": "enroll-merchant"
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EnrollMerchantRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Enrollment applied.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EnrollMerchantResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation failed. Unknown `program`, a missing required per-program field, or a body in the old `{ type, merchantId, requestData }` shape."
+                    },
+                    "401": {
+                        "description": "Missing or invalid API key."
+                    },
+                    "404": {
+                        "description": "A `merchant_id` was supplied but no merchant with that id belongs to this account."
+                    }
+                }
             }
         },
         "/api/v2/merchants": {
@@ -514,19 +513,24 @@
                 "tags": [
                     "Enrollment"
                 ],
-                "description": "Pass in a given descriptor_id to unenroll merchant's descriptor. Ethoca alerts take 48 hours to confirm unenrollment, RDR ~2 weeks, CDRN ~24 hours.",
+                "description": "Queue an unenrollment for one or more descriptors. Pass `descriptor_ids` (obtain ids from `GET /api/descriptors`); a single legacy `descriptor_id` is also accepted. The descriptors are marked in progress and Chargeblast completes the provider-side de-registration (Ethoca ~48 hours, RDR ~2 weeks, CDRN ~24 hours); your settings reflect the removal once that is confirmed. Any ids that do not belong to your account are returned under `notFound`.",
                 "operationId": "unenroll",
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Unenrollment queued.",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "format": "int64",
-                                    "type": "integer"
+                                    "$ref": "#/components/schemas/UnenrollMerchantResponse"
                                 }
                             }
                         }
+                    },
+                    "400": {
+                        "description": "Validation failed. No descriptor ids were supplied."
+                    },
+                    "401": {
+                        "description": "Missing or invalid API key."
                     }
                 },
                 "parameters": [
@@ -545,7 +549,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/UnenrollmentBody"
+                                "$ref": "#/components/schemas/UnenrollMerchantRequest"
                             }
                         }
                     },
@@ -1164,16 +1168,46 @@
                 ],
                 "type": "object"
             },
-            "UnenrollmentBody": {
+            "UnenrollMerchantRequest": {
+                "type": "object",
+                "description": "Descriptors to unenroll. Supply `descriptor_ids`; a single legacy `descriptor_id` is also accepted and folded into the list.",
                 "properties": {
+                    "descriptor_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "Descriptor ids to unenroll, e.g. `desc_xxxxxxxxxxxxx`. Obtain them from `GET /api/descriptors`."
+                    },
                     "descriptor_id": {
-                        "type": "string"
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Legacy single descriptor id. Prefer `descriptor_ids`."
                     }
-                },
+                }
+            },
+            "UnenrollMerchantResponse": {
                 "type": "object",
                 "required": [
-                    "descriptor_id"
-                ]
+                    "unenrolled",
+                    "notFound"
+                ],
+                "properties": {
+                    "unenrolled": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "Descriptor ids on your account that were queued for unenrollment. They keep their current status until Chargeblast confirms provider de-registration, then they are removed."
+                    },
+                    "notFound": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "Requested ids that did not match a descriptor on your account."
+                    }
+                }
             },
             "DescriptorType": {
                 "type": "string",
@@ -3078,6 +3112,321 @@
                     }
                 },
                 "type": "object"
+            },
+            "EnrollMerchantEthocaRequest": {
+                "type": "object",
+                "required": [
+                    "program",
+                    "descriptors"
+                ],
+                "properties": {
+                    "program": {
+                        "type": "string",
+                        "enum": [
+                            "ethoca"
+                        ],
+                        "description": "Program discriminator. Use `ethoca`."
+                    },
+                    "merchant_id": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Existing merchant (retailer) id to enroll. Omit to create a new merchant. The new id is returned as `merchantId`."
+                    },
+                    "ruleset": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Optional refund / RDR threshold for the merchant (e.g. `<300`). When supplied and changed, a ruleset snapshot is recorded."
+                    },
+                    "descriptors": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "Billing descriptors to enroll. At least one non-blank value is required. Stored uppercased."
+                    }
+                }
+            },
+            "EnrollMerchantCdrnRequest": {
+                "type": "object",
+                "required": [
+                    "program",
+                    "descriptors"
+                ],
+                "properties": {
+                    "program": {
+                        "type": "string",
+                        "enum": [
+                            "cdrn"
+                        ],
+                        "description": "Program discriminator. Use `cdrn`."
+                    },
+                    "merchant_id": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Existing merchant (retailer) id to enroll. Omit to create a new merchant. The new id is returned as `merchantId`."
+                    },
+                    "ruleset": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Optional refund / RDR threshold for the merchant (e.g. `<300`). When supplied and changed, a ruleset snapshot is recorded."
+                    },
+                    "descriptors": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "Billing descriptors to enroll. At least one non-blank value is required. Stored uppercased."
+                    }
+                }
+            },
+            "EnrollMerchantRdrRequest": {
+                "type": "object",
+                "required": [
+                    "program"
+                ],
+                "description": "RDR enrollment. Provide at least one of `arns`, `bins`, or `caids`.",
+                "properties": {
+                    "program": {
+                        "type": "string",
+                        "enum": [
+                            "rdr"
+                        ],
+                        "description": "Program discriminator. Use `rdr`."
+                    },
+                    "merchant_id": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Existing merchant (retailer) id to enroll. Omit to create a new merchant. The new id is returned as `merchantId`."
+                    },
+                    "ruleset": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Optional refund / RDR threshold for the merchant (e.g. `<300`). When supplied and changed, a ruleset snapshot is recorded."
+                    },
+                    "arns": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "nullable": true,
+                        "description": "Visa Acquirer Reference Numbers."
+                    },
+                    "bins": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "nullable": true,
+                        "description": "Card BINs."
+                    },
+                    "caids": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "nullable": true,
+                        "description": "Card Acceptor IDs."
+                    }
+                }
+            },
+            "EnrollMerchantAmexRequest": {
+                "type": "object",
+                "required": [
+                    "program",
+                    "legalName",
+                    "dbaName",
+                    "amexSe",
+                    "amexDescriptor",
+                    "streetAddress",
+                    "city",
+                    "state",
+                    "country",
+                    "zip"
+                ],
+                "properties": {
+                    "program": {
+                        "type": "string",
+                        "enum": [
+                            "amex"
+                        ],
+                        "description": "Program discriminator. Use `amex`."
+                    },
+                    "merchant_id": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Existing merchant (retailer) id to enroll. Omit to create a new merchant. The new id is returned as `merchantId`."
+                    },
+                    "ruleset": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Optional refund / RDR threshold for the merchant (e.g. `<300`). When supplied and changed, a ruleset snapshot is recorded."
+                    },
+                    "legalName": {
+                        "type": "string",
+                        "description": "Merchant legal name."
+                    },
+                    "dbaName": {
+                        "type": "string",
+                        "description": "Doing-business-as name."
+                    },
+                    "amexSe": {
+                        "type": "string",
+                        "description": "Amex Service Establishment (SE) number."
+                    },
+                    "amexDescriptor": {
+                        "type": "string",
+                        "description": "Amex billing descriptor."
+                    },
+                    "streetAddress": {
+                        "type": "string",
+                        "description": "Street address."
+                    },
+                    "city": {
+                        "type": "string",
+                        "description": "City."
+                    },
+                    "state": {
+                        "type": "string",
+                        "description": "State or province."
+                    },
+                    "country": {
+                        "type": "string",
+                        "description": "Country."
+                    },
+                    "zip": {
+                        "type": "string",
+                        "description": "Postal code."
+                    }
+                }
+            },
+            "EnrollMerchantDiscoverRequest": {
+                "type": "object",
+                "required": [
+                    "program",
+                    "legalName",
+                    "dbaName",
+                    "discoverSe",
+                    "streetAddress",
+                    "city",
+                    "state",
+                    "country",
+                    "zip"
+                ],
+                "properties": {
+                    "program": {
+                        "type": "string",
+                        "enum": [
+                            "discover"
+                        ],
+                        "description": "Program discriminator. Use `discover`."
+                    },
+                    "merchant_id": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Existing merchant (retailer) id to enroll. Omit to create a new merchant. The new id is returned as `merchantId`."
+                    },
+                    "ruleset": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Optional refund / RDR threshold for the merchant (e.g. `<300`). When supplied and changed, a ruleset snapshot is recorded."
+                    },
+                    "legalName": {
+                        "type": "string",
+                        "description": "Merchant legal name."
+                    },
+                    "dbaName": {
+                        "type": "string",
+                        "description": "Doing-business-as name."
+                    },
+                    "discoverSe": {
+                        "type": "string",
+                        "description": "Discover Service Establishment (SE) number."
+                    },
+                    "streetAddress": {
+                        "type": "string",
+                        "description": "Street address."
+                    },
+                    "city": {
+                        "type": "string",
+                        "description": "City."
+                    },
+                    "state": {
+                        "type": "string",
+                        "description": "State or province."
+                    },
+                    "country": {
+                        "type": "string",
+                        "description": "Country."
+                    },
+                    "zip": {
+                        "type": "string",
+                        "description": "Postal code."
+                    }
+                }
+            },
+            "EnrollMerchantRequest": {
+                "oneOf": [
+                    {
+                        "$ref": "#/components/schemas/EnrollMerchantEthocaRequest"
+                    },
+                    {
+                        "$ref": "#/components/schemas/EnrollMerchantCdrnRequest"
+                    },
+                    {
+                        "$ref": "#/components/schemas/EnrollMerchantRdrRequest"
+                    },
+                    {
+                        "$ref": "#/components/schemas/EnrollMerchantAmexRequest"
+                    },
+                    {
+                        "$ref": "#/components/schemas/EnrollMerchantDiscoverRequest"
+                    }
+                ],
+                "discriminator": {
+                    "propertyName": "program",
+                    "mapping": {
+                        "ethoca": "#/components/schemas/EnrollMerchantEthocaRequest",
+                        "cdrn": "#/components/schemas/EnrollMerchantCdrnRequest",
+                        "rdr": "#/components/schemas/EnrollMerchantRdrRequest",
+                        "amex": "#/components/schemas/EnrollMerchantAmexRequest",
+                        "discover": "#/components/schemas/EnrollMerchantDiscoverRequest"
+                    }
+                }
+            },
+            "EnrollMerchantResponse": {
+                "type": "object",
+                "required": [
+                    "merchantId",
+                    "merchantCreated",
+                    "program",
+                    "descriptorIds"
+                ],
+                "properties": {
+                    "merchantId": {
+                        "type": "string",
+                        "description": "The merchant (retailer) id this enrollment was applied to. Newly created or reused."
+                    },
+                    "merchantCreated": {
+                        "type": "boolean",
+                        "description": "True if a new merchant was created for this request, false if an existing one was reused."
+                    },
+                    "program": {
+                        "type": "string",
+                        "description": "The program that was enrolled (lowercased)."
+                    },
+                    "descriptorIds": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "Ids of descriptor records created or updated. Populated for Ethoca and CDRN, empty otherwise."
+                    },
+                    "rulesetSnapshotId": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Id of the ruleset snapshot recorded, or null if no ruleset change occurred."
+                    }
+                }
             }
         }
     }
