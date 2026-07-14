@@ -127,6 +127,13 @@ Dictionary of string keys and string values for optional metadata on the alert (
 The individual merchant this alert belongs to. You can call the [Fetch Merchants](/api-reference/enrollment/fetch-merchants) endpoint to get all possible merchant IDs for your account.
 </ResponseField>
 <ResponseField
+  name="networkId"
+  type="string"
+  placeholder="542418161516789787"
+>
+The card network transaction ID for the disputed transaction. Useful for matching the alert against the network transaction ID your payment processor reports. **Optional** — only present when the alert network provides it, so keep fallback matching on `arn`, `authCode`, card, amount, and `transactionDate`.
+</ResponseField>
+<ResponseField
   name="provider"
   type="string"
   placeholder="ethoca"
@@ -182,6 +189,7 @@ The alert network or source. See [Alert Types](/reference/alert-types) for all p
     "id": "al_genericId123",
     "issuer": "Generic Bank, Inc.",
     "merchantId": "cb_genericMerchantId",
+    "networkId": "542418161516789787",
     "provider": "exampleProvider",
     "reasonCode": "Resolved",
     "responseAction": "Accepted",
