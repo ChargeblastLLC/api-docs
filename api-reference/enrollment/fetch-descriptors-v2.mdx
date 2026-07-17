@@ -1,0 +1,5 @@
+---
+openapi: get /api/v2/descriptors
+---
+
+Returns your descriptors as a flat, filterable list — one record per descriptor with its program, status, name or BIN/CAID, and owning merchant id. Filter with the `program` and `status` query parameters; the response is **paginated** using `page` and `per`. For the per-program roll-up (`none` / `pending` / `enrolled`), use [`GET /api/enrollment_status`](/api-reference/enrollment/enrollment-status) instead. Record ids feed [`POST /api/unenroll`](/api-reference/enrollment/unenroll-merchant).
