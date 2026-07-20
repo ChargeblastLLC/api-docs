@@ -3703,7 +3703,8 @@
                 "required": [
                     "program",
                     "status",
-                    "descriptors"
+                    "descriptors",
+                    "arns"
                 ],
                 "properties": {
                     "program": {
@@ -3719,6 +3720,13 @@
                             "$ref": "#/components/schemas/EnrollmentStatusDescriptor"
                         },
                         "description": "The descriptor records contributing to this program's status."
+                    },
+                    "arns": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "RDR ARNs on file for the account. ARNs are stored on merchant settings rather than as descriptor records (RDR is confirmed at the BIN/CAID merchant level, not per ARN), so they are surfaced here for visibility. Always empty for non-RDR programs."
                     }
                 }
             },
