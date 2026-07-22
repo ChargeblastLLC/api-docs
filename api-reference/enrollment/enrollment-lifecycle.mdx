@@ -1,0 +1,58 @@
+---
+title: "Enrollment Lifecycle"
+description: "How enrollment works across programs: enrolling files a request, records start Pending, and they become Enrolled once the provider confirms."
+sidebarTitle: "Lifecycle"
+icon: "arrows-rotate"
+---
+
+## Enrollment files a request — it does not make a descriptor live
+
+Calling [`POST /api/enroll_merchant`](/api-reference/enrollment/enroll-merchant) records your intent and persists a descriptor. It does **not** instantly make that descriptor live with the card network. Provider-side enrollment is a separate step that Chargeblast completes (via sync or back-office), so every record moves through a lifecycle:
+
+```
+enroll  ->  Pending  ->  Enrolled  ->  (unenroll) PendingRemoval  ->  removed
+```
+
+- **`Pending`** — the enrollment request is on file; the provider has not confirmed yet.
+- **`Enrolled`** — live with the provider; alerts route to this descriptor.
+- **`PendingRemoval`** — an unenroll was requested for a live descriptor; it stays active until the provider confirms de-registration, then the record is deleted.
+
+<Note>
+Poll [`GET /api/enrollment_status`](/api-reference/enrollment/enrollment-status) for a per-program roll-up (`none` / `pending` / `enrolled`), or [`GET /api/v2/descriptors`](/api-reference/enrollment/fetch-descriptors-v2) for the individual records and their statuses — filterable by `program` and `status`, and paginated. The legacy [`GET /api/descriptors`](/api-reference/enrollment/fetch-descriptors) remains available.
+</Note>
+
+## What each program persists
+
+| Program | Enroll input | Persisted record | Becomes `Enrolled` when |
+| --- | --- | --- | --- |
+| **Ethoca** | `descriptors` | One descriptor per name | Provider sync confirms |
+| **CDRN** | `descriptors` | One descriptor per name | Provider sync confirms |
+| **RDR** | `arns`, `bins`, `caids` | One descriptor per BIN/CAID pair (ARNs also stored on your settings) | Verifi sync confirms |
+| **Amex** | legal / DBA / SE fields | One `Pending` descriptor tagged `amex` | Onboarding completes |
+| **Discover** | legal / DBA / SE fields | One `Pending` descriptor tagged `discover` | Onboarding completes |
+
+## Typical timelines
+
+Provider-side confirmation is not instant. Expect roughly:
+
+- **Ethoca** ~48 hours
+- **CDRN** ~24 hours
+- **RDR** ~2 weeks
+- **Amex / Discover** several weeks (manual onboarding)
+
+## Merchant resolution
+
+Pass `merchant_id` to target a specific existing merchant (list them via [`GET /api/v2/merchants`](/api-reference/enrollment/fetch-merchants)), or omit it to create a brand-new merchant. The resolved id is returned as `merchantId`, and `merchantCreated` tells you whether it was newly created or an existing merchant you targeted.
+
+## Unenrolling
+
+[`POST /api/unenroll`](/api-reference/enrollment/unenroll-merchant) splits the outcome:
+
+- **`removed`** — descriptors that were still `Pending` (never live) are deleted immediately.
+- **`queued`** — descriptors that were live are marked `PendingRemoval` and stay visible until the provider de-registration confirms, after which the record is deleted.
+- **`skipped`** — descriptors you own but whose status was not actionable (`Processing` / `InReview`, or already-terminal `Disabled` / `Rejected` / `Surpressed`), left untouched.
+- **`notFound`** — ids that do not belong to your account.
+
+<Warning>
+The `unenrolled` response field is deprecated. It is retained as the union of `removed` and `queued` for backward compatibility; migrate to `removed` and `queued`.
+</Warning>

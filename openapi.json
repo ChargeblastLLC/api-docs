@@ -177,7 +177,7 @@
                 ],
                 "summary": "Enroll Merchant",
                 "operationId": "enroll-merchant",
-                "description": "Enroll a merchant in an alert or refund program. Send a `program` discriminator with that program's fields. `ethoca` and `cdrn` require `descriptors`. `rdr` requires at least one of `arns`, `bins`, or `caids`. `amex` and `discover` require legal name, DBA, address, and their SE identifiers. Omit `merchant_id` in the body to create a new merchant (its id is returned), or pass one to enroll an existing merchant.",
+                "description": "Enroll a merchant in an alert or refund program. Send a `program` discriminator with that program's fields. `ethoca` and `cdrn` require `descriptors`. `rdr` requires `arns` and/or equal-length paired `bins`/`caids` (its `bins`/`caids` are persisted as queryable RDR descriptors). `amex` and `discover` require legal name, DBA, address, and their SE identifiers (they now persist a `Pending` descriptor you can poll). Enrollment files a request; records start `Pending` and become `Enrolled` once the provider-side enrollment confirms. Pass `merchant_id` to target a specific merchant, or omit it to create a brand-new merchant. Poll `GET /api/enrollment_status` for per-program state.",
                 "parameters": [
                     {
                         "name": "X-API-Key",
@@ -513,7 +513,7 @@
                 "tags": [
                     "Enrollment"
                 ],
-                "description": "Queue an unenrollment for one or more descriptors. Pass `descriptor_ids` (obtain ids from `GET /api/descriptors`); a single legacy `descriptor_id` is also accepted. The descriptors are marked in progress and Chargeblast completes the provider-side de-registration (Ethoca ~48 hours, RDR ~2 weeks, CDRN ~24 hours); your settings reflect the removal once that is confirmed. Any ids that do not belong to your account are returned under `notFound`.",
+                "description": "Unenroll one or more descriptors. Pass `descriptor_ids` (obtain ids from `GET /api/v2/descriptors`); a single legacy `descriptor_id` is also accepted. Descriptors that were still `Pending` (never live with the provider) are removed immediately and returned under `removed`. Descriptors that were live are marked `PendingRemoval` — a visible \"removing\" state on the API and dashboard — and returned under `queued`; Chargeblast completes the provider-side de-registration (Ethoca ~48 hours, RDR ~2 weeks, CDRN ~24 hours), after which the record is deleted and your settings reflect the removal. Any ids that do not belong to your account are returned under `notFound`.",
                 "operationId": "unenroll",
                 "responses": {
                     "200": {
@@ -782,6 +782,127 @@
                     }
                 ],
                 "operationId": "descriptors"
+            }
+        },
+        "/api/v2/descriptors": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/V2DescriptorsResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Unknown `program` or `status` filter value; the error lists the valid ones."
+                    },
+                    "401": {
+                        "description": "Missing or invalid API key."
+                    }
+                },
+                "summary": "Fetch Descriptors (v2)",
+                "tags": [
+                    "Enrollment"
+                ],
+                "description": "List every descriptor on your account as a flat, filterable record set: one row per descriptor with its program (`ethoca`, `cdrn`, `rdr`, `amex`, `discover`; `null` for legacy types not tied to a program), status, descriptor name or BIN/CAID, owning merchant id, and timestamps. Filter with `program` and/or `status` (case-insensitive; an unknown value returns a 400 listing the valid ones) and paginate with `page`/`per`. Use `GET /api/enrollment_status` for the per-program roll-up instead; record ids feed `POST /api/unenroll`.",
+                "parameters": [
+                    {
+                        "name": "X-API-Key",
+                        "required": true,
+                        "in": "header",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Your API key. Sent in the `X-API-Key` header."
+                    },
+                    {
+                        "name": "program",
+                        "required": false,
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "ethoca",
+                                "cdrn",
+                                "rdr",
+                                "amex",
+                                "discover"
+                            ]
+                        },
+                        "description": "Filter by program (case-insensitive)."
+                    },
+                    {
+                        "name": "status",
+                        "required": false,
+                        "in": "query",
+                        "schema": {
+                            "$ref": "#/components/schemas/PayshieldDescriptorDescriptorStatus"
+                        },
+                        "description": "Filter by descriptor status (case-insensitive)."
+                    },
+                    {
+                        "name": "page",
+                        "required": false,
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        },
+                        "description": "The page to request. Default 1."
+                    },
+                    {
+                        "name": "per",
+                        "required": false,
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 10,
+                            "maximum": 1000
+                        },
+                        "description": "How many records per page. Default 10, max 1000."
+                    }
+                ],
+                "operationId": "descriptors-v2"
+            }
+        },
+        "/api/enrollment_status": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EnrollmentStatusResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Missing or invalid API key."
+                    }
+                },
+                "summary": "Enrollment Status",
+                "tags": [
+                    "Enrollment"
+                ],
+                "description": "Report your merchant's enrollment status for every program (Ethoca, CDRN, RDR, Amex, Discover). Each entry is `none`, `pending`, or `enrolled`. Enrollment via the API files a request, so a program stays `pending` until the provider-side enrollment confirms (which flips it to `enrolled`). The contributing descriptor records are included so you can correlate by descriptor name or BIN/CAID.",
+                "parameters": [
+                    {
+                        "name": "X-API-Key",
+                        "required": true,
+                        "in": "header",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Your API key. Sent in the `X-API-Key` header."
+                    }
+                ],
+                "operationId": "enrollment-status"
             }
         },
         "/api/v2/alerts": {
@@ -1177,7 +1298,7 @@
                         "items": {
                             "type": "string"
                         },
-                        "description": "Descriptor ids to unenroll, e.g. `desc_xxxxxxxxxxxxx`. Obtain them from `GET /api/descriptors`."
+                        "description": "Descriptor ids to unenroll, e.g. `desc_xxxxxxxxxxxxx`. Obtain them from `GET /api/v2/descriptors`."
                     },
                     "descriptor_id": {
                         "type": "string",
@@ -1189,16 +1310,33 @@
             "UnenrollMerchantResponse": {
                 "type": "object",
                 "required": [
-                    "unenrolled",
-                    "notFound"
+                    "removed",
+                    "queued",
+                    "skipped",
+                    "notFound",
+                    "unenrolled"
                 ],
                 "properties": {
-                    "unenrolled": {
+                    "removed": {
                         "type": "array",
                         "items": {
                             "type": "string"
                         },
-                        "description": "Descriptor ids on your account that were queued for unenrollment. They keep their current status until Chargeblast confirms provider de-registration, then they are removed."
+                        "description": "Descriptor ids that were still `Pending` (never live with the provider) and so were removed immediately."
+                    },
+                    "queued": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "Descriptor ids that were live and are now marked `PendingRemoval`. They stay visible until Chargeblast confirms provider de-registration, then they are removed."
+                    },
+                    "skipped": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "Owned descriptor ids left untouched because their status was not actionable (`Processing` / `InReview`, or already-terminal `Disabled` / `Rejected` / `Surpressed`). Distinct from `notFound`."
                     },
                     "notFound": {
                         "type": "array",
@@ -1206,6 +1344,13 @@
                             "type": "string"
                         },
                         "description": "Requested ids that did not match a descriptor on your account."
+                    },
+                    "unenrolled": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "Deprecated: use `removed` and `queued`. Retained as their union (all descriptor ids acted on) for backward compatibility."
                     }
                 }
             },
@@ -1879,6 +2024,89 @@
                 ],
                 "type": "object"
             },
+            "V2DescriptorsResponse": {
+                "type": "object",
+                "properties": {
+                    "descriptors": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/DescriptorRecord"
+                        }
+                    },
+                    "page": {
+                        "type": "integer"
+                    },
+                    "per": {
+                        "type": "integer"
+                    },
+                    "total": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "descriptors",
+                    "page",
+                    "per",
+                    "total"
+                ]
+            },
+            "DescriptorRecord": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "merchantId": {
+                        "nullable": true,
+                        "type": "string",
+                        "description": "Owning merchant (retailer) id, as returned by `GET /api/v2/merchants`."
+                    },
+                    "program": {
+                        "type": "string",
+                        "enum": [
+                            "ethoca",
+                            "cdrn",
+                            "rdr",
+                            "amex",
+                            "discover"
+                        ],
+                        "nullable": true,
+                        "description": "The alert program this descriptor belongs to. `null` for legacy descriptor types (JCB, TC40, …) not tied to a program."
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/PayshieldDescriptorDescriptorStatus"
+                    },
+                    "descriptorName": {
+                        "nullable": true,
+                        "type": "string",
+                        "description": "The enrolled descriptor string. `null` for RDR records, which are keyed by BIN/CAID."
+                    },
+                    "bin": {
+                        "nullable": true,
+                        "type": "string",
+                        "description": "RDR only."
+                    },
+                    "caid": {
+                        "nullable": true,
+                        "type": "string",
+                        "description": "RDR only."
+                    },
+                    "createdAt": {
+                        "nullable": true,
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updatedAt": {
+                        "nullable": true,
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "status"
+                ]
+            },
             "SlackIntegration": {
                 "properties": {
                     "enabled": {
@@ -2530,8 +2758,10 @@
                     "Surpressed",
                     "Processing",
                     "Rejected",
-                    "InReview"
-                ]
+                    "InReview",
+                    "PendingRemoval"
+                ],
+                "description": "Descriptor lifecycle state. `PendingRemoval` means an unenroll was requested for a previously `Enrolled` descriptor; it stays live until provider de-registration is confirmed, then the record is deleted."
             },
             "MamopayIntegration": {
                 "properties": {
@@ -3130,7 +3360,7 @@
                     "merchant_id": {
                         "type": "string",
                         "nullable": true,
-                        "description": "Existing merchant (retailer) id to enroll. Omit to create a new merchant. The new id is returned as `merchantId`."
+                        "description": "Existing merchant (retailer) id to enroll. Omit to create a brand-new merchant. The resolved id is returned as `merchantId`."
                     },
                     "ruleset": {
                         "type": "string",
@@ -3163,7 +3393,7 @@
                     "merchant_id": {
                         "type": "string",
                         "nullable": true,
-                        "description": "Existing merchant (retailer) id to enroll. Omit to create a new merchant. The new id is returned as `merchantId`."
+                        "description": "Existing merchant (retailer) id to enroll. Omit to create a brand-new merchant. The resolved id is returned as `merchantId`."
                     },
                     "ruleset": {
                         "type": "string",
@@ -3184,7 +3414,7 @@
                 "required": [
                     "program"
                 ],
-                "description": "RDR enrollment. Provide at least one of `arns`, `bins`, or `caids`.",
+                "description": "RDR enrollment. Provide `arns`, and/or equal-length paired `bins`/`caids` (each bin needs a matching caid at the same index). Submitted `bins`/`caids` are persisted as queryable RDR descriptor records (returned in `descriptorIds` and listed by `GET /api/v2/descriptors`), starting `Pending` and becoming `Enrolled` once the provider-side enrollment confirms.",
                 "properties": {
                     "program": {
                         "type": "string",
@@ -3196,7 +3426,7 @@
                     "merchant_id": {
                         "type": "string",
                         "nullable": true,
-                        "description": "Existing merchant (retailer) id to enroll. Omit to create a new merchant. The new id is returned as `merchantId`."
+                        "description": "Existing merchant (retailer) id to enroll. Omit to create a brand-new merchant. The resolved id is returned as `merchantId`."
                     },
                     "ruleset": {
                         "type": "string",
@@ -3217,7 +3447,7 @@
                             "type": "string"
                         },
                         "nullable": true,
-                        "description": "Card BINs."
+                        "description": "Card BINs. Paired positionally with `caids` and persisted as RDR descriptor records."
                     },
                     "caids": {
                         "type": "array",
@@ -3225,7 +3455,7 @@
                             "type": "string"
                         },
                         "nullable": true,
-                        "description": "Card Acceptor IDs."
+                        "description": "Card Acceptor IDs. Paired positionally with `bins` and persisted as RDR descriptor records."
                     }
                 }
             },
@@ -3254,7 +3484,7 @@
                     "merchant_id": {
                         "type": "string",
                         "nullable": true,
-                        "description": "Existing merchant (retailer) id to enroll. Omit to create a new merchant. The new id is returned as `merchantId`."
+                        "description": "Existing merchant (retailer) id to enroll. Omit to create a brand-new merchant. The resolved id is returned as `merchantId`."
                     },
                     "ruleset": {
                         "type": "string",
@@ -3323,7 +3553,7 @@
                     "merchant_id": {
                         "type": "string",
                         "nullable": true,
-                        "description": "Existing merchant (retailer) id to enroll. Omit to create a new merchant. The new id is returned as `merchantId`."
+                        "description": "Existing merchant (retailer) id to enroll. Omit to create a brand-new merchant. The resolved id is returned as `merchantId`."
                     },
                     "ruleset": {
                         "type": "string",
@@ -3419,12 +3649,99 @@
                         "items": {
                             "type": "string"
                         },
-                        "description": "Ids of descriptor records created or updated. Populated for Ethoca and CDRN, empty otherwise."
+                        "description": "Ids of descriptor records created or updated, retrievable via `GET /api/v2/descriptors`. Populated for Ethoca, CDRN, RDR (one per BIN/CAID pair), Amex, and Discover. Empty only when the program persisted no descriptor (e.g. an RDR enrollment sending `arns` alone)."
                     },
                     "rulesetSnapshotId": {
                         "type": "string",
                         "nullable": true,
                         "description": "Id of the ruleset snapshot recorded, or null if no ruleset change occurred."
+                    }
+                }
+            },
+            "ProgramAggregateStatus": {
+                "type": "string",
+                "enum": [
+                    "none",
+                    "pending",
+                    "enrolled"
+                ],
+                "description": "Aggregate enrollment state for a program: `none` (nothing on file), `pending` (requested, awaiting provider confirmation), `enrolled` (live with the provider)."
+            },
+            "EnrollmentStatusDescriptor": {
+                "type": "object",
+                "required": [
+                    "status"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Descriptor record id."
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/PayshieldDescriptorDescriptorStatus"
+                    },
+                    "descriptorName": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Billing descriptor name (Ethoca / CDRN / Amex / Discover). Null for RDR, which is keyed by BIN/CAID."
+                    },
+                    "bin": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Card BIN (RDR only)."
+                    },
+                    "caid": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Card Acceptor ID (RDR only)."
+                    }
+                }
+            },
+            "ProgramEnrollmentStatus": {
+                "type": "object",
+                "required": [
+                    "program",
+                    "status",
+                    "descriptors",
+                    "arns"
+                ],
+                "properties": {
+                    "program": {
+                        "type": "string",
+                        "description": "Program name: `ethoca`, `cdrn`, `rdr`, `amex`, or `discover`."
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/ProgramAggregateStatus"
+                    },
+                    "descriptors": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/EnrollmentStatusDescriptor"
+                        },
+                        "description": "The descriptor records contributing to this program's status."
+                    },
+                    "arns": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "RDR ARNs on file for the account. ARNs are stored on merchant settings rather than as descriptor records (RDR is confirmed at the BIN/CAID merchant level, not per ARN), so they are surfaced here for visibility. Always empty for non-RDR programs."
+                    }
+                }
+            },
+            "EnrollmentStatusResponse": {
+                "type": "object",
+                "required": [
+                    "programs"
+                ],
+                "properties": {
+                    "programs": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ProgramEnrollmentStatus"
+                        },
+                        "description": "Per-program enrollment status, one entry per program."
                     }
                 }
             }

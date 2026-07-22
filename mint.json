@@ -98,8 +98,11 @@
     {
       "group": "Enrollment",
       "pages": [
+        "api-reference/enrollment/enrollment-lifecycle",
         "api-reference/enrollment/fetch-merchants",
         "api-reference/enrollment/fetch-descriptors",
+        "api-reference/enrollment/fetch-descriptors-v2",
+        "api-reference/enrollment/enrollment-status",
         "api-reference/enrollment/fetch-merchant",
         "api-reference/enrollment/enroll-merchant",
         "api-reference/enrollment/unenroll-merchant"
