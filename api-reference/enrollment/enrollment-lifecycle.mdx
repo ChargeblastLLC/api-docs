@@ -5,9 +5,9 @@ sidebarTitle: "Lifecycle"
 icon: "arrows-rotate"
 ---
 
-## Enrollment files a request — it does not make a descriptor live
+## Enrollment files a request
 
-Calling [`POST /api/enroll_merchant`](/api-reference/enrollment/enroll-merchant) records your intent and persists a descriptor. It does **not** instantly make that descriptor live with the card network. Provider-side enrollment is a separate step that Chargeblast completes (via sync or back-office), so every record moves through a lifecycle:
+Calling [`POST /api/enroll_merchant`](/api-reference/enrollment/enroll-merchant) records your intent and persists a descriptor. It does **not** instantly make that descriptor live with the card network. Provider-side enrollment is a separate step that Chargeblast completes, so every record moves through a lifecycle:
 
 ```
 enroll  ->  Pending  ->  Enrolled  ->  (unenroll) PendingRemoval  ->  removed
@@ -18,7 +18,7 @@ enroll  ->  Pending  ->  Enrolled  ->  (unenroll) PendingRemoval  ->  removed
 - **`PendingRemoval`** — an unenroll was requested for a live descriptor; it stays active until the provider confirms de-registration, then the record is deleted.
 
 <Note>
-Poll [`GET /api/enrollment_status`](/api-reference/enrollment/enrollment-status) for a per-program roll-up (`none` / `pending` / `enrolled`), or [`GET /api/v2/descriptors`](/api-reference/enrollment/fetch-descriptors-v2) for the individual records and their statuses — filterable by `program` and `status`, and paginated. The legacy [`GET /api/descriptors`](/api-reference/enrollment/fetch-descriptors) remains available.
+Poll [`GET /api/enrollment_status`](/api-reference/enrollment/enrollment-status) for a per-program roll-up (`none` / `pending` / `enrolled`), or [`GET /api/v2/descriptors`](/api-reference/enrollment/fetch-descriptors-v2) for the individual records and their statuses — filterable by `program` and `status`, and paginated. [`GET /api/descriptors`](/api-reference/enrollment/fetch-descriptors) remains available.
 </Note>
 
 ## What each program persists
@@ -33,12 +33,13 @@ Poll [`GET /api/enrollment_status`](/api-reference/enrollment/enrollment-status)
 
 ## Typical timelines
 
-Provider-side confirmation is not instant. Expect roughly:
+Provider-side confirmation is not instant. Expect:
 
 - **Ethoca** ~48 hours
 - **CDRN** ~24 hours
 - **RDR** ~2 weeks
-- **Amex / Discover** several weeks (manual onboarding)
+- **Amex** ~4-6 weeks
+- **Discover** ~7 days
 
 ## Merchant resolution
 
