@@ -28,10 +28,10 @@ Decline codes indicate the alert is being declined and no refund will be issued.
 | Code | Description |
 | --- | --- |
 | `UnmatchedGeneral` \* | The transaction either can't find a matching transaction, or you're unsure which specific reason code applies. This is the default option to select when in doubt. Credit is subject to review. |
-| `UnmatchedCannotFindTransaction` \* | The specific transaction referenced in the alert cannot be found in your system. This code is eligible for credit. |
-| `AlreadyChargeback` \* | The transaction has already resulted in a chargeback, so there is no need to refund via the alert. This code is eligible for credit. |
+| `UnmatchedCannotFindTransaction` \* | The specific transaction referenced in the alert cannot be found in your system. Credit is subject to review. |
+| `AlreadyChargeback` \* | The transaction has already resulted in a chargeback **prior** to the alert being transmitted. This code is eligible for credit. |
 | `Ineligible` | A generic decline code indicating the alert is not eligible for a refund. The main use case is when you simply do not want to refund the cardholder, but the alert is otherwise valid. Not eligible for credit. |
-| `MIDLost` | The Merchant ID (processing account) associated with this transaction has been lost or terminated. Not eligible for credit. |
+| `MIDLost` | The Merchant ID (processing account) associated with this transaction has been lost or terminated. This code is eligible for credit. |
 | `TDS` | The transaction was 3D Secure (3DS) verified. Occasionally, you may want to decline fraud-coded alerts on 3DS-authenticated transactions. Not eligible for credit. |
 | `EscalateChargeback` | The merchant is declining the alert and accepting that it will escalate to a chargeback. Use when you have evidence to fight the dispute. Not eligible for credit. |
 | `NotMyDescriptor` | The billing descriptor on the alert does not belong to your merchant account. Not eligible for credit. **⚠️ Monitored** — If alerts are actioned with this code, the descriptor may be automatically unenrolled. Use with caution, as this code is not used in most implementations. |
