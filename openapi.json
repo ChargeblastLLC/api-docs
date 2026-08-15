@@ -436,7 +436,7 @@
                         }
                     }
                 ],
-                "description": "Update the state of an alert to properly inform the banks of whether or not a refund will be issued. If an alert is left unactioned for 72 hours it will be automatically declined. For best results mark alerts as resolved within 24 hours of receiving them (some smaller banks will escalate quarantined transactions as soon as 24 hours within propogating an alert). If you attempt to update an already actioned alert, the request will fail.",
+                "description": "Update the status of an alert to inform the issuing bank whether a refund will be issued. If an alert is left unactioned for 48 hours, it will be automatically declined. For the best outcome, mark alerts as resolved within 24 hours of receiving them (some smaller banks will escalate quarantined transactions as soon as 24 hours within propagating an alert). Although our API allows multiple status updates, only the first response is recognized and acted upon by the issuing bank.",
                 "operationId": "alerts-update",
                 "responses": {
                     "200": {
@@ -639,7 +639,7 @@
                 "tags": [
                     "Alerts"
                 ],
-                "description": "Update the state of an alert to properly inform the banks of whether or not a refund will be issued. If an alert is left unactioned for 72 hours it will be automatically declined. For best results mark alerts as resolved within 24 hours of receiving them (some smaller banks will escalate quarantined transactions as soon as 24 hours within propogating an alert). If you attempt to update an already actioned alert, the request will fail.",
+                "description": "Update the status of an alert to inform the issuing bank whether a refund will be issued. If an alert is left unactioned for 48 hours, it will be automatically declined. For the best outcome, mark alerts as resolved within 24 hours of receiving them (some smaller banks will escalate quarantined transactions as soon as 24 hours within propagating an alert). Although our API allows multiple status updates, only the first response is recognized and acted upon by the issuing bank.",
                 "operationId": "alerts-update",
                 "requestBody": {
                     "required": true,
