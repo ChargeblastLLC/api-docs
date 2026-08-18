@@ -63,6 +63,7 @@
       {
         "group": "Alerts",
         "pages": [
+          "api-reference/alerts/fetch-alerts-v3",
           "api-reference/alerts/fetch-alerts",
           "api-reference/alerts/fetch-an-alert",
           "api-reference/alerts/update-alert",

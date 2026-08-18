@@ -34,7 +34,7 @@
                             "format": "int64",
                             "nullable": true
                         },
-                        "description": "The starting page of the request. Default value of 0."
+                        "description": "The starting page of the request. Default value of 1."
                     },
                     {
                         "name": "per",
@@ -469,7 +469,7 @@
         },
         "/api/alert/{id}": {
             "get": {
-                "operationId": "alert",
+                "operationId": "alert-legacy",
                 "tags": [
                     "Alerts"
                 ],
@@ -681,7 +681,7 @@
                         },
                         "name": "page",
                         "in": "query",
-                        "description": "The starting page of the request. Default value of 0."
+                        "description": "The starting page of the request. Default value of 1."
                     },
                     {
                         "in": "query",
@@ -921,7 +921,7 @@
                     {
                         "required": false,
                         "in": "query",
-                        "description": "The starting page of the request. Default value of 0.",
+                        "description": "The starting page of the request. Default value of 1.",
                         "schema": {
                             "format": "int64",
                             "nullable": true,
@@ -968,6 +968,111 @@
                 "summary": "Fetch Alerts",
                 "description": "Get all the alerts from your chargeblast account.",
                 "operationId": "alerts"
+            }
+        },
+        "/api/v3/alerts": {
+            "get": {
+                "tags": [
+                    "Alerts"
+                ],
+                "summary": "Fetch Alerts",
+                "description": "Get all the alerts from your Chargeblast account, filtered by network, status, match state or date range. Each company has its own API key, so run the export once per key.",
+                "operationId": "alerts-v3",
+                "parameters": [
+                    {
+                        "name": "filter[type]",
+                        "in": "query",
+                        "required": false,
+                        "description": "Alert networks to include, comma-separated. Possible values: RDR, CDRN, Ethoca, TC40, SAFE, Cancel. Case-insensitive. An unrecognised value is rejected with a 400 rather than ignored.",
+                        "schema": {
+                            "type": "string",
+                            "nullable": true
+                        }
+                    },
+                    {
+                        "name": "filter[status]",
+                        "in": "query",
+                        "required": false,
+                        "description": "Alert reason codes to include, comma-separated (for example Resolved, UnmatchedGeneral, AlreadyRefunded). Case-insensitive.",
+                        "schema": {
+                            "type": "string",
+                            "nullable": true
+                        }
+                    },
+                    {
+                        "name": "filter[isMatched]",
+                        "in": "query",
+                        "required": false,
+                        "description": "`true` returns only alerts matched to a transaction, `false` only unmatched ones. Mirrors the `isMatched` field on each alert.",
+                        "schema": {
+                            "type": "boolean",
+                            "nullable": true
+                        }
+                    },
+                    {
+                        "name": "filter[startDate]",
+                        "in": "query",
+                        "required": false,
+                        "description": "Only return alerts created on or after this point. ISO 8601 date/time (2026-06-01T00:00:00Z) or a date (2026-06-01).",
+                        "schema": {
+                            "type": "string",
+                            "nullable": true
+                        }
+                    },
+                    {
+                        "name": "filter[endDate]",
+                        "in": "query",
+                        "required": false,
+                        "description": "Only return alerts created on or before this point. ISO 8601 date/time (2026-06-01T00:00:00Z) or a date (2026-06-01).",
+                        "schema": {
+                            "type": "string",
+                            "nullable": true
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "description": "The starting page of the request. Default value of 1.",
+                        "schema": {
+                            "type": "integer",
+                            "nullable": true,
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "per",
+                        "in": "query",
+                        "required": false,
+                        "description": "How many objects to request per page. Default value of 10.",
+                        "schema": {
+                            "type": "integer",
+                            "nullable": true,
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "X-API-Key",
+                        "in": "header",
+                        "required": true,
+                        "description": "Your API key. Sent in the `X-API-Key` header.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIAlertsResponse"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     },
@@ -1364,7 +1469,10 @@
                     "AMEX",
                     "JCB",
                     "Unknown",
-                    ""
+                    "",
+                    "Cancel",
+                    "TC40",
+                    "SAFE"
                 ]
             },
             "PayshieldSiteDTO": {
@@ -3744,6 +3852,406 @@
                         "description": "Per-program enrollment status, one entry per program."
                     }
                 }
+            },
+            "AlertV3": {
+                "type": "object",
+                "required": [
+                    "alertType",
+                    "creditAppealed",
+                    "isMatched",
+                    "isRefunded",
+                    "subprovider"
+                ],
+                "properties": {
+                    "acquirerAction": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Actions taken by the acquirer in response to the alert. Only relevant for RDR and other acquirer side alerts - either Resolved or Declined."
+                    },
+                    "alertId": {
+                        "nullable": true,
+                        "type": "string",
+                        "description": "Unique identifier for the alert within the provider's system. Will match the id field."
+                    },
+                    "alertType": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/GetAlertAlertType"
+                            }
+                        ],
+                        "description": "Type of alert, e.g., FRAUD, DISPUTE."
+                    },
+                    "amount": {
+                        "type": "number",
+                        "nullable": true,
+                        "format": "double",
+                        "description": "Transaction amount for the alert. $139.38 will be represented as 139.38"
+                    },
+                    "arn": {
+                        "nullable": true,
+                        "type": "string",
+                        "description": "Acquirer Reference Number, unique identifier for the transaction."
+                    },
+                    "attributes": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "type": "object",
+                        "nullable": true,
+                        "description": "Optional string key-value metadata associated with the alert. Included on webhook payloads and when fetching alerts via the API when present."
+                    },
+                    "authCode": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Authorization code for the transaction, if available."
+                    },
+                    "bin": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Acquiring BIN the alert was raised under."
+                    },
+                    "binDetails": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/BinDetails"
+                            }
+                        ],
+                        "description": "Issuer/BIN metadata for the alerted card, when a BIN lookup succeeded."
+                    },
+                    "caid": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Card acceptor id (merchant id) the alert was raised under."
+                    },
+                    "card": {
+                        "nullable": true,
+                        "type": "string",
+                        "description": "The redacted card number, e.g., 424242****1234."
+                    },
+                    "cardBrand": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "The card network (e.g., Visa, Mastercard, Amex)."
+                    },
+                    "country": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Issuing country of the alerted card."
+                    },
+                    "createdAt": {
+                        "format": "date-time",
+                        "nullable": true,
+                        "type": "string",
+                        "description": "Date and time when the alert was created."
+                    },
+                    "creditAppealed": {
+                        "type": "boolean",
+                        "description": "Indicates if the credit associated with the alert was appealed."
+                    },
+                    "creditNotes": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Additional notes or information regarding the credit status."
+                    },
+                    "creditStatus": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Status of the credit (if any) associated with the alert."
+                    },
+                    "currency": {
+                        "nullable": true,
+                        "type": "string",
+                        "description": "Currency code in ISO format (e.g., USD, EUR) for the transaction."
+                    },
+                    "customerEmail": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Customer's email address associated with the alert, if available."
+                    },
+                    "customerId": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Unique identifier for the customer associated with the alert, if available."
+                    },
+                    "descriptor": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Billing descriptor shown on the card statement."
+                    },
+                    "externalOrder": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "External charge id related to the alert."
+                    },
+                    "externalUrl": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "URL linking to an external reference for the alert."
+                    },
+                    "funding": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Card funding type (credit, debit, prepaid)."
+                    },
+                    "id": {
+                        "nullable": true,
+                        "type": "string",
+                        "description": "Id for the alert."
+                    },
+                    "invoicedAt": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "date-time",
+                        "description": "Date and time when the alert was invoiced."
+                    },
+                    "isMatched": {
+                        "type": "boolean",
+                        "description": "Whether the alert was matched to a transaction. When false, the charge-level fields (externalOrder, externalUrl, customerId, customerEmail, metadata, attributes, mid, processor) are null and isRefunded is false."
+                    },
+                    "isRefunded": {
+                        "type": "boolean",
+                        "description": "Whether the matched transaction had already been refunded at match time. Always false for an unmatched alert."
+                    },
+                    "issuer": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Issuer of the card (e.g., bank or financial institution)."
+                    },
+                    "merchantId": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Identifier for the merchant within the system."
+                    },
+                    "merchantName": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Merchant name registered with the alert network."
+                    },
+                    "metadata": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Metadata carried on the matched transaction, when the processor supplied any."
+                    },
+                    "mid": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Sub-account / MID the matched transaction settled under."
+                    },
+                    "networkId": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Network transaction id supplied by the card network."
+                    },
+                    "notes": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Internal notes recorded against the alert."
+                    },
+                    "origin": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Upstream alert origin, e.g. mastercard, visa, discover."
+                    },
+                    "processor": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/CommonChargeChargePlatform"
+                            }
+                        ],
+                        "description": "Payment processor the matched transaction belongs to."
+                    },
+                    "provider": {
+                        "nullable": true,
+                        "type": "string",
+                        "description": "Provider associated with the alert. Possible values: ethoca, verifi"
+                    },
+                    "reasonCode": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/AlertReasonCode"
+                            }
+                        ],
+                        "description": "Reason code associated with the alert, often indicating the nature of the dispute."
+                    },
+                    "resolvedByApi": {
+                        "type": "boolean",
+                        "nullable": true,
+                        "description": "Indicates if the alert was resolved via API."
+                    },
+                    "resolvedDate": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "date-time",
+                        "description": "Date and time when the alert was resolved."
+                    },
+                    "responseAction": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Response action taken in response to the alert."
+                    },
+                    "site": {
+                        "nullable": true,
+                        "type": "string",
+                        "description": "Merchant's website or site string associated with the alert."
+                    },
+                    "subprovider": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/DescriptorType"
+                            }
+                        ],
+                        "description": "Specific sub-provider within the provider service."
+                    },
+                    "transactionDate": {
+                        "nullable": true,
+                        "format": "date-time",
+                        "type": "string",
+                        "description": "Date and time when the transaction took place."
+                    }
+                }
+            },
+            "APIAlertsResponse": {
+                "type": "object",
+                "required": [
+                    "alerts",
+                    "page",
+                    "per",
+                    "total"
+                ],
+                "properties": {
+                    "alerts": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AlertV3"
+                        }
+                    },
+                    "page": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "The page returned. The first page is 1."
+                    },
+                    "per": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Objects per page."
+                    },
+                    "total": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Total alerts matching the filter."
+                    }
+                }
+            },
+            "BinDetails": {
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "prepaid": {
+                        "type": "boolean",
+                        "nullable": true
+                    },
+                    "brand": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "bank": {
+                        "$ref": "#/components/schemas/Bank"
+                    },
+                    "country": {
+                        "$ref": "#/components/schemas/BinCountry"
+                    }
+                }
+            },
+            "Bank": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "phone": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                }
+            },
+            "BinCountry": {
+                "type": "object",
+                "properties": {
+                    "alpha2": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "name": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                }
+            },
+            "GetAlertAlertType": {
+                "type": "string",
+                "description": "• FRAUD → Fraud\n• DISPUTE → Dispute\n• UNKNOWN → Unknown\n• DISPUTE_RDR → RDR\n• CANCEL → Cancel",
+                "enum": [
+                    "FRAUD",
+                    "DISPUTE",
+                    "UNKNOWN",
+                    "DISPUTE_RDR",
+                    "CANCEL"
+                ]
+            },
+            "CommonChargeChargePlatform": {
+                "type": "string",
+                "enum": [
+                    "Stripe",
+                    "Shopify",
+                    "CheckoutChamp",
+                    "Braintree",
+                    "Mamopay",
+                    "Maverick",
+                    "Sticky",
+                    "Unknown",
+                    "API",
+                    "29Next",
+                    "Square",
+                    "Spreedly",
+                    "Airwallex",
+                    "NMI",
+                    "Auth",
+                    "Primer",
+                    "Payarc",
+                    "PaymentKit",
+                    "Chargebee",
+                    "Phoenix",
+                    "Adyen",
+                    "Recurly",
+                    "Gr4vy",
+                    "Recharge",
+                    "Openpay",
+                    "Finix",
+                    "Worldpay",
+                    "FMJ",
+                    "Coinflow",
+                    "Xecom",
+                    "Vrio",
+                    "Checkout",
+                    "a55",
+                    "Seal",
+                    "GuestyPay",
+                    "Fyntek",
+                    "Paytech",
+                    "SwissCRM",
+                    "Paysight",
+                    "Whop",
+                    "Spark",
+                    "Kurv",
+                    "Everflow",
+                    "IMerchant",
+                    "RocketGate"
+                ],
+                "description": "• Stripe → Stripe\n• Shopify → Shopify\n• CheckoutChamp → CheckoutChamp\n• Braintree → Braintree\n• Mamopay → Mamopay\n• Maverick → Maverick\n• Sticky → Sticky\n• Unknown → Unknown\n• API → API\n• 29Next → Next\n• Square → Square\n• Spreedly → Spreedly\n• Airwallex → Airwallex\n• NMI → NMI\n• Auth → Auth\n• Primer → Primer\n• Payarc → Payarc\n• PaymentKit → PaymentKit\n• Chargebee → Chargebee\n• Phoenix → Phoenix\n• Adyen → Adyen\n• Recurly → Recurly\n• Gr4vy → Gr4vy\n• Recharge → Recharge\n• Openpay → Openpay\n• Finix → Finix\n• Worldpay → Worldpay\n• FMJ → FMJ\n• Coinflow → Coinflow\n• Xecom → Xecom\n• Vrio → Vrio\n• Checkout → Checkout\n• a55 → a55\n• Seal → Seal\n• GuestyPay → GuestyPay\n• Fyntek → Fyntek\n• Paytech → Paytech\n• SwissCRM → SwissCRM\n• Paysight → Paysight\n• Whop → Whop\n• Spark → Spark\n• Kurv → Kurv\n• Everflow → Everflow\n• IMerchant → IMerchant\n• RocketGate → RocketGate"
             }
         }
     }
