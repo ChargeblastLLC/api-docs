@@ -1,3 +1,168 @@
 ---
-openapi: get /api/descriptors
+title: "Fetch Descriptors"
+description: "List the descriptors on your account. Use the version tabs below to switch between the current v2 endpoint and the legacy v1 endpoint."
 ---
+
+<Tabs>
+  <Tab title="v2 (current)">
+    ```http
+    GET https://api.chargeblast.com/api/v2/descriptors
+    ```
+
+    List every descriptor on your account as a flat, filterable record set: one row per descriptor with its program, status, descriptor name or BIN/CAID, owning merchant id, and timestamps. Filter with `program` and/or `status` and paginate with `page`/`per`. For the per-program roll-up (`none` / `pending` / `enrolled`), use [`GET /api/enrollment_status`](/api-reference/enrollment/enrollment-status) instead. Record ids feed [`POST /api/unenroll`](/api-reference/enrollment/unenroll-merchant).
+
+    ### Headers
+
+    <ParamField header="X-API-Key" type="string" required>
+      Your API key. Sent in the `X-API-Key` header.
+    </ParamField>
+
+    ### Query parameters
+
+    <ParamField query="program" type="string">
+      Filter by program (case-insensitive). One of `ethoca`, `cdrn`, `rdr`, `amex`, `discover`. An unknown value returns a `400` listing the valid ones.
+    </ParamField>
+
+    <ParamField query="status" type="string">
+      Filter by descriptor status (case-insensitive). One of `Pending`, `Enrolled`, `Disabled`, `Surpressed`, `Processing`, `Rejected`, `InReview`, `PendingRemoval`.
+    </ParamField>
+
+    <ParamField query="page" type="integer" default="1">
+      The page to request. Defaults to `1`.
+    </ParamField>
+
+    <ParamField query="per" type="integer" default="10">
+      How many records per page. Defaults to `10`, max `1000`.
+    </ParamField>
+
+    ### Response
+
+    <ResponseField name="descriptors" type="DescriptorRecord[]" required>
+      The page of descriptor records.
+      <Expandable title="DescriptorRecord">
+        <ResponseField name="id" type="string">Record id. Feeds `POST /api/unenroll`.</ResponseField>
+        <ResponseField name="merchantId" type="string">Owning merchant (retailer) id, as returned by `GET /api/v2/merchants`.</ResponseField>
+        <ResponseField name="program" type="string">The alert program this descriptor belongs to: `ethoca`, `cdrn`, `rdr`, `amex`, `discover`. `null` for legacy descriptor types (JCB, TC40, …) not tied to a program.</ResponseField>
+        <ResponseField name="status" type="string" required>Descriptor lifecycle state: `Pending`, `Enrolled`, `Disabled`, `Surpressed`, `Processing`, `Rejected`, `InReview`, `PendingRemoval`. `PendingRemoval` means an unenroll was requested for a previously `Enrolled` descriptor; it stays live until provider de-registration is confirmed, then the record is deleted.</ResponseField>
+        <ResponseField name="descriptorName" type="string">The enrolled descriptor string. `null` for RDR records, which are keyed by BIN/CAID.</ResponseField>
+        <ResponseField name="bin" type="string">Acquiring BIN. RDR only.</ResponseField>
+        <ResponseField name="caid" type="string">Card acceptor id. RDR only.</ResponseField>
+        <ResponseField name="createdAt" type="string">When the record was created.</ResponseField>
+        <ResponseField name="updatedAt" type="string">When the record was last updated.</ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="page" type="integer" required>The page returned.</ResponseField>
+    <ResponseField name="per" type="integer" required>Records per page.</ResponseField>
+    <ResponseField name="total" type="integer" required>Total records matching the filter.</ResponseField>
+
+    <RequestExample>
+    ```bash cURL
+    curl --request GET \
+      --url 'https://api.chargeblast.com/api/v2/descriptors?program=rdr&status=Enrolled&page=1&per=100' \
+      --header 'X-API-Key: <your-api-key>'
+    ```
+    </RequestExample>
+
+    <ResponseExample>
+    ```json 200
+    {
+      "descriptors": [
+        {
+          "id": "desc_7b21c0a9",
+          "merchantId": "mer_3a9f01",
+          "program": "rdr",
+          "status": "Enrolled",
+          "descriptorName": null,
+          "bin": "424242",
+          "caid": "123456789012345",
+          "createdAt": "2026-05-02T10:00:00Z",
+          "updatedAt": "2026-06-01T12:30:00Z"
+        },
+        {
+          "id": "desc_9d44f1b2",
+          "merchantId": "mer_3a9f01",
+          "program": "ethoca",
+          "status": "Enrolled",
+          "descriptorName": "CHARGEBLAST",
+          "bin": null,
+          "caid": null,
+          "createdAt": "2026-05-02T10:00:00Z",
+          "updatedAt": "2026-05-02T10:00:00Z"
+        }
+      ],
+      "page": 1,
+      "per": 100,
+      "total": 2
+    }
+    ```
+    </ResponseExample>
+  </Tab>
+
+  <Tab title="v1">
+    ```http
+    GET https://api.chargeblast.com/api/descriptors
+    ```
+
+    <Warning>
+    This is the legacy **v1** endpoint. New integrations should use **v2** (the tab to the left), which returns a flat, filterable, paginated record set (`program` / `status` filters, `page` / `per`). v1 returns a nested embed shape with no filtering or pagination.
+    </Warning>
+
+    Fetch all the descriptors for your merchants.
+
+    ### Headers
+
+    <ParamField header="X-API-Key" type="string" required>
+      Your API key. Sent in the `X-API-Key` header.
+    </ParamField>
+
+    ### Response
+
+    <ResponseField name="descriptors" type="PayshieldDescriptor[]" required>
+      All descriptors, as nested records.
+      <Expandable title="PayshieldDescriptor">
+        <ResponseField name="id" type="string">Descriptor id.</ResponseField>
+        <ResponseField name="type" type="string" required>Descriptor / network type: `Ethoca`, `CDRN`, `RDR`, `Discover`, `AMEX`, `JCB`, `Cancel`, `TC40`, `SAFE`, `Unknown`.</ResponseField>
+        <ResponseField name="status" type="string" required>Descriptor lifecycle state: `Pending`, `Enrolled`, `Disabled`, `Surpressed`, `Processing`, `Rejected`, `InReview`, `PendingRemoval`.</ResponseField>
+        <ResponseField name="hasEmailSent" type="boolean" required>Whether the enrollment email was sent.</ResponseField>
+        <ResponseField name="bankMid" type="string">Bank MID associated with the descriptor.</ResponseField>
+        <ResponseField name="details" type="object" required>
+          Descriptor details.
+          <Expandable title="details">
+            <ResponseField name="type" type="string" required>The descriptor detail type.</ResponseField>
+          </Expandable>
+        </ResponseField>
+        <ResponseField name="site" type="object" required>The owning site, including its `name` and parent `retailer`. This nested shape is why v2 is preferred: v2 flattens it to a single `merchantId` per record.</ResponseField>
+      </Expandable>
+    </ResponseField>
+
+    <RequestExample>
+    ```bash cURL
+    curl --request GET \
+      --url 'https://api.chargeblast.com/api/descriptors' \
+      --header 'X-API-Key: <your-api-key>'
+    ```
+    </RequestExample>
+
+    <ResponseExample>
+    ```json 200
+    {
+      "descriptors": [
+        {
+          "id": "desc_9d44f1b2",
+          "type": "Ethoca",
+          "status": "Enrolled",
+          "hasEmailSent": true,
+          "bankMid": null,
+          "details": { "type": "descriptor" },
+          "site": {
+            "id": "site_1a2b3c",
+            "name": "CHARGEBLAST",
+            "retailer": { "id": "mer_3a9f01", "name": "Acme Inc" }
+          }
+        }
+      ]
+    }
+    ```
+    </ResponseExample>
+  </Tab>
+</Tabs>

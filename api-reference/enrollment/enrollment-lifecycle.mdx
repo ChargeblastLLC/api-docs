@@ -18,7 +18,7 @@ enroll  ->  Pending  ->  Enrolled  ->  (unenroll) PendingRemoval  ->  removed
 - **`PendingRemoval`** — an unenroll was requested for a live descriptor; it stays active until the provider confirms de-registration, then the record is deleted.
 
 <Note>
-Poll [`GET /api/enrollment_status`](/api-reference/enrollment/enrollment-status) for a per-program roll-up (`none` / `pending` / `enrolled`), or [`GET /api/v2/descriptors`](/api-reference/enrollment/fetch-descriptors-v2) for the individual records and their statuses — filterable by `program` and `status`, and paginated. [`GET /api/descriptors`](/api-reference/enrollment/fetch-descriptors) remains available.
+Poll [`GET /api/enrollment_status`](/api-reference/enrollment/enrollment-status) for a per-program roll-up (`none` / `pending` / `enrolled`), or [`GET /api/v2/descriptors`](/api-reference/enrollment/fetch-descriptors) for the individual records and their statuses — filterable by `program` and `status`, and paginated.
 </Note>
 
 ## What each program persists
