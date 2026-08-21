@@ -1,0 +1,10 @@
+---
+title: "Fetch Descriptors (v1)"
+description: "Legacy v1 descriptors endpoint. Use the v2 endpoint for new integrations."
+openapi: get /api/descriptors
+deprecated: true
+---
+
+<Warning>
+This is the legacy **v1** endpoint. It returns a nested embed shape with no filtering or pagination. New integrations should use [Fetch Descriptors (v2)](/api-reference/enrollment/fetch-descriptors), which returns a flat, filterable, paginated record set (`program` / `status` filters, `page` / `per`).
+</Warning>
