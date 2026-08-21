@@ -21,30 +21,31 @@ Changes deploy to production automatically once merged to the default branch (vi
 
 ## Layout
 
-- `docs.json` — the single source of truth for navigation, theme, versions, and redirects. (The old `mint.json` schema is no longer used; do not reintroduce it.)
-- `openapi.json` — one OpenAPI spec covering every version. Endpoint pages target an operation with `openapi: <method> <path>` frontmatter (e.g. `get /api/v3/alerts`).
+- `docs.json` — the single source of truth for navigation (a flat `groups` list), theme, and redirects. (The old `mint.json` schema is no longer used; do not reintroduce it.)
+- `openapi.json` — one OpenAPI spec covering every version. Auto-generated endpoint pages target an operation with `openapi: <method> <path>` frontmatter (e.g. `get /api/v2/alerts`). Multi-version endpoints are hand-authored instead (see Versioning).
 - `api-reference/<tag>/*.mdx` — one page per API operation, backed by `openapi.json`.
 - `guides/*.mdx` — task-oriented prose (implementation walkthroughs).
 - `reference/*.mdx` — conceptual reference prose (alert types, reason codes, welcome).
 - `images/`, `logo/`, `favicon.png` — assets.
 
-## Versioning
+## Versioning (per-endpoint, in-page tabs)
 
-Parallel API versions live under `navigation.versions` in `docs.json`, rendered as a version dropdown in the sidebar. Each version has its own group tree; shared (non-versioned) pages are listed in both trees by referencing the same `.mdx` file — no content is duplicated.
+When an endpoint has multiple live API versions, document them on a **single page** with a `<Tabs>` switcher — one `<Tab>` per version — rather than as separate sibling pages or a global site version dropdown. The user switches versions inside the endpoint page.
 
-- `v3` is the default (`"default": true`).
-- Only the pages that actually differ by version are swapped between trees. Today that is:
-  - Alerts: `api-reference/alerts/fetch-alerts-v3` (v3) vs `api-reference/alerts/fetch-alerts` (v2, `GET /api/v2/alerts`).
-  - Enrollment: `fetch-descriptors-v2` (v3) vs `fetch-descriptors` (v2, `GET /api/descriptors`).
+- Example: [`api-reference/alerts/fetch-alerts.mdx`](api-reference/alerts/fetch-alerts.mdx) has a `v3 (current)` tab and a `v2` tab.
+- The nav (`docs.json`) is a single flat `groups` list with **one** entry per endpoint (`api-reference/alerts/fetch-alerts`).
+- Old per-version URLs (e.g. `/api-reference/alerts/fetch-alerts-v3`) 308-redirect to the merged page.
+
+Tradeoff to know: because a Mintlify page is either an auto-generated OpenAPI endpoint (`openapi:` frontmatter) **or** regular MDX, a tabbed multi-version page cannot embed the auto-generated playground/schema. Tab contents are hand-authored with `<ParamField>` / `<ResponseField>` / `<RequestExample>` / `<ResponseExample>`, so keep them in sync with `openapi.json` by hand.
 
 When a new API version of an existing endpoint ships:
 
-1. Add the new endpoint `.mdx` under `api-reference/<tag>/`.
-2. Add a new entry to `navigation.versions` and set `"default": true` on it (removing it from the previous default).
-3. Add a deprecation `<Warning>` to the superseded page pointing readers to the new version.
+1. Add a new `<Tab title="vN (current)">` to the endpoint page and demote the previous tab.
+2. Keep a single nav entry; do not add a `-vN` sibling page.
+3. Add a `<Warning>` in the legacy tab pointing to the current one.
 
-Do not add `-vN` sibling pages inside the same nav group — that is exactly the duplication the version dropdown replaces.
+Do not reintroduce `navigation.versions` (a global, whole-site dropdown) for per-endpoint versioning, and do not add `-vN` sibling pages in the nav.
 
 ## Cleanup status (strangler-fig)
 
-Navigation was migrated from a flat `groups` list to versions without moving or renaming any live URLs, and legacy artifacts are being retired incrementally. The full plan, per-endpoint playbooks, progress checklist, and remaining orphan inventory live in [RESTRUCTURING.md](RESTRUCTURING.md) (tracked by [CHA-2109](https://linear.app/chargeblast/issue/CHA-2109/version-api-docs-navigation-collapse-duplicate-v2v3-endpoint-pages)). Read it before adding or removing pages.
+Duplicate per-version endpoint pages were collapsed into single tabbed pages, and legacy artifacts are being retired incrementally. The full plan, per-endpoint playbooks, progress checklist, and remaining orphan inventory live in [RESTRUCTURING.md](RESTRUCTURING.md) (tracked by [CHA-2109](https://linear.app/chargeblast/issue/CHA-2109/version-api-docs-navigation-collapse-duplicate-v2v3-endpoint-pages)). Read it before adding or removing pages.

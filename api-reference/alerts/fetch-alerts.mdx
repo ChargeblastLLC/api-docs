@@ -1,10 +1,7 @@
 ---
-openapi: get /api/v2/alerts
+title: "Fetch Alerts"
+description: "Get all the alerts from your Chargeblast account. Use the version tabs below to switch between the current v3 endpoint and the legacy v2 endpoint."
 ---
-
-<Warning>
-This is the **v2** endpoint. New integrations should use [Fetch Alerts (v3)](/api-reference/alerts/fetch-alerts-v3), which adds network/status/date filtering, matched-vs-unmatched fields, and BIN details. Switch to the **v3** version in the sidebar version dropdown.
-</Warning>
 
 <Info>
 The `subprovider` field indicates the alert network. See [Alert Types](/reference/alert-types) for all possible values and descriptions.
@@ -13,3 +10,285 @@ The `subprovider` field indicates the alert network. See [Alert Types](/referenc
 <Info>
 Each alert may include optional **`attributes`**: a dictionary of string keys and string values (for example `order_number`, `processor_id`). The same field appears on [webhook](/api-reference/webhooks/setup#body) payloads when present.
 </Info>
+
+<Tabs>
+  <Tab title="v3 (current)">
+    ```http
+    GET https://api.chargeblast.com/api/v3/alerts
+    ```
+
+    Get all the alerts from your Chargeblast account, filtered by network, status, match state, or date range. Each company has its own API key, so run the export once per key.
+
+    ### Filtering
+
+    Filters are bracketed query parameters and combine with AND:
+
+    ```
+    GET /api/v3/alerts?filter[type]=TC40&page=1&per=100
+    GET /api/v3/alerts?filter[type]=RDR,CDRN&filter[isMatched]=false
+    GET /api/v3/alerts?filter[startDate]=2026-06-01&filter[endDate]=2026-06-30
+    ```
+
+    Values are case-insensitive, and a value that is not recognised returns a `400` naming the accepted values rather than being ignored.
+
+    ### Matched and unmatched alerts
+
+    Chargeblast matches each incoming alert against the transactions it has synced from your processors. `isMatched` tells you whether that succeeded, and it is the rule behind why some alerts carry transaction-level detail and others do not.
+
+    When `isMatched` is `false`, these fields are `null` (and `isRefunded` is `false`): `externalOrder`, `externalUrl`, `customerId`, `customerEmail`, `metadata`, `attributes`, `mid`, `processor`. The alert's own fields, supplied by the card network, are always present: `card`, `amount`, `currency`, `arn`, `authCode`, `bin`, `caid`, `networkId`, `issuer`, `descriptor`, `subprovider`, `reasonCode`.
+
+    Use `filter[isMatched]` to retrieve one group at a time.
+
+    <Warning>
+    API keys are scoped to a single company. If your organisation has several companies in Chargeblast, repeat the request once per company key to export all of your alerts.
+    </Warning>
+
+    ### Headers
+
+    <ParamField header="X-API-Key" type="string" required>
+      Your API key. Sent in the `X-API-Key` header.
+    </ParamField>
+
+    ### Query parameters
+
+    <ParamField query="filter[type]" type="string">
+      Alert networks to include, comma-separated. Possible values: `RDR`, `CDRN`, `Ethoca`, `TC40`, `SAFE`, `Cancel`. Case-insensitive. An unrecognised value is rejected with a `400`.
+    </ParamField>
+
+    <ParamField query="filter[status]" type="string">
+      Alert reason codes to include, comma-separated (for example `Resolved`, `UnmatchedGeneral`, `AlreadyRefunded`). Case-insensitive.
+    </ParamField>
+
+    <ParamField query="filter[isMatched]" type="boolean">
+      `true` returns only alerts matched to a transaction, `false` only unmatched ones.
+    </ParamField>
+
+    <ParamField query="filter[startDate]" type="string">
+      Only return alerts created on or after this point. ISO 8601 date/time (`2026-06-01T00:00:00Z`) or a date (`2026-06-01`).
+    </ParamField>
+
+    <ParamField query="filter[endDate]" type="string">
+      Only return alerts created on or before this point. ISO 8601 date/time or a date.
+    </ParamField>
+
+    <ParamField query="page" type="integer" default="1">
+      The page to request. 1-based; defaults to `1`.
+    </ParamField>
+
+    <ParamField query="per" type="integer" default="10">
+      How many objects to request per page. Defaults to `10`. Read `total` from the response to know how many pages to walk.
+    </ParamField>
+
+    ### Response
+
+    <ResponseField name="alerts" type="AlertV3[]" required>
+      The page of alerts matching the filter.
+      <Expandable title="AlertV3">
+        <ResponseField name="id" type="string">Id for the alert.</ResponseField>
+        <ResponseField name="alertId" type="string">Unique identifier for the alert within the provider's system. Matches `id`.</ResponseField>
+        <ResponseField name="alertType" type="string" required>Type of alert: `FRAUD`, `DISPUTE`, `UNKNOWN`, `DISPUTE_RDR`, `CANCEL`.</ResponseField>
+        <ResponseField name="subprovider" type="string" required>Specific sub-provider (alert network): `Ethoca`, `CDRN`, `RDR`, `Discover`, `AMEX`, `JCB`, `Cancel`, `TC40`, `SAFE`.</ResponseField>
+        <ResponseField name="isMatched" type="boolean" required>Whether the alert was matched to a transaction. When `false`, charge-level fields are `null`.</ResponseField>
+        <ResponseField name="isRefunded" type="boolean" required>Whether the matched transaction had already been refunded at match time. Always `false` for an unmatched alert.</ResponseField>
+        <ResponseField name="creditAppealed" type="boolean" required>Whether the credit associated with the alert was appealed.</ResponseField>
+        <ResponseField name="amount" type="number">Transaction amount. `$139.38` is represented as `139.38`.</ResponseField>
+        <ResponseField name="currency" type="string">ISO currency code (e.g. `USD`, `EUR`).</ResponseField>
+        <ResponseField name="card" type="string">The redacted card number, e.g. `424242****1234`.</ResponseField>
+        <ResponseField name="cardBrand" type="string">The card network (e.g. Visa, Mastercard, Amex).</ResponseField>
+        <ResponseField name="arn" type="string">Acquirer Reference Number.</ResponseField>
+        <ResponseField name="authCode" type="string">Authorization code for the transaction.</ResponseField>
+        <ResponseField name="bin" type="string">Acquiring BIN the alert was raised under.</ResponseField>
+        <ResponseField name="caid" type="string">Card acceptor id (merchant id) the alert was raised under.</ResponseField>
+        <ResponseField name="networkId" type="string">Network transaction id supplied by the card network.</ResponseField>
+        <ResponseField name="issuer" type="string">Issuer of the card (bank or financial institution).</ResponseField>
+        <ResponseField name="country" type="string">Issuing country of the alerted card.</ResponseField>
+        <ResponseField name="funding" type="string">Card funding type (credit, debit, prepaid).</ResponseField>
+        <ResponseField name="binDetails" type="object">Issuer/BIN metadata for the alerted card, when a BIN lookup succeeded.</ResponseField>
+        <ResponseField name="descriptor" type="string">Billing descriptor shown on the card statement.</ResponseField>
+        <ResponseField name="reasonCode" type="string">Reason code associated with the alert.</ResponseField>
+        <ResponseField name="acquirerAction" type="string">Acquirer action (RDR and acquirer-side alerts): `Resolved` or `Declined`.</ResponseField>
+        <ResponseField name="responseAction" type="string">Response action taken in response to the alert.</ResponseField>
+        <ResponseField name="resolvedByApi" type="boolean">Whether the alert was resolved via API.</ResponseField>
+        <ResponseField name="resolvedDate" type="string">Date and time when the alert was resolved.</ResponseField>
+        <ResponseField name="creditStatus" type="string">Status of the credit (if any) associated with the alert.</ResponseField>
+        <ResponseField name="creditNotes" type="string">Additional notes regarding the credit status.</ResponseField>
+        <ResponseField name="notes" type="string">Internal notes recorded against the alert.</ResponseField>
+        <ResponseField name="origin" type="string">Upstream alert origin, e.g. mastercard, visa, discover.</ResponseField>
+        <ResponseField name="provider" type="string">Provider associated with the alert: `ethoca`, `verifi`.</ResponseField>
+        <ResponseField name="merchantId" type="string">Identifier for the merchant within the system.</ResponseField>
+        <ResponseField name="merchantName" type="string">Merchant name registered with the alert network.</ResponseField>
+        <ResponseField name="site" type="string">Merchant's website or site string associated with the alert.</ResponseField>
+        <ResponseField name="createdAt" type="string">Date and time when the alert was created.</ResponseField>
+        <ResponseField name="invoicedAt" type="string">Date and time when the alert was invoiced.</ResponseField>
+        <ResponseField name="transactionDate" type="string">Date and time when the transaction took place.</ResponseField>
+        <ResponseField name="externalOrder" type="string">External charge id related to the alert. `null` when unmatched.</ResponseField>
+        <ResponseField name="externalUrl" type="string">URL linking to an external reference. `null` when unmatched.</ResponseField>
+        <ResponseField name="customerId" type="string">Unique identifier for the customer. `null` when unmatched.</ResponseField>
+        <ResponseField name="customerEmail" type="string">Customer's email address. `null` when unmatched.</ResponseField>
+        <ResponseField name="metadata" type="string">Metadata carried on the matched transaction. `null` when unmatched.</ResponseField>
+        <ResponseField name="mid" type="string">Sub-account / MID the matched transaction settled under. `null` when unmatched.</ResponseField>
+        <ResponseField name="processor" type="string">Payment processor the matched transaction belongs to. `null` when unmatched.</ResponseField>
+        <ResponseField name="attributes" type="object">Optional string key-value metadata. `null` when unmatched.</ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="page" type="integer" required>The page returned. The first page is 1.</ResponseField>
+    <ResponseField name="per" type="integer" required>Objects per page.</ResponseField>
+    <ResponseField name="total" type="integer" required>Total alerts matching the filter.</ResponseField>
+
+    <RequestExample>
+    ```bash cURL
+    curl --request GET \
+      --url 'https://api.chargeblast.com/api/v3/alerts?filter[type]=RDR,CDRN&filter[isMatched]=true&page=1&per=100' \
+      --header 'X-API-Key: <your-api-key>'
+    ```
+    </RequestExample>
+
+    <ResponseExample>
+    ```json 200
+    {
+      "alerts": [
+        {
+          "id": "al_9f2c1a8b",
+          "alertId": "al_9f2c1a8b",
+          "alertType": "DISPUTE_RDR",
+          "subprovider": "RDR",
+          "isMatched": true,
+          "isRefunded": false,
+          "creditAppealed": false,
+          "amount": 139.38,
+          "currency": "USD",
+          "card": "424242****1234",
+          "cardBrand": "Visa",
+          "arn": "74208352536000013652530",
+          "reasonCode": "Resolved",
+          "acquirerAction": "Resolved",
+          "descriptor": "CHARGEBLAST",
+          "externalOrder": "ch_3PabcDEfGh",
+          "customerEmail": "customer@example.com",
+          "processor": "Stripe",
+          "createdAt": "2026-06-15T12:04:22Z",
+          "transactionDate": "2026-06-14T09:11:00Z",
+          "attributes": { "order_number": "#1533", "processor_id": "proc_b381c83a9bc8a93" }
+        }
+      ],
+      "page": 1,
+      "per": 100,
+      "total": 1
+    }
+    ```
+    </ResponseExample>
+  </Tab>
+
+  <Tab title="v2">
+    ```http
+    GET https://api.chargeblast.com/api/v2/alerts
+    ```
+
+    <Warning>
+    This is the legacy **v2** endpoint. New integrations should use **v3** (the tab to the left), which adds network/status/date filtering, matched-vs-unmatched fields, and BIN details.
+    </Warning>
+
+    Get all the alerts from your chargeblast account.
+
+    ### Headers
+
+    <ParamField header="X-API-Key" type="string" required>
+      Your API key. Sent in the `X-API-Key` header.
+    </ParamField>
+
+    ### Query parameters
+
+    <ParamField query="filter" type="string">
+      The type of alerts to filter for. Possible values: `RDR`, `CDRN`, `Ethoca`, `TC40`, `SAFE`.
+    </ParamField>
+
+    <ParamField query="page" type="integer" default="1">
+      The starting page of the request. Defaults to `1`.
+    </ParamField>
+
+    <ParamField query="per" type="integer" default="10">
+      How many objects to request per page. Defaults to `10`.
+    </ParamField>
+
+    ### Response
+
+    <ResponseField name="alerts" type="ExportAlert[]" required>
+      The page of alerts.
+      <Expandable title="ExportAlert">
+        <ResponseField name="id" type="string" required>Id for the alert.</ResponseField>
+        <ResponseField name="alertId" type="string">Unique identifier for the alert within the provider's system. Matches `id`.</ResponseField>
+        <ResponseField name="alertType" type="string" required>Type of alert, e.g. FRAUD, DISPUTE.</ResponseField>
+        <ResponseField name="subprovider" type="string" required>Specific sub-provider within the provider service.</ResponseField>
+        <ResponseField name="amount" type="number" required>Transaction amount. `$139.38` is represented as `139.38`.</ResponseField>
+        <ResponseField name="createdAt" type="string" required>Date and time when the alert was created.</ResponseField>
+        <ResponseField name="transactionDate" type="string" required>Date and time when the transaction took place.</ResponseField>
+        <ResponseField name="creditAppealed" type="boolean" required>Whether the credit associated with the alert was appealed.</ResponseField>
+        <ResponseField name="provider" type="string">Provider associated with the alert: `ethoca`, `verifi`.</ResponseField>
+        <ResponseField name="card" type="string">The redacted card number, e.g. `424242****1234`.</ResponseField>
+        <ResponseField name="cardBrand" type="string">The card network (e.g. Visa, Mastercard, Amex).</ResponseField>
+        <ResponseField name="issuer" type="string">Issuer of the card.</ResponseField>
+        <ResponseField name="currency" type="string">ISO currency code (e.g. `USD`, `EUR`).</ResponseField>
+        <ResponseField name="arn" type="string">Acquirer Reference Number.</ResponseField>
+        <ResponseField name="authCode" type="string">Authorization code for the transaction.</ResponseField>
+        <ResponseField name="reasonCode" type="string">Reason code associated with the alert.</ResponseField>
+        <ResponseField name="descriptor" type="string">Billing descriptor shown on the card statement.</ResponseField>
+        <ResponseField name="site" type="string">Merchant's website or site string.</ResponseField>
+        <ResponseField name="merchantId" type="string">Identifier for the merchant within the system.</ResponseField>
+        <ResponseField name="acquirerAction" type="string">Acquirer action (RDR and acquirer-side alerts): `Resolved` or `Declined`.</ResponseField>
+        <ResponseField name="responseAction" type="string">Response action taken in response to the alert.</ResponseField>
+        <ResponseField name="creditStatus" type="string">Status of the credit (if any).</ResponseField>
+        <ResponseField name="creditNotes" type="string">Additional notes regarding the credit status.</ResponseField>
+        <ResponseField name="resolvedByApi" type="boolean">Whether the alert was resolved via API.</ResponseField>
+        <ResponseField name="resolvedDate" type="string">Date and time when the alert was resolved.</ResponseField>
+        <ResponseField name="customerId" type="string">Unique identifier for the customer.</ResponseField>
+        <ResponseField name="customerEmail" type="string">Customer's email address.</ResponseField>
+        <ResponseField name="externalOrder" type="string">External charge id related to the alert.</ResponseField>
+        <ResponseField name="externalUrl" type="string">URL linking to an external reference.</ResponseField>
+        <ResponseField name="invoicedAt" type="string">Date and time when the alert was invoiced.</ResponseField>
+        <ResponseField name="attributes" type="object">Optional string key-value metadata.</ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="page" type="integer" required>The page returned.</ResponseField>
+    <ResponseField name="per" type="integer" required>Objects per page.</ResponseField>
+    <ResponseField name="total" type="integer" required>Total alerts.</ResponseField>
+
+    <RequestExample>
+    ```bash cURL
+    curl --request GET \
+      --url 'https://api.chargeblast.com/api/v2/alerts?filter=RDR&page=1&per=10' \
+      --header 'X-API-Key: <your-api-key>'
+    ```
+    </RequestExample>
+
+    <ResponseExample>
+    ```json 200
+    {
+      "alerts": [
+        {
+          "id": "al_9f2c1a8b",
+          "alertId": "al_9f2c1a8b",
+          "alertType": "DISPUTE",
+          "subprovider": "RDR",
+          "amount": 139.38,
+          "currency": "USD",
+          "card": "424242****1234",
+          "cardBrand": "Visa",
+          "arn": "74208352536000013652530",
+          "reasonCode": "Resolved",
+          "descriptor": "CHARGEBLAST",
+          "externalOrder": "ch_3PabcDEfGh",
+          "customerEmail": "customer@example.com",
+          "creditAppealed": false,
+          "createdAt": "2026-06-15T12:04:22Z",
+          "transactionDate": "2026-06-14T09:11:00Z",
+          "attributes": { "order_number": "#1533", "processor_id": "proc_b381c83a9bc8a93" }
+        }
+      ],
+      "page": 1,
+      "per": 10,
+      "total": 1
+    }
+    ```
+    </ResponseExample>
+  </Tab>
+</Tabs>

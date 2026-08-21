@@ -19,8 +19,8 @@ We do **not** rewrite the docs in one pass. We incrementally route each concern 
 ## Target architecture
 
 ```
-docs.json                      # single source of truth: theme, navigation.versions, redirects
-openapi.json                   # one spec, all versions; pages target ops via frontmatter
+docs.json                      # single source of truth: flat groups nav, theme, redirects
+openapi.json                   # one spec, all versions; single-version pages target ops via frontmatter
 api-reference/<tag>/*.mdx       # one page per API operation (openapi: <method> <path>)
 guides/*.mdx                    # task-oriented prose
 guides/integrations/*.mdx       # per-processor setup guides
@@ -34,13 +34,15 @@ The repo does not match this yet; see [Repository structure](#repository-structu
 Rules:
 
 - **One nav source.** Only `docs.json`. Never reintroduce `mint.json`.
-- **Versions, not `-vN` siblings.** Parallel API versions live under `navigation.versions` (a sidebar version dropdown). Each version has its own group tree; shared pages are referenced in both trees by the same `.mdx` path — no content is duplicated. Only pages that genuinely differ by version get swapped between trees.
-- **One file per operation.** Endpoint pages are backed by `openapi.json` via `openapi: <method> <path>` frontmatter; prose lives in the page body.
+- **Per-endpoint versioning via in-page tabs, not `-vN` siblings and not a global version dropdown.** When an endpoint has multiple live API versions, document them on one page with a `<Tabs>` switcher (one `<Tab>` per version). The nav is a single flat `groups` list with one entry per endpoint. See the playbook below.
+- **One file per operation (single-version endpoints).** Single-version endpoint pages are backed by `openapi.json` via `openapi: <method> <path>` frontmatter; prose lives in the page body. Multi-version endpoints are hand-authored (a tabbed page cannot embed the auto-generated OpenAPI block).
 - **Every removed URL gets a redirect.** Add a 308 entry to `docs.json` `redirects` whenever a page path goes away.
 
-### Version axis note (decision needed)
+### Versioning decision (resolved)
 
-The site's version dropdown is currently labeled `v3` / `v2`, driven by the Alerts API. Other endpoints have their own version numbers (descriptors are v1/v2), so the current descriptors page (`/api/v2/descriptors`) sits in the site's `v3` bucket. This is a "current vs legacy" split, not a number-for-number match. If more endpoints join, consider relabeling the versions to `Latest` / `Legacy` (a one-line `docs.json` change) to avoid implying every endpoint is at v3/v2.
+**Versioning is applied per endpoint, not globally.** Each endpoint advances through API versions independently (alerts are at v2/v3, descriptors at v1/v2), so a single site-wide version axis would be misleading — selecting "v3" globally would imply a v3 exists for every endpoint. It therefore does not make sense to keep a global version dropdown.
+
+We evaluated Mintlify's global `navigation.versions` dropdown and rejected it for this reason. Instead, each multi-version endpoint gets an **in-page `<Tabs>` switcher** on its own page, and the nav stays a single flat `groups` list with one entry per endpoint. Tradeoff accepted: tab contents are hand-authored (kept in sync with `openapi.json` manually) because a Mintlify page cannot mix the auto-generated OpenAPI block with tabbed content. Reference implementation: `api-reference/alerts/fetch-alerts.mdx`.
 
 ## Repository structure (target + cleanup)
 
@@ -91,16 +93,19 @@ For each, decide keep-and-move vs delete-and-redirect using the orphan playbook:
 
 ## Playbooks
 
-### Collapse a duplicated endpoint pair into versions
+### Collapse a duplicated endpoint pair into one tabbed page
 
 1. Identify the current page and the legacy page (by their `openapi:` frontmatter paths).
-2. In `docs.json`, ensure the **current** page is listed in the default (`v3`) version tree and the **legacy** page only in the older (`v2`) tree, within the same group. Remove the legacy page from the default tree.
-3. Add a deprecation `<Warning>` to the legacy page body linking to the current page and telling readers to switch versions in the sidebar dropdown.
-4. Run `mint broken-links`; verify the dropdown and that both URLs still resolve with `mint dev`.
+2. Create/keep one page at the endpoint's canonical slug (e.g. `api-reference/alerts/fetch-alerts`). Give it a `<Tabs>` block with one `<Tab title="vN (current)">` and one `<Tab title="vM">`.
+3. Hand-author each tab from `openapi.json`: the method + path, query/header params (`<ParamField>`), the response body (`<ResponseField>` inside an `<Expandable>`), and a `<RequestExample>` / `<ResponseExample>`. Put a `<Warning>` in the legacy tab pointing at the current one.
+4. Delete the now-merged sibling page(s) and add a 308 `redirects` entry from each old slug (e.g. `/api-reference/alerts/fetch-alerts-v3`) to the canonical slug.
+5. Ensure `docs.json` lists a single nav entry for the endpoint. Run `mint broken-links` and check the tabs render with `mint dev`.
+
+Reference implementation: `api-reference/alerts/fetch-alerts.mdx` (v3 current + v2 tabs).
 
 ### Retire an orphaned page
 
-1. Confirm it is orphaned: not referenced in any `docs.json` version tree (see script below).
+1. Confirm it is orphaned: not referenced in the `docs.json` nav (see script below).
 2. `grep` the repo for internal links to its route; check whether the app or help center deep-links to it (orphans stay reachable by direct URL).
 3. If the content is still valuable, **add it to the nav** instead of deleting. If superseded, delete the file and add a 308 `redirects` entry to its replacement.
 4. Run `mint broken-links`.
@@ -111,7 +116,7 @@ Per Mintlify's [Migrating MDX API pages to OpenAPI navigation](https://www.mintl
 
 Do this as its own reviewed batch, not bundled with a versioning change, because of two caveats:
 
-- **Pages with a body stay MDX** (or move their prose into the spec via the `x-mint` extension): anything with callouts, deprecation `<Warning>`s, or long prose. Today that means keep `fetch-alerts-v3` and `fetch-alerts` as MDX; `fetch-descriptors` / `fetch-descriptors-v2` carry small bodies (a `<Warning>` / a description) that must be preserved.
+- **Pages with a body stay MDX** (or move their prose into the spec via the `x-mint` extension): anything with callouts, prose, or a `<Tabs>` version switcher. Notably `api-reference/alerts/fetch-alerts` and `api-reference/enrollment/fetch-descriptors` are hand-authored tabbed multi-version pages and must stay MDX.
 - **URL stability**: a directly-referenced operation generates its own slug, which differs from the current file-path slug (e.g. `api-reference/sync-data/track`). Add a 308 `redirects` entry for every changed URL.
 
 Zero-body stub candidates (safe first batch — verify each still has an empty body first):
@@ -127,7 +132,7 @@ Zero-body stub candidates (safe first batch — verify each still has an empty b
 - [ ] `api-reference/sync-data/track`
 - [ ] `api-reference/sync-data/upload-orders`
 
-Near-empty pages to evaluate (move body to `x-mint` or keep): `fetch-an-alert`, `update-alert`, `fetch-merchants`, `fetch-descriptors-v2`.
+Near-empty pages to evaluate (move body to `x-mint` or keep): `fetch-an-alert`, `update-alert`, `fetch-merchants`.
 
 ### Find orphaned pages
 
@@ -155,11 +160,13 @@ EOF
 
 ### Done
 
-- [x] Phase 1 — `docs.json` migrated from flat `groups` to `navigation.versions` (`v3` default, `v2`).
-- [x] Phase 1 — Alerts split: `fetch-alerts-v3` (v3) vs `fetch-alerts` (v2) + deprecation warning.
-- [x] Phase 1 — Enrollment descriptors split: `fetch-descriptors-v2` (v3) vs `fetch-descriptors` (v2) + deprecation warning.
-- [x] Phase 2 — deleted `mint.json`.
-- [x] Phase 3 (batch 1) — deleted `reference/alerts-5`, `reference/alert-1`, `reference/descriptors-2`, `api-reference/alerts/alert`, each with a redirect.
+- [x] Alerts versioning — merged `fetch-alerts` (v2) and `fetch-alerts-v3` into one tabbed page `api-reference/alerts/fetch-alerts` (v3 current + v2 tabs); deleted `fetch-alerts-v3` with a 308 redirect.
+- [x] Descriptors versioning — merged into one tabbed page `api-reference/enrollment/fetch-descriptors` (v2 current + v1 tabs); deleted `fetch-descriptors-v2` with a 308 redirect.
+- [x] Nav — flat `groups` list (single entry per endpoint).
+- [x] Retired the earlier global `navigation.versions` dropdown in favour of per-endpoint tabs.
+- [x] Deleted `mint.json`.
+- [x] Orphan cleanup (batch 1) — deleted `reference/alerts-5`, `reference/alert-1`, `reference/descriptors-2`, `api-reference/alerts/alert`, each with a redirect.
+- [x] Removed tracked `.DS_Store` and added `.gitignore`.
 
 ### Remaining orphans (per-batch review)
 
@@ -182,6 +189,5 @@ Verify links before removing each; keep-and-nav if still valuable, else delete +
 
 ### Known follow-ups
 
-- [ ] Decide on version labels (`v3`/`v2` vs `Latest`/`Legacy`) once more endpoints are versioned.
 - [ ] Fix the one broken link surfaced by `mint broken-links` (in `api-reference/getting-started/refund-endpoint`).
 - [ ] Consolidate zero-body endpoint stubs into direct OpenAPI nav references (see the playbook above).
