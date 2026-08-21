@@ -983,7 +983,7 @@
                         "name": "filter[type]",
                         "in": "query",
                         "required": false,
-                        "description": "Alert networks to include, comma-separated. Possible values: RDR, CDRN, Ethoca, TC40, SAFE, Cancel. Case-insensitive. An unrecognised value is rejected with a 400 rather than ignored.",
+                        "description": "Alert networks to include, comma-separated. Possible values: Ethoca, CDRN, RDR, Discover, AMEX, JCB, Cancel, TC40, SAFE, PayPal. Case-insensitive. An unrecognised value is rejected with a 400 rather than ignored.",
                         "schema": {
                             "type": "string",
                             "nullable": true
@@ -993,7 +993,7 @@
                         "name": "filter[status]",
                         "in": "query",
                         "required": false,
-                        "description": "Alert reason codes to include, comma-separated (for example Resolved, UnmatchedGeneral, AlreadyRefunded). Case-insensitive.",
+                        "description": "Alert reason codes to include, comma-separated. Possible values: Resolved, ResolvedPartial, ResolvedCancelled, AccountCancelled, CancellationProcessed, UnmatchedGeneral, UnmatchedCannotFindTransaction, Duplicate, MIDLost, AlreadyRefunded, AlreadyChargeback, Ineligible, TDS, CannotCancel, MatchedWillShip, EscalateChargeback, ContactedShipper, WIP, Error, None, NotMyDescriptor, Unactioned, TIMEOUT. Case-insensitive. An unrecognised value is rejected with a 400 rather than ignored.",
                         "schema": {
                             "type": "string",
                             "nullable": true
