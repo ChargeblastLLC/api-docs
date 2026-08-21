@@ -31,6 +31,16 @@ Each alert may include optional **`attributes`**: a dictionary of string keys an
 
     Values are case-insensitive, and a value that is not recognised returns a `400` naming the accepted values rather than being ignored.
 
+    <Note>
+    The same clauses can alternatively be sent as a JSON body with a top-level `filter` object, as a fallback for clients that prefer a body over a query string:
+
+    ```json
+    { "filter": { "type": "RDR,CDRN", "isMatched": false, "startDate": "2026-06-01" } }
+    ```
+
+    Query-string filters take precedence — the body is only read when the query carries no `filter[...]` clause. Pagination (`page` / `per`) is always read from the query string, never the body. Prefer the query-parameter form above; the body fallback exists mainly for backwards compatibility.
+    </Note>
+
     ### Matched and unmatched alerts
 
     Chargeblast matches each incoming alert against the transactions it has synced from your processors. `isMatched` tells you whether that succeeded, and it is the rule behind why some alerts carry transaction-level detail and others do not.
@@ -52,11 +62,11 @@ Each alert may include optional **`attributes`**: a dictionary of string keys an
     ### Query parameters
 
     <ParamField query="filter[type]" type="string">
-      Alert networks to include, comma-separated. Possible values: `RDR`, `CDRN`, `Ethoca`, `TC40`, `SAFE`, `Cancel`. Case-insensitive. An unrecognised value is rejected with a `400`.
+      Alert networks to include, comma-separated. Possible values: `Ethoca`, `CDRN`, `RDR`, `Discover`, `AMEX`, `JCB`, `Cancel`, `TC40`, `SAFE`, `PayPal`. Case-insensitive. An unrecognised value is rejected with a `400`.
     </ParamField>
 
     <ParamField query="filter[status]" type="string">
-      Alert reason codes to include, comma-separated (for example `Resolved`, `UnmatchedGeneral`, `AlreadyRefunded`). Case-insensitive.
+      Alert reason codes to include, comma-separated. Possible values: `Resolved`, `ResolvedPartial`, `ResolvedCancelled`, `AccountCancelled`, `CancellationProcessed`, `UnmatchedGeneral`, `UnmatchedCannotFindTransaction`, `Duplicate`, `MIDLost`, `AlreadyRefunded`, `AlreadyChargeback`, `Ineligible`, `TDS`, `CannotCancel`, `MatchedWillShip`, `EscalateChargeback`, `ContactedShipper`, `WIP`, `Error`, `None`, `NotMyDescriptor`, `Unactioned`, `TIMEOUT`. Case-insensitive. An unrecognised value is rejected with a `400`.
     </ParamField>
 
     <ParamField query="filter[isMatched]" type="boolean">
