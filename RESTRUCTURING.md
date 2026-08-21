@@ -44,6 +44,8 @@ Rules:
 
 We evaluated Mintlify's global `navigation.versions` dropdown and rejected it for this reason. Instead, each multi-version endpoint gets an **in-page `<Tabs>` switcher** on its own page, and the nav stays a single flat `groups` list with one entry per endpoint. Tradeoff accepted: tab contents are hand-authored (kept in sync with `openapi.json` manually) because a Mintlify page cannot mix the auto-generated OpenAPI block with tabbed content. Reference implementation: `api-reference/alerts/fetch-alerts.mdx`.
 
+A second consequence of dropping the `openapi:` frontmatter: the sidebar loses the auto-generated color-coded method pill (green `GET` / blue `POST`) that OpenAPI-backed pages render. As a substitute, tabbed pages set a `tag: "GET"` frontmatter field, which renders a plain text badge next to the title — close, but not the native method pill.
+
 ## Repository structure (target + cleanup)
 
 The repo layout drifted: `reference/` became a catch-all holding three live pages next to ~18 orphans (auto-named junk like `merchant-2`, `unenroll-2`, plus processor integration guides), `api-reference/getting-started/` mixes a live endpoint with orphaned prose, and assets are split across two logo folders. The goal is that a contributor can guess where any page lives from its purpose alone.
