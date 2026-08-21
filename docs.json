@@ -38,71 +38,158 @@
     }
   },
   "navigation": {
-    "groups": [
+    "versions": [
       {
-        "group": "Welcome",
-        "pages": [
-          "reference/welcome-to-chargeblast"
+        "version": "v3",
+        "default": true,
+        "groups": [
+          {
+            "group": "Welcome",
+            "pages": [
+              "reference/welcome-to-chargeblast"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/implementation-overview",
+              "guides/alerts-implementation",
+              "guides/deflections-implementation"
+            ]
+          },
+          {
+            "group": "Platform",
+            "pages": [
+              "api-reference/introduction/authorization",
+              "api-reference/webhooks/setup"
+            ]
+          },
+          {
+            "group": "Alerts",
+            "pages": [
+              "api-reference/alerts/fetch-alerts-v3",
+              "api-reference/alerts/fetch-an-alert",
+              "api-reference/alerts/update-alert",
+              "reference/alert-types",
+              "reference/reason-codes",
+              "api-reference/credit-requests/create"
+            ]
+          },
+          {
+            "group": "Digital Receipts & Deflections",
+            "pages": [
+              "api-reference/sync-data/upload-orders",
+              "api-reference/sync-data/get-orders",
+              "api-reference/sync-data/get-order",
+              "api-reference/sync-data/track",
+              "api-reference/deflections/logs"
+            ]
+          },
+          {
+            "group": "RDR",
+            "pages": [
+              "api-reference/getting-started/rdr-endpoint"
+            ]
+          },
+          {
+            "group": "Enrollment",
+            "pages": [
+              "api-reference/enrollment/enrollment-lifecycle",
+              "api-reference/enrollment/fetch-merchants",
+              "api-reference/enrollment/fetch-descriptors-v2",
+              "api-reference/enrollment/enrollment-status",
+              "api-reference/enrollment/fetch-merchant",
+              "api-reference/enrollment/enroll-merchant",
+              "api-reference/enrollment/unenroll-merchant"
+            ]
+          }
         ]
       },
       {
-        "group": "Guides",
-        "pages": [
-          "guides/implementation-overview",
-          "guides/alerts-implementation",
-          "guides/deflections-implementation"
-        ]
-      },
-      {
-        "group": "Platform",
-        "pages": [
-          "api-reference/introduction/authorization",
-          "api-reference/webhooks/setup"
-        ]
-      },
-      {
-        "group": "Alerts",
-        "pages": [
-          "api-reference/alerts/fetch-alerts-v3",
-          "api-reference/alerts/fetch-alerts",
-          "api-reference/alerts/fetch-an-alert",
-          "api-reference/alerts/update-alert",
-          "reference/alert-types",
-          "reference/reason-codes",
-          "api-reference/credit-requests/create"
-        ]
-      },
-      {
-        "group": "Digital Receipts & Deflections",
-        "pages": [
-          "api-reference/sync-data/upload-orders",
-          "api-reference/sync-data/get-orders",
-          "api-reference/sync-data/get-order",
-          "api-reference/sync-data/track",
-          "api-reference/deflections/logs"
-        ]
-      },
-      {
-        "group": "RDR",
-        "pages": [
-          "api-reference/getting-started/rdr-endpoint"
-        ]
-      },
-      {
-        "group": "Enrollment",
-        "pages": [
-          "api-reference/enrollment/enrollment-lifecycle",
-          "api-reference/enrollment/fetch-merchants",
-          "api-reference/enrollment/fetch-descriptors",
-          "api-reference/enrollment/fetch-descriptors-v2",
-          "api-reference/enrollment/enrollment-status",
-          "api-reference/enrollment/fetch-merchant",
-          "api-reference/enrollment/enroll-merchant",
-          "api-reference/enrollment/unenroll-merchant"
+        "version": "v2",
+        "groups": [
+          {
+            "group": "Welcome",
+            "pages": [
+              "reference/welcome-to-chargeblast"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/implementation-overview",
+              "guides/alerts-implementation",
+              "guides/deflections-implementation"
+            ]
+          },
+          {
+            "group": "Platform",
+            "pages": [
+              "api-reference/introduction/authorization",
+              "api-reference/webhooks/setup"
+            ]
+          },
+          {
+            "group": "Alerts",
+            "pages": [
+              "api-reference/alerts/fetch-alerts",
+              "api-reference/alerts/fetch-an-alert",
+              "api-reference/alerts/update-alert",
+              "reference/alert-types",
+              "reference/reason-codes",
+              "api-reference/credit-requests/create"
+            ]
+          },
+          {
+            "group": "Digital Receipts & Deflections",
+            "pages": [
+              "api-reference/sync-data/upload-orders",
+              "api-reference/sync-data/get-orders",
+              "api-reference/sync-data/get-order",
+              "api-reference/sync-data/track",
+              "api-reference/deflections/logs"
+            ]
+          },
+          {
+            "group": "RDR",
+            "pages": [
+              "api-reference/getting-started/rdr-endpoint"
+            ]
+          },
+          {
+            "group": "Enrollment",
+            "pages": [
+              "api-reference/enrollment/enrollment-lifecycle",
+              "api-reference/enrollment/fetch-merchants",
+              "api-reference/enrollment/fetch-descriptors",
+              "api-reference/enrollment/enrollment-status",
+              "api-reference/enrollment/fetch-merchant",
+              "api-reference/enrollment/enroll-merchant",
+              "api-reference/enrollment/unenroll-merchant"
+            ]
+          }
         ]
       }
     ]
   },
+  "redirects": [
+    {
+      "source": "/reference/alerts-5",
+      "destination": "/api-reference/alerts/fetch-alerts-v3"
+    },
+    {
+      "source": "/reference/alert-1",
+      "destination": "/api-reference/alerts/fetch-an-alert"
+    },
+    {
+      "source": "/reference/descriptors-2",
+      "destination": "/api-reference/enrollment/fetch-descriptors-v2"
+    },
+    {
+      "source": "/api-reference/alerts/alert",
+      "destination": "/api-reference/alerts/fetch-an-alert"
+    }
+  ],
   "footer": {
     "socials": {
       "x": "https://twitter.com/chargeblast",

@@ -1,0 +1,7 @@
+# macOS
+.DS_Store
+
+# Node / Mintlify local
+node_modules/
+.mintlify/
+*.log

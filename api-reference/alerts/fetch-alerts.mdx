@@ -2,6 +2,10 @@
 openapi: get /api/v2/alerts
 ---
 
+<Warning>
+This is the **v2** endpoint. New integrations should use [Fetch Alerts (v3)](/api-reference/alerts/fetch-alerts-v3), which adds network/status/date filtering, matched-vs-unmatched fields, and BIN details. Switch to the **v3** version in the sidebar version dropdown.
+</Warning>
+
 <Info>
 The `subprovider` field indicates the alert network. See [Alert Types](/reference/alert-types) for all possible values and descriptions.
 </Info>
