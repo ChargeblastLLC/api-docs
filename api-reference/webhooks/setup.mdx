@@ -26,8 +26,16 @@ api: https://yourwebsite.com/webhook/endpoint
   header="X-Event-Type"
   type="string"
   placeholder="alert.created"
-></ParamField>
+>
+Event name for this delivery, for example `alert.created`, `alert.updated`, `deflection.created`, or `deflection.updated`.
+</ParamField>
 ### Body
+
+Alert events (`alert.*`) and deflection events (`deflection.*`) use different JSON bodies. Use the tabs below for field definitions; the example on the right switches between **Alert** and **Deflection**.
+
+<Tabs>
+  <Tab title="Alert">
+
   <Expandable title="properties">
 
 <ResponseField
@@ -163,8 +171,64 @@ The alert network or source. See [Alert Types](/reference/alert-types) for all p
 ></ResponseField>
 </Expandable>
 
+  </Tab>
+  <Tab title="Deflection">
+
+  <Expandable title="properties">
+
+<ResponseField
+  name="id"
+  type="string"
+  placeholder="def_4xUCdBXVs23u03i51cpQBJ"
+></ResponseField>
+<ResponseField
+  name="type"
+  type="string"
+  placeholder="CE"
+>
+Deflection product: `CE` (Consumer Clarity) or `FPT`.
+</ResponseField>
+<ResponseField
+  name="status"
+  type="string"
+  placeholder="Succeeded"
+>
+One of `Succeeded`, `Reversed`, `Failed`, `Timeout`.
+</ResponseField>
+<ResponseField name="amount" type="float" placeholder="49.99"></ResponseField>
+<ResponseField name="currency" type="string" placeholder="USD"></ResponseField>
+<ResponseField
+  name="chargeId"
+  type="string"
+  placeholder="ch_0ab931c9139b0c8519c"
+></ResponseField>
+<ResponseField
+  name="customerEmail"
+  type="string"
+  placeholder="jason@gmail.com"
+></ResponseField>
+<ResponseField
+  name="fees"
+  type="float"
+  placeholder="0.75"
+>
+Billed deflection fee in dollars when set; may be null until billing runs.
+</ResponseField>
+<ResponseField
+  name="merchantId"
+  type="string"
+  placeholder="cb_Gu5xtoaxk10tGT9Nyb1Thf"
+>
+The individual merchant this deflection belongs to (same id space as alert `merchantId`). You can call the [Fetch Merchants](/api-reference/enrollment/fetch-merchants) endpoint to list merchant IDs for your account.
+</ResponseField>
+
+  </Expandable>
+
+  </Tab>
+</Tabs>
+
 <ResponseExample>
-```json
+```json Alert
 {
     "alertId": "al_genericId123",
     "alertType": "FRAUD",
@@ -198,6 +262,20 @@ The alert network or source. See [Alert Types](/reference/alert-types) for all p
     "transactionDate": "2024-09-30 00:00:00.000000Z"
 }
 ```
+
+```json Deflection
+{
+    "id": "def_4xUCdBXVs23u03i51cpQBJ",
+    "type": "CE",
+    "status": "Succeeded",
+    "amount": 49.99,
+    "currency": "USD",
+    "chargeId": "ch_0ab931c9139b0c8519c",
+    "customerEmail": "customer@example.com",
+    "fees": 0.75,
+    "merchantId": "cb_genericMerchantId"
+}
+```
 </ResponseExample>
 
 ---
@@ -206,7 +284,8 @@ First set up your webhook URL in the Chargeblast dashboard in the settings tab.
 
 ![](/images/reference/webhooks-developer-settings-dashboard.png)
 
-Chargeblast will begin emitting events to your webhook URL with the following schema. These events will be fired anytime a new alert is generated.
+Chargeblast will begin emitting events to your webhook URL. Switch the example above between **Alert** and **Deflection**, or see [Webhook event types](/api-reference/webhooks/webhook-events) for when each `X-Event-Type` fires.
+
 
 <Note>
   The `externalOrder` field is not available in the `alert.created` event.
@@ -246,7 +325,7 @@ Make sure to remove the version prefix and delimiter (e.g. v1,) before verifying
 
 ### Types
 
-Chargeblast emits several **`X-Event-Type`** values (for example `alert.created`, `alert.updated`, `alert.refunded`, `alert.matched`, `alert.will_expire`, `alert.within_refund_rules`). The guide below documents **which alert types apply to each webhook event** (for example whether Ethoca, CDRN, RDR, or TC40 can trigger that event), **when** each event fires, and **deduping** behavior:
+Chargeblast emits several **`X-Event-Type`** values, including alert events (`alert.created`, `alert.updated`, `alert.refunded`, `alert.matched`, `alert.will_expire`, `alert.within_refund_rules`) and deflection events (`deflection.created`, `deflection.updated`). The guide below documents **when** each event fires and which alert or deflection types apply:
 
 **[Webhook event types](/api-reference/webhooks/webhook-events)**
 
@@ -254,6 +333,6 @@ Chargeblast emits several **`X-Event-Type`** values (for example `alert.created`
 
 ### Related
 
-- [Webhook event types](/api-reference/webhooks/webhook-events) — Full event-type reference (which of Ethoca, CDRN, RDR, TC40 apply per event)
+- [Webhook event types](/api-reference/webhooks/webhook-events) — Full event-type reference (alerts and deflections)
 - [Alert Types](/reference/alert-types) — Full list of alert networks and subprovider values
 - [Reason Codes](/reference/reason-codes) — Codes used when actioning alerts

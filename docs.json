@@ -94,7 +94,6 @@
           "api-reference/enrollment/enrollment-lifecycle",
           "api-reference/enrollment/fetch-merchants",
           "api-reference/enrollment/fetch-descriptors",
-          "api-reference/enrollment/fetch-descriptors-v2",
           "api-reference/enrollment/enrollment-status",
           "api-reference/enrollment/fetch-merchant",
           "api-reference/enrollment/enroll-merchant",
@@ -103,6 +102,32 @@
       }
     ]
   },
+  "redirects": [
+    {
+      "source": "/reference/alerts-5",
+      "destination": "/api-reference/alerts/fetch-alerts"
+    },
+    {
+      "source": "/reference/alert-1",
+      "destination": "/api-reference/alerts/fetch-an-alert"
+    },
+    {
+      "source": "/reference/descriptors-2",
+      "destination": "/api-reference/enrollment/fetch-descriptors"
+    },
+    {
+      "source": "/api-reference/alerts/alert",
+      "destination": "/api-reference/alerts/fetch-an-alert"
+    },
+    {
+      "source": "/api-reference/alerts/fetch-alerts-v3",
+      "destination": "/api-reference/alerts/fetch-alerts"
+    },
+    {
+      "source": "/api-reference/enrollment/fetch-descriptors-v2",
+      "destination": "/api-reference/enrollment/fetch-descriptors"
+    }
+  ],
   "footer": {
     "socials": {
       "x": "https://twitter.com/chargeblast",

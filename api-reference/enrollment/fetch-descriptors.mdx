@@ -1,3 +1,9 @@
 ---
-openapi: get /api/descriptors
+title: "Fetch Descriptors"
+description: "List the descriptors on your account as a flat, filterable, paginated record set."
+openapi: get /api/v2/descriptors
 ---
+
+<Note>
+New integrations should use v2; the legacy endpoint is [Fetch Descriptors (v1)](/api-reference/enrollment/fetch-descriptors-v1). For a per-program roll-up (`none` / `pending` / `enrolled`) instead of individual records, see [Enrollment Status](/api-reference/enrollment/enrollment-status).
+</Note>

@@ -1,11 +1,13 @@
 ---
-openapi: get /api/v2/alerts
+title: "Fetch Alerts"
+description: "Get all the alerts from your Chargeblast account."
+openapi: get /api/v3/alerts
 ---
 
 <Info>
-The `subprovider` field indicates the alert network. See [Alert Types](/reference/alert-types) for all possible values and descriptions.
+The `subprovider` field indicates the alert network — see [Alert Types](/reference/alert-types) for all values. Each alert may also include optional **`attributes`**: a dictionary of string key/value pairs (for example `order_number`, `processor_id`), the same field that appears on [webhook](/api-reference/webhooks/setup#body) payloads.
 </Info>
 
-<Info>
-Each alert may include optional **`attributes`**: a dictionary of string keys and string values (for example `order_number`, `processor_id`). The same field appears on [webhook](/api-reference/webhooks/setup#body) payloads when present.
-</Info>
+<Note>
+New integrations should use v3; the legacy endpoint is [Fetch Alerts (v2)](/api-reference/alerts/fetch-alerts-v2). Filters use the bracketed `filter[...]` query parameters below, or an equivalent JSON `filter` body (query string wins; `page` / `per` are always query params).
+</Note>
