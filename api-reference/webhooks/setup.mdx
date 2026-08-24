@@ -26,8 +26,13 @@ api: https://yourwebsite.com/webhook/endpoint
   header="X-Event-Type"
   type="string"
   placeholder="alert.created"
-></ParamField>
+>
+Event name for this delivery, for example `alert.created`, `alert.updated`, `deflection.created`, or `deflection.updated`.
+</ParamField>
 ### Body
+
+Alert events (`alert.*`) use the alert schema below. Deflection events (`deflection.*`) use the [deflection body](#deflection-body) instead.
+
   <Expandable title="properties">
 
 <ResponseField
@@ -206,7 +211,8 @@ First set up your webhook URL in the Chargeblast dashboard in the settings tab.
 
 ![](/images/reference/webhooks-developer-settings-dashboard.png)
 
-Chargeblast will begin emitting events to your webhook URL with the following schema. These events will be fired anytime a new alert is generated.
+Chargeblast will begin emitting events to your webhook URL. Alert events use the alert schema below; deflection events use a separate deflection schema (see [Deflection body](#deflection-body)).
+
 
 <Note>
   The `externalOrder` field is not available in the `alert.created` event.
@@ -244,9 +250,77 @@ v1,bm9ldHUjKzFob2VudXRob2VodWUzMjRvdWVvdW9ldQo= v2,MzJsNDk4MzI0K2VvdSMjMTEjQEBAQ
 
 Make sure to remove the version prefix and delimiter (e.g. v1,) before verifying the signature. Use v1. In this example, you'd compare your signature against `bm9ldHUjKzFob2VudXRob2VodWUzMjRvdWVvdW9ldQo=`.
 
+### Deflection body
+
+When **`X-Event-Type`** is `deflection.created` or `deflection.updated`, the JSON body is a **deflection** object (not an alert). Fields:
+
+  <Expandable title="properties">
+
+<ResponseField
+  name="id"
+  type="string"
+  placeholder="def_4xUCdBXVs23u03i51cpQBJ"
+></ResponseField>
+<ResponseField
+  name="type"
+  type="string"
+  placeholder="CE"
+>
+Deflection product: `CE` (Consumer Clarity) or `FPT`.
+</ResponseField>
+<ResponseField
+  name="status"
+  type="string"
+  placeholder="Succeeded"
+>
+One of `Succeeded`, `Reversed`, `Failed`, `Timeout`.
+</ResponseField>
+<ResponseField name="amount" type="float" placeholder="49.99"></ResponseField>
+<ResponseField name="amountUsd" type="float" placeholder="49.99"></ResponseField>
+<ResponseField name="currency" type="string" placeholder="USD"></ResponseField>
+<ResponseField
+  name="chargeId"
+  type="string"
+  placeholder="ch_0ab931c9139b0c8519c"
+></ResponseField>
+<ResponseField
+  name="insightId"
+  type="string"
+  placeholder="case_abc123"
+></ResponseField>
+<ResponseField
+  name="customerEmail"
+  type="string"
+  placeholder="jason@gmail.com"
+></ResponseField>
+<ResponseField
+  name="fees"
+  type="float"
+  placeholder="0.75"
+>
+Billed deflection fee in dollars when set; may be null until billing runs.
+</ResponseField>
+<ResponseField
+  name="pushedToBilling"
+  type="bool"
+  placeholder="false"
+></ResponseField>
+<ResponseField
+  name="createdAt"
+  type="string"
+  placeholder="2024-10-31 21:57:23.601000Z"
+></ResponseField>
+<ResponseField
+  name="retailerId"
+  type="string"
+  placeholder="ret_4xUCdBXVs23u03i51cpQBJ"
+></ResponseField>
+
+  </Expandable>
+
 ### Types
 
-Chargeblast emits several **`X-Event-Type`** values (for example `alert.created`, `alert.updated`, `alert.refunded`, `alert.matched`, `alert.will_expire`, `alert.within_refund_rules`). The guide below documents **which alert types apply to each webhook event** (for example whether Ethoca, CDRN, RDR, or TC40 can trigger that event), **when** each event fires, and **deduping** behavior:
+Chargeblast emits several **`X-Event-Type`** values, including alert events (`alert.created`, `alert.updated`, `alert.refunded`, `alert.matched`, `alert.will_expire`, `alert.within_refund_rules`) and deflection events (`deflection.created`, `deflection.updated`). The guide below documents **when** each event fires and which alert or deflection types apply:
 
 **[Webhook event types](/api-reference/webhooks/webhook-events)**
 
@@ -254,6 +328,6 @@ Chargeblast emits several **`X-Event-Type`** values (for example `alert.created`
 
 ### Related
 
-- [Webhook event types](/api-reference/webhooks/webhook-events) — Full event-type reference (which of Ethoca, CDRN, RDR, TC40 apply per event)
+- [Webhook event types](/api-reference/webhooks/webhook-events) — Full event-type reference (alerts and deflections)
 - [Alert Types](/reference/alert-types) — Full list of alert networks and subprovider values
 - [Reason Codes](/reference/reason-codes) — Codes used when actioning alerts
