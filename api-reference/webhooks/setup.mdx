@@ -31,7 +31,10 @@ Event name for this delivery, for example `alert.created`, `alert.updated`, `def
 </ParamField>
 ### Body
 
-Alert events (`alert.*`) use the alert schema below. Deflection events (`deflection.*`) use the [deflection body](#deflection-body) instead.
+Alert events (`alert.*`) and deflection events (`deflection.*`) use different JSON bodies. Use the tabs below for field definitions; the example on the right switches between **Alert** and **Deflection**.
+
+<Tabs>
+  <Tab title="Alert">
 
   <Expandable title="properties">
 
@@ -168,8 +171,64 @@ The alert network or source. See [Alert Types](/reference/alert-types) for all p
 ></ResponseField>
 </Expandable>
 
+  </Tab>
+  <Tab title="Deflection">
+
+  <Expandable title="properties">
+
+<ResponseField
+  name="id"
+  type="string"
+  placeholder="def_4xUCdBXVs23u03i51cpQBJ"
+></ResponseField>
+<ResponseField
+  name="type"
+  type="string"
+  placeholder="CE"
+>
+Deflection product: `CE` (Consumer Clarity) or `FPT`.
+</ResponseField>
+<ResponseField
+  name="status"
+  type="string"
+  placeholder="Succeeded"
+>
+One of `Succeeded`, `Reversed`, `Failed`, `Timeout`.
+</ResponseField>
+<ResponseField name="amount" type="float" placeholder="49.99"></ResponseField>
+<ResponseField name="currency" type="string" placeholder="USD"></ResponseField>
+<ResponseField
+  name="chargeId"
+  type="string"
+  placeholder="ch_0ab931c9139b0c8519c"
+></ResponseField>
+<ResponseField
+  name="customerEmail"
+  type="string"
+  placeholder="jason@gmail.com"
+></ResponseField>
+<ResponseField
+  name="fees"
+  type="float"
+  placeholder="0.75"
+>
+Billed deflection fee in dollars when set; may be null until billing runs.
+</ResponseField>
+<ResponseField
+  name="merchantId"
+  type="string"
+  placeholder="cb_Gu5xtoaxk10tGT9Nyb1Thf"
+>
+The individual merchant this deflection belongs to (same id space as alert `merchantId`). You can call the [Fetch Merchants](/api-reference/enrollment/fetch-merchants) endpoint to list merchant IDs for your account.
+</ResponseField>
+
+  </Expandable>
+
+  </Tab>
+</Tabs>
+
 <ResponseExample>
-```json
+```json Alert
 {
     "alertId": "al_genericId123",
     "alertType": "FRAUD",
@@ -203,6 +262,20 @@ The alert network or source. See [Alert Types](/reference/alert-types) for all p
     "transactionDate": "2024-09-30 00:00:00.000000Z"
 }
 ```
+
+```json Deflection
+{
+    "id": "def_4xUCdBXVs23u03i51cpQBJ",
+    "type": "CE",
+    "status": "Succeeded",
+    "amount": 49.99,
+    "currency": "USD",
+    "chargeId": "ch_0ab931c9139b0c8519c",
+    "customerEmail": "customer@example.com",
+    "fees": 0.75,
+    "merchantId": "cb_genericMerchantId"
+}
+```
 </ResponseExample>
 
 ---
@@ -211,7 +284,7 @@ First set up your webhook URL in the Chargeblast dashboard in the settings tab.
 
 ![](/images/reference/webhooks-developer-settings-dashboard.png)
 
-Chargeblast will begin emitting events to your webhook URL. Alert events use the alert schema below; deflection events use a separate deflection schema (see [Deflection body](#deflection-body)).
+Chargeblast will begin emitting events to your webhook URL. Switch the example above between **Alert** and **Deflection**, or see [Webhook event types](/api-reference/webhooks/webhook-events) for when each `X-Event-Type` fires.
 
 
 <Note>
@@ -249,74 +322,6 @@ The svix-signature header is composed of a list of space delimited signatures an
 v1,bm9ldHUjKzFob2VudXRob2VodWUzMjRvdWVvdW9ldQo= v2,MzJsNDk4MzI0K2VvdSMjMTEjQEBAQDEyMzMzMzEyMwo=
 
 Make sure to remove the version prefix and delimiter (e.g. v1,) before verifying the signature. Use v1. In this example, you'd compare your signature against `bm9ldHUjKzFob2VudXRob2VodWUzMjRvdWVvdW9ldQo=`.
-
-### Deflection body
-
-When **`X-Event-Type`** is `deflection.created` or `deflection.updated`, the JSON body is a **deflection** object (not an alert). Fields:
-
-  <Expandable title="properties">
-
-<ResponseField
-  name="id"
-  type="string"
-  placeholder="def_4xUCdBXVs23u03i51cpQBJ"
-></ResponseField>
-<ResponseField
-  name="type"
-  type="string"
-  placeholder="CE"
->
-Deflection product: `CE` (Consumer Clarity) or `FPT`.
-</ResponseField>
-<ResponseField
-  name="status"
-  type="string"
-  placeholder="Succeeded"
->
-One of `Succeeded`, `Reversed`, `Failed`, `Timeout`.
-</ResponseField>
-<ResponseField name="amount" type="float" placeholder="49.99"></ResponseField>
-<ResponseField name="amountUsd" type="float" placeholder="49.99"></ResponseField>
-<ResponseField name="currency" type="string" placeholder="USD"></ResponseField>
-<ResponseField
-  name="chargeId"
-  type="string"
-  placeholder="ch_0ab931c9139b0c8519c"
-></ResponseField>
-<ResponseField
-  name="insightId"
-  type="string"
-  placeholder="case_abc123"
-></ResponseField>
-<ResponseField
-  name="customerEmail"
-  type="string"
-  placeholder="jason@gmail.com"
-></ResponseField>
-<ResponseField
-  name="fees"
-  type="float"
-  placeholder="0.75"
->
-Billed deflection fee in dollars when set; may be null until billing runs.
-</ResponseField>
-<ResponseField
-  name="pushedToBilling"
-  type="bool"
-  placeholder="false"
-></ResponseField>
-<ResponseField
-  name="createdAt"
-  type="string"
-  placeholder="2024-10-31 21:57:23.601000Z"
-></ResponseField>
-<ResponseField
-  name="retailerId"
-  type="string"
-  placeholder="ret_4xUCdBXVs23u03i51cpQBJ"
-></ResponseField>
-
-  </Expandable>
 
 ### Types
 

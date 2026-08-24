@@ -10,7 +10,7 @@ When webhooks are configured for your account, Chargeblast delivers notification
 <Info>
 **Alert events:** **`alertCategory`** reflects the alert type (for example **Ethoca**, **CDRN**, **RDR**, **TC40**). Which types each alert webhook event supports is defined in the table; some events omit certain types by design.
 
-**Deflection events:** payloads use the deflection body schema (not the alert schema). See [Webhooks](/api-reference/webhooks/setup#deflection-body).
+**Deflection events:** payloads use the deflection body schema (not the alert schema). See [Webhooks](/api-reference/webhooks/setup#body) (Deflection tab).
 </Info>
 
 For payload field definitions and authentication, see [Webhooks](/api-reference/webhooks/setup).
@@ -35,8 +35,7 @@ For payload field definitions and authentication, see [Webhooks](/api-reference/
 | Event type | Deflection types | Circumstance | Notes |
 |------------|------------------|--------------|-------|
 | `deflection.created` | CE, FPT | A new deflection record is created. | **CE** from Verifi Consumer Clarity notifications; **FPT** when an FPT row is materialized into `clarity.deflection`. |
-| `deflection.updated` | CE, FPT | An existing deflection changes in a way that should notify subscribers. | Includes CE status transitions (for example Succeeded → Reversed) and billing updates (`fees` / `pushedToBilling`). |
-
+| `deflection.updated` | CE, FPT | An existing deflection changes in a way that should notify subscribers. | Includes CE status transitions (for example Succeeded → Reversed) and billing updates when `fees` is set. |
 ---
 
 ## Event details
@@ -67,11 +66,11 @@ Fires when an alert is **within** your configured **automation rules** after the
 
 ### `deflection.created`
 
-Fires when Chargeblast first persists a deflection (**CE** or **FPT**). The JSON body is the [deflection schema](/api-reference/webhooks/setup#deflection-body), not an alert object. **`type`** is `CE` or `FPT`; **`status`** is one of `Succeeded`, `Reversed`, `Failed`, or `Timeout`.
+Fires when Chargeblast first persists a deflection (**CE** or **FPT**). The JSON body is the [deflection schema](/api-reference/webhooks/setup#body) (Deflection tab), not an alert object. **`type`** is `CE` or `FPT`; **`status`** is one of `Succeeded`, `Reversed`, `Failed`, or `Timeout`.
 
 ### `deflection.updated`
 
-Fires when an existing deflection is updated for subscribers — typically a **CE** status change from a later Verifi notification, or after the deflection is pushed to billing (`pushedToBilling`, `fees`). Same deflection body schema as `deflection.created`.
+Fires when an existing deflection is updated for subscribers — typically a **CE** status change from a later Verifi notification, or after the deflection is billed (`fees` populated). Same deflection body schema as `deflection.created`.
 
 ---
 
