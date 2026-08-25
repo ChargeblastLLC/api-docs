@@ -2,3 +2,36 @@
 title: "Update Alert"
 description: "Update the status of an alert to inform the issuing bank whether a refund will be issued. If an alert is left unactioned for 48 hours, it will be automatically declined. For the best outcome, mark alerts as resolved within 24 hours of receiving them (some smaller banks will escalate quarantined transactions as soon as 24 hours within propogating an alert). Although our API allows multiple status updates, only the first response is recognized and acted upon by the issuing bank."
 ---
+
+## Automatically request credit
+
+Pass optional `automatically_request_credit: true` when actioning an alert with a **credit-eligible** reason code to request and auto-approve a credit in the same call:
+
+| Eligible reason codes | Notes |
+| --- | --- |
+| `AlreadyRefunded` | Resolved code; eligible for credit |
+| `AlreadyChargeback` | Decline code; eligible for credit |
+| `MIDLost` | Decline code; eligible for credit |
+| `ResolvedCancelled` | Decline code; eligible for credit |
+| `UnmatchedCannotFindTransaction` | Decline code; eligible for credit |
+
+Credit is **only** granted when all of the following are true:
+
+- The reason code is one of the eligible codes above
+- The merchant is **not** on the bill-per-resolved-alert pricing model (`is_billed_for_resolved`)
+- The alert is not RDR
+- The alert is at most 7 days old
+- The alert does not already have a credit request
+
+If a credit will not be granted, **no** credit request is opened — the alert is still updated normally and the response body does not include credit fields.
+
+When a credit **is** granted, the `200` response includes:
+
+```json
+{
+  "credit_granted": true,
+  "credit_request_id": "al_..."
+}
+```
+
+See [Reason Codes](/reference/reason-codes) for the full list of codes and credit eligibility.

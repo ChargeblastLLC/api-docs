@@ -436,16 +436,15 @@
                         }
                     }
                 ],
-                "description": "Update the status of an alert to inform the issuing bank whether a refund will be issued. If an alert is left unactioned for 48 hours, it will be automatically declined. For the best outcome, mark alerts as resolved within 24 hours of receiving them (some smaller banks will escalate quarantined transactions as soon as 24 hours within propagating an alert). Although our API allows multiple status updates, only the first response is recognized and acted upon by the issuing bank.",
+                "description": "Update the status of an alert to inform the issuing bank whether a refund will be issued. If an alert is left unactioned for 48 hours, it will be automatically declined. For the best outcome, mark alerts as resolved within 24 hours of receiving them (some smaller banks will escalate quarantined transactions as soon as 24 hours within propagating an alert). Although our API allows multiple status updates, only the first response is recognized and acted upon by the issuing bank. Optionally pass `automatically_request_credit: true` with a credit-eligible reason code to request and auto-grant a credit when eligible; when a credit is granted the response body includes `credit_granted: true`.",
                 "operationId": "alerts-update",
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "OK. Empty object when no credit was granted; includes `credit_granted` when an automatic credit was issued.",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "integer",
-                                    "format": "int64"
+                                    "$ref": "#/components/schemas/AlertUpdateResponse"
                                 }
                             }
                         }
@@ -605,12 +604,11 @@
             "post": {
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "OK. Empty object when no credit was granted; includes `credit_granted` when an automatic credit was issued.",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "integer",
-                                    "format": "int64"
+                                    "$ref": "#/components/schemas/AlertUpdateResponse"
                                 }
                             }
                         }
@@ -639,8 +637,8 @@
                 "tags": [
                     "Alerts"
                 ],
-                "description": "Update the status of an alert to inform the issuing bank whether a refund will be issued. If an alert is left unactioned for 48 hours, it will be automatically declined. For the best outcome, mark alerts as resolved within 24 hours of receiving them (some smaller banks will escalate quarantined transactions as soon as 24 hours within propagating an alert). Although our API allows multiple status updates, only the first response is recognized and acted upon by the issuing bank.",
-                "operationId": "alerts-update",
+                "description": "Update the status of an alert to inform the issuing bank whether a refund will be issued. If an alert is left unactioned for 48 hours, it will be automatically declined. For the best outcome, mark alerts as resolved within 24 hours of receiving them (some smaller banks will escalate quarantined transactions as soon as 24 hours within propagating an alert). Although our API allows multiple status updates, only the first response is recognized and acted upon by the issuing bank. Optionally pass `automatically_request_credit: true` with a credit-eligible reason code to request and auto-grant a credit when eligible; when a credit is granted the response body includes `credit_granted: true`.",
+                "operationId": "alerts-update-legacy",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1978,12 +1976,30 @@
                         "type": "boolean",
                         "default": false,
                         "description": "When set to true, the alert will be actioned at the point of expiration rather than immediately. If the alert is actioned with a different reason code before the expiration date, this action is disregarded. Intended for sending unidentified alert updates where a manual search process is also implemented. Note: If the action code is 'resolved', this field will be disregarded and the alert will be actioned as resolved immediately."
+                    },
+                    "automatically_request_credit": {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "When true, automatically request and grant a credit if the reason code is credit-eligible (`AlreadyRefunded`, `AlreadyChargeback`, `MIDLost`, `ResolvedCancelled`, `UnmatchedCannotFindTransaction`) and the merchant/alert qualify (not on bill-per-resolved pricing, not RDR, alert age ≤ 7 days, no existing credit). If a credit will not be granted, no credit request is opened. When a credit is granted, the response includes `credit_granted: true` and `credit_request_id`."
                     }
                 },
                 "required": [
                     "result"
                 ],
                 "type": "object"
+            },
+            "AlertUpdateResponse": {
+                "type": "object",
+                "properties": {
+                    "credit_granted": {
+                        "type": "boolean",
+                        "description": "True when a credit was automatically requested and granted for this update. Omitted when no credit was granted."
+                    },
+                    "credit_request_id": {
+                        "type": "string",
+                        "description": "Id of the approved credit request when `credit_granted` is true (same as the alert id)."
+                    }
+                }
             },
             "RefundRequestBody": {
                 "properties": {
