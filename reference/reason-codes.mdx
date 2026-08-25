@@ -28,7 +28,7 @@ Decline codes indicate the alert is being declined and no refund will be issued.
 | Code | Description |
 | --- | --- |
 | `UnmatchedGeneral` \* | The transaction either can't find a matching transaction, or you're unsure which specific reason code applies. This is the default option to select when in doubt. Credit is subject to review. |
-| `UnmatchedCannotFindTransaction` \* | The specific transaction referenced in the alert cannot be found in your system. Credit is subject to review. |
+| `UnmatchedCannotFindTransaction` \* | The specific transaction referenced in the alert cannot be found in your system. This code is eligible for credit. |
 | `AlreadyChargeback` \* | The transaction has already resulted in a chargeback **prior** to the alert being transmitted. This code is eligible for credit. |
 | `Ineligible` | A generic decline code indicating the alert is not eligible for a refund. The main use case is when you simply do not want to refund the cardholder, but the alert is otherwise valid. Not eligible for credit. |
 | `MIDLost` | The Merchant ID (processing account) associated with this transaction has been lost or terminated. This code is eligible for credit. |
