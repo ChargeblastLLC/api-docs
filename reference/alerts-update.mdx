@@ -18,7 +18,7 @@ Pass optional `automatically_request_credit: true` when actioning an alert with 
 Credit is **only** granted when all of the following are true:
 
 - The reason code is one of the eligible codes above
-- The merchant is **not** billed for resolved alerts
+- The merchant is **not** on the bill-per-resolved-alert pricing model (`is_billed_for_resolved`)
 - The alert is not RDR
 - The alert is at most 7 days old
 - The alert does not already have a credit request

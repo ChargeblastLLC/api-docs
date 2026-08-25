@@ -8,6 +8,6 @@ See the full list of available reason codes and their descriptions in the [Reaso
 
 ## Automatically request credit
 
-Set `automatically_request_credit` to `true` to request and auto-grant a credit when the reason code is credit-eligible (`AlreadyRefunded`, `AlreadyChargeback`, `MIDLost`, `ResolvedCancelled`, `UnmatchedCannotFindTransaction`) and the merchant/alert qualify. If a credit will not be granted, no credit request is created. When a credit is granted, the response includes `credit_granted: true` and `credit_request_id`.
+Set `automatically_request_credit` to `true` to request and auto-grant a credit when the reason code is credit-eligible (`AlreadyRefunded`, `AlreadyChargeback`, `MIDLost`, `ResolvedCancelled`, `UnmatchedCannotFindTransaction`) and the merchant/alert qualify (including that the merchant is not on bill-per-resolved pricing). If a credit will not be granted, no credit request is created. When a credit is granted, the response includes `credit_granted: true` and `credit_request_id`.
 
 See [Update Alert](/reference/alerts-update) for eligibility details.

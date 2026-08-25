@@ -1980,7 +1980,7 @@
                     "automatically_request_credit": {
                         "type": "boolean",
                         "default": false,
-                        "description": "When true, automatically request and grant a credit if the reason code is credit-eligible (`AlreadyRefunded`, `AlreadyChargeback`, `MIDLost`, `ResolvedCancelled`, `UnmatchedCannotFindTransaction`) and the merchant/alert qualify (not billed for resolved alerts, not RDR, alert age ≤ 7 days, no existing credit). If a credit will not be granted, no credit request is opened. When a credit is granted, the response includes `credit_granted: true` and `credit_request_id`."
+                        "description": "When true, automatically request and grant a credit if the reason code is credit-eligible (`AlreadyRefunded`, `AlreadyChargeback`, `MIDLost`, `ResolvedCancelled`, `UnmatchedCannotFindTransaction`) and the merchant/alert qualify (not on bill-per-resolved pricing, not RDR, alert age ≤ 7 days, no existing credit). If a credit will not be granted, no credit request is opened. When a credit is granted, the response includes `credit_granted: true` and `credit_request_id`."
                     }
                 },
                 "required": [
