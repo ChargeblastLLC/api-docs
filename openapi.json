@@ -1074,6 +1074,49 @@
                     }
                 }
             }
+        },
+        "/api/v3/disputes/upload": {
+            "post": {
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DisputeUploadV3Response"
+                                }
+                            }
+                        }
+                    }
+                },
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DisputeUploadBody"
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Sync Data"
+                ],
+                "operationId": "disputes-upload-v3",
+                "parameters": [
+                    {
+                        "name": "X-API-Key",
+                        "required": true,
+                        "in": "header",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Your API key. Sent in the `X-API-Key` header."
+                    }
+                ],
+                "summary": "Upload Disputes",
+                "description": "Upload disputes with per-dispute validation. Each dispute must reference an existing order via chargeId or include an order object to create it, so every dispute is linked to a charge. Valid disputes are saved even when others in the batch fail. Returns succeeded and failed dispute ids with reasons. Maximum of 100 disputes per request."
+            }
         }
     },
     "info": {
@@ -4252,6 +4295,131 @@
                     "RocketGate"
                 ],
                 "description": "• Stripe → Stripe\n• Shopify → Shopify\n• CheckoutChamp → CheckoutChamp\n• Braintree → Braintree\n• Mamopay → Mamopay\n• Maverick → Maverick\n• Sticky → Sticky\n• Unknown → Unknown\n• API → API\n• 29Next → Next\n• Square → Square\n• Spreedly → Spreedly\n• Airwallex → Airwallex\n• NMI → NMI\n• Auth → Auth\n• Primer → Primer\n• Payarc → Payarc\n• PaymentKit → PaymentKit\n• Chargebee → Chargebee\n• Phoenix → Phoenix\n• Adyen → Adyen\n• Recurly → Recurly\n• Gr4vy → Gr4vy\n• Recharge → Recharge\n• Openpay → Openpay\n• Finix → Finix\n• Worldpay → Worldpay\n• FMJ → FMJ\n• Coinflow → Coinflow\n• Xecom → Xecom\n• Vrio → Vrio\n• Checkout → Checkout\n• a55 → a55\n• Seal → Seal\n• GuestyPay → GuestyPay\n• Fyntek → Fyntek\n• Paytech → Paytech\n• SwissCRM → SwissCRM\n• Paysight → Paysight\n• Whop → Whop\n• Spark → Spark\n• Kurv → Kurv\n• Everflow → Everflow\n• IMerchant → IMerchant\n• RocketGate → RocketGate"
+            },
+            "DisputeUploadBody": {
+                "type": "object",
+                "properties": {
+                    "disputes": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/DisputeUploadBodyDispute"
+                        }
+                    }
+                },
+                "required": [
+                    "disputes"
+                ]
+            },
+            "DisputeUploadBodyDispute": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "The internal id of the dispute in your CRM. Re-uploading the same id updates the existing dispute."
+                    },
+                    "disputeDate": {
+                        "type": "string",
+                        "description": "The date the dispute was opened, either in yyyy-MM-dd'T'HH:mm:ssZ format or yyyy-MM-dd format."
+                    },
+                    "chargeId": {
+                        "type": "string",
+                        "description": "The id of an order previously uploaded via /api/v3/orders/upload. Provide exactly one of chargeId or order."
+                    },
+                    "order": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/OrderUploadBodyOrder"
+                            }
+                        ],
+                        "description": "The order to create and link the dispute to, using the same schema as /api/v3/orders/upload. Provide exactly one of chargeId or order."
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "needs_response",
+                            "under_review",
+                            "charge_refunded",
+                            "won",
+                            "lost",
+                            "protected",
+                            "prevented"
+                        ],
+                        "description": "The dispute status. Defaults to 'needs_response'."
+                    },
+                    "reason": {
+                        "type": "string",
+                        "enum": [
+                            "bank_cannot_process",
+                            "check_returned",
+                            "credit_not_processed",
+                            "customer_initiated",
+                            "debit_not_authorized",
+                            "duplicate",
+                            "fraudulent",
+                            "general",
+                            "incorrect_account_details",
+                            "insufficient_funds",
+                            "product_not_received",
+                            "product_unacceptable",
+                            "subscription_canceled",
+                            "unrecognized",
+                            "unknown"
+                        ],
+                        "description": "The dispute reason. Defaults to 'general'."
+                    },
+                    "isRDR": {
+                        "type": "boolean",
+                        "description": "Whether the dispute was deflected via RDR. Defaults to false."
+                    },
+                    "submittedEvidence": {
+                        "type": "boolean",
+                        "description": "Whether evidence has already been submitted for this dispute. Defaults to false."
+                    }
+                },
+                "required": [
+                    "id",
+                    "disputeDate"
+                ]
+            },
+            "DisputeUploadFailure": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "reason": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "reason"
+                ]
+            },
+            "DisputeUploadV3Response": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    },
+                    "succeeded": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "failed": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/DisputeUploadFailure"
+                        }
+                    }
+                },
+                "required": [
+                    "message",
+                    "succeeded",
+                    "failed"
+                ]
             }
         }
     }
