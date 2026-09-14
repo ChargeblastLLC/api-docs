@@ -1,16 +1,9 @@
----
-title: "Digital receipt lookup pull guide"
-description: "Use the pull path when you want Chargeblast to ask your own systems for receipt details in real time—ideal if you already resolve orders behind an API such as GET /orders/:id instead of sending everything to us up front."
-icon: "plug"
-hidden: true
----
-
 This guide covers **digital receipt lookup** on the **pull** path: when someone looks up a charge, Chargeblast **calls your HTTPS endpoint** and your application returns the receipt information, rather than Chargeblast reading it from data you have already stored with us (similar to how you might serve an order from **GET `/orders/:id`** in your own API).
 
 You will expose an endpoint that receives each lookup request, optionally checks that the call really came from Chargeblast, finds the matching transaction in your systems, and answers with **found** (success) or **not found**—the following sections spell out headers, security, and the exact JSON shape.
 
 <Info>
-This is the **pull** path described under [Digital Receipts & Deflections](/guides/deflections-implementation) (Pull Data). Return to that page for the high-level implementation steps and qualifying fields for deflection.
+  This is the **pull** path described under [Digital Receipts & Deflections](/guides/deflections-implementation) (Pull Data). Return to that page for the high-level implementation steps and qualifying fields for deflection.
 </Info>
 
 ---
@@ -38,7 +31,7 @@ Use **Send test webhook** (and related controls in the same area) to drive those
 ## 2. Request method, URL, and headers
 
 | Item | Value |
-|------|--------|
+| --- | --- |
 | Method | `POST` |
 | URL | `https://{your configured host path}` |
 | `Content-Type` | `application/json` |
@@ -65,7 +58,7 @@ The JSON body is derived from Chargeblast’s **internal search object** for dig
 These fields are **guaranteed** on every lookup. Use them as the primary keys when resolving the transaction in your system:
 
 | Field | Notes |
-|--------|--------|
+| --- | --- |
 | `cardBin` | First six digits of the PAN |
 | `cardLast4` | Last four digits of the PAN |
 | `currency` | Transaction currency (e.g. `"USD"`) |
@@ -177,9 +170,9 @@ In Python, compare with `hmac.compare_digest(computed, header_value)`.
 **Simpler / weaker option:** you may **only** check that **`X-Digital-Receipt-Lookup-Key`** matches your configured lookup key and **skip** HMAC verification.
 
 | Approach | Pros | Cons |
-|----------|------|------|
+| --- | --- | --- |
 | Lookup key **only** | Easiest to implement; no crypto code. | Anyone who learns the single secret can impersonate Chargeblast to your endpoint if they can reach it. No integrity check on the body (rely on TLS only). |
-| Lookup key **+** HMAC | Stronger authentication and **body integrity**. | Must use raw body bytes and correct HMAC-SHA256 hex. |
+| Lookup key **\+** HMAC | Stronger authentication and **body integrity**. | Must use raw body bytes and correct HMAC-SHA256 hex. |
 
 Chargeblast **still sends** both headers; skipping signature verification is **your** policy choice.
 
@@ -188,10 +181,10 @@ Chargeblast **still sends** both headers; skipping signature verification is **y
 ## 6. Response: HTTP status
 
 | Status | Meaning | Body |
-|--------|---------|------|
+| --- | --- | --- |
 | **200**–**299** | Transaction **found** (success). | JSON receipt in the **minimal merchant shape** (`order`, `merchantProfile`, `accountProfile`); see [Minimal successful JSON](#7-minimal-successful-json-top-level-keys). |
 | **404** | Transaction **not** found. | Body may be empty; Chargeblast treats this as “not found” without parsing JSON. |
-| Other | Treated as errors by Chargeblast for production lookup flows; use **200** / **404** for normal outcomes. |
+| Other | Treated as errors by Chargeblast for production lookup flows; use **200** / **404** for normal outcomes. |  |
 
 You do **not** need a top-level `response` wrapper. **`responseStatus` in JSON is optional** for minimal shape; found vs not found is primarily driven by **HTTP status** (200 vs 404).
 
@@ -206,7 +199,7 @@ Chargeblast accepts a minimal object with top-level **`order`**, **`merchantProf
 These are enforced for the **minimal** path (structural validation). Amounts are **strings** in the merchant JSON (e.g. `"15.00"`), not necessarily the same type as the inbound `amount` number.
 
 | Path | Requirement |
-|------|---------------|
+| --- | --- |
 | `order.merchantOrderId` | Non-empty after trim |
 | `order.orderDateTime` | Non-empty after trim |
 | `order.total` | Non-empty after trim |
@@ -221,7 +214,7 @@ These are enforced for the **minimal** path (structural validation). Amounts are
 ### 7.2 Optional on the minimal path (but useful)
 
 | Path | Notes |
-|------|--------|
+| --- | --- |
 | `order.subtotal` | Defaults to `order.total` if omitted or blank |
 | `order.orderPhone` | Optional |
 | `order.transactionDetails.deviceIpAddress` | **Not required** for a minimal valid receipt |
@@ -237,7 +230,7 @@ A response can be **structurally valid** (decodes to a receipt) but still **fail
 - **`order.transactionDetails.deviceIpAddress`** is **important for CE** but **not** part of the minimal required-field list above.
 - Other CE-related gaps are derived from the mapped receipt shape (merchant descriptors, product description, customer identifiers, delivery address, etc.).
 
-The Chargeblast **developer test** API merges structural and CE gaps into one list. CE-only gaps may appear in payloads with the suffix **` (required for compelling evidence)`**; in the **Send test webhook** UI, those paths are shown with a **\*** and a short legend instead of that full suffix.
+The Chargeblast **developer test** API merges structural and CE gaps into one list. CE-only gaps may appear in payloads with the suffix  **`(required for compelling evidence)`**; in the **Send test webhook** UI, those paths are shown with a **\*** and a short legend instead of that full suffix.
 
 ---
 
@@ -295,7 +288,7 @@ Treat lookups as **read-only** from Chargeblast’s perspective: avoid charging 
 ## 10. SLA and deflection eligibility
 
 <Warning>
-**1.5 second SLA** — If your endpoint does not respond in time, the lookup fails and the transaction may not be eligible for deflection or digital receipt display. Optimize matching logic for speed; see [Digital Receipts & Deflections](/guides/deflections-implementation).
+  **1.5 second SLA** — If your endpoint does not respond in time, the lookup fails and the transaction may not be eligible for deflection or digital receipt display. Optimize matching logic for speed; see [Digital Receipts & Deflections](/guides/deflections-implementation).
 </Warning>
 
 If response times **repeatedly breach** this SLA, Chargeblast **emails the account owner** to flag that lookup latency is **consistently** over the allowed window—so you can fix performance or capacity before more lookups fail.
