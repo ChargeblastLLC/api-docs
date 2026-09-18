@@ -1,11 +1,8 @@
 ---
 title: "Fetch Disputes"
 description: "Get the recovery disputes from your Chargeblast account—with win, loss, and submission outcomes."
----
-
-```text
 openapi: get /api/v2/disputes
-```
+---
 
 <Info>
   Pass `managedByChargeblast=true` to return only the disputes Chargeblast fights on your behalf. Each dispute carries `disputeStatus` (`needs_response`, `under_review`, `won`, `lost`, ...), `isManagedByChargeblast`, `isSubmittedEvidenceByChargeblast` and `submissionDate`; fields that do not apply are omitted from the JSON rather than sent as `null`.
