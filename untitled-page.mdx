@@ -1,0 +1,12 @@
+---
+title: "Fetch Disputes"
+description: "Get the chargeback disputes from your Chargeblast account, with win, loss and submission outcomes."
+---
+
+<Info>
+  Pass `managedByChargeblast=true` to return only the disputes Chargeblast fights on your behalf. Each dispute carries `disputeStatus` (`needs_response`, `under_review`, `won`, `lost`, ...), `isManagedByChargeblast`, `isSubmittedEvidenceByChargeblast` and `submissionDate`; fields that do not apply are omitted from the JSON rather than sent as `null`.
+</Info>
+
+<Note>
+  This endpoint is enabled per account. Ask your account manager to turn it on for your API key. Use `startDate` / `endDate` (ISO 8601 or `yyyy-MM-dd`) for incremental pulls and keep `per` at 25 or below.
+</Note>
