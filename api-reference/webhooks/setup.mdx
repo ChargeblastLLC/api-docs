@@ -168,7 +168,9 @@ The alert network or source. See [Alert Types](/reference/alert-types) for all p
   name="transactionDate"
   type="string"
   placeholder="2024-09-30 00:00:00.000000Z"
-></ResponseField>
+>
+When the disputed transaction occurred, as reported by the alert network. **Precision varies by network and is frequently date-only** — the six fractional digits are fixed-width padding, not a guarantee of sub-second accuracy. Read [`transactionDate` precision](#transactiondate-precision) before matching on this field.
+</ResponseField>
 </Expandable>
 
   </Tab>
@@ -291,6 +293,37 @@ Chargeblast will begin emitting events to your webhook URL. Switch the example a
   The `externalOrder` field is not available in the `alert.created` event.
   Please use the `alert.updated` event if you require this field.
 </Note>
+
+### `transactionDate` precision
+
+`transactionDate` is passed through exactly as the alert network reports it. Chargeblast does not truncate it, and does not fill in a time when the network omits one.
+
+<Warning>
+  Every date in the webhook payload is formatted to a fixed width of six fractional digits, so `transactionDate` **always looks microsecond-precise even when it is not**. A value of `2024-09-30 00:00:00.000000Z` almost always means *the network gave us a calendar date and no time* — not that the transaction happened at midnight. Precision cannot be inferred from the format.
+</Warning>
+
+How much time detail you actually receive depends on the alert network. Measured across 432,727 production alerts over 30 days:
+
+| Alert type | Network | No time (`00:00:00Z`) | Real time of day | Sub-second |
+| --- | --- | --- | --- | --- |
+| `DISPUTE_RDR` | RDR | **99.4%** | 0.6% | **None** |
+| `DISPUTE` | CDRN | 84.4% | 15.6% | **None** |
+| `FRAUD` | Ethoca | 67.7% | 32.3% | 0.4% |
+| `DISPUTE` | Ethoca | 35.9% | 64.1% | 0.7% |
+
+These proportions are stable month over month.
+
+**When matching alerts against your own transactions:**
+
+- Match on a **±1 day window**, never on an exact timestamp.
+- **Treat RDR alerts as date-only.** No RDR alert carried a time component in the last six months.
+- **Never treat `transactionDate` as millisecond-accurate**, on any network.
+- Do not use it to order or de-duplicate transactions within a single day.
+- Where you need a precise match, prefer `arn`, `authCode`, or `networkId`, and fall back to `transactionDate` together with amount and card.
+
+<Info>
+  **The date format differs between webhooks and the REST API.** Webhooks emit `2024-09-30 09:17:28.000000Z` (space separator, six fractional digits); the REST API emits `2024-09-30T09:17:28.000Z` (ISO-8601 `T`, three digits). Both describe the same instant, but a strict ISO-8601 parser will reject the webhook form. This applies to every date field in the webhook payload, including `createdAt`, `resolvedDate` and `invoicedAt`.
+</Info>
 
 ### Authentication
 
