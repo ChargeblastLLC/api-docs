@@ -68,8 +68,13 @@
           "api-reference/alerts/update-alert",
           "reference/alert-types",
           "reference/reason-codes",
-          "api-reference/credit-requests/create",
-          "api/v2/disputes"
+          "api-reference/credit-requests/create"
+        ]
+      },
+      {
+        "group": "Disputes",
+        "pages": [
+          "api-reference/disputes/fetch-disputes"
         ]
       },
       {
@@ -127,6 +132,10 @@
     {
       "source": "/api-reference/enrollment/fetch-descriptors-v2",
       "destination": "/api-reference/enrollment/fetch-descriptors"
+    },
+    {
+      "source": "/api/v2/disputes",
+      "destination": "/api-reference/disputes/fetch-disputes"
     }
   ],
   "footer": {

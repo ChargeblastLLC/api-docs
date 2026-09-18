@@ -10,6 +10,9 @@
             "name": "Alerts"
         },
         {
+            "name": "Disputes"
+        },
+        {
             "name": "Enrollment"
         }
     ],
@@ -1066,6 +1069,110 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/APIAlertsResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/disputes": {
+            "get": {
+                "tags": [
+                    "Disputes"
+                ],
+                "summary": "Fetch Disputes",
+                "description": "Get all the chargeback disputes from your Chargeblast account. Each dispute includes linked alert, deflection, and evidence-submission data where available — roughly matching what the Chargeblast dashboard shows for a dispute.",
+                "operationId": "disputes",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "description": "Filter by dispute status. Possible values: needs_response, under_review, charge_refunded, won, lost, protected, prevented.",
+                        "schema": {
+                            "type": "string",
+                            "nullable": true,
+                            "enum": [
+                                "needs_response",
+                                "under_review",
+                                "charge_refunded",
+                                "won",
+                                "lost",
+                                "protected",
+                                "prevented"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "startDate",
+                        "in": "query",
+                        "required": false,
+                        "description": "ISO8601 date (or date-only, e.g. 2026-06-01). Only return disputes opened on or after this date.",
+                        "schema": {
+                            "type": "string",
+                            "nullable": true
+                        }
+                    },
+                    {
+                        "name": "endDate",
+                        "in": "query",
+                        "required": false,
+                        "description": "ISO8601 date (or date-only, e.g. 2026-06-01). Only return disputes opened on or before this date.",
+                        "schema": {
+                            "type": "string",
+                            "nullable": true
+                        }
+                    },
+                    {
+                        "name": "managedByChargeblast",
+                        "in": "query",
+                        "required": false,
+                        "description": "Set to true to return only the disputes Chargeblast manages (the ones our team fights on your behalf). Omit to include every dispute; false is rejected.",
+                        "schema": {
+                            "type": "boolean",
+                            "nullable": true
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "description": "The starting page of the request. Default value of 1.",
+                        "schema": {
+                            "type": "integer",
+                            "nullable": true,
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "per",
+                        "in": "query",
+                        "required": false,
+                        "description": "How many objects to request per page. Default value of 10, capped at 100.",
+                        "schema": {
+                            "type": "integer",
+                            "nullable": true,
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "X-API-Key",
+                        "in": "header",
+                        "required": true,
+                        "description": "Your API key. Sent in the `X-API-Key` header.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIDisputesResponse"
                                 }
                             }
                         }
@@ -4311,6 +4418,550 @@
                     "RocketGate"
                 ],
                 "description": "• Stripe → Stripe\n• Shopify → Shopify\n• CheckoutChamp → CheckoutChamp\n• Braintree → Braintree\n• Mamopay → Mamopay\n• Maverick → Maverick\n• Sticky → Sticky\n• Unknown → Unknown\n• API → API\n• 29Next → Next\n• Square → Square\n• Spreedly → Spreedly\n• Airwallex → Airwallex\n• NMI → NMI\n• Auth → Auth\n• Primer → Primer\n• Payarc → Payarc\n• PaymentKit → PaymentKit\n• Chargebee → Chargebee\n• Phoenix → Phoenix\n• Adyen → Adyen\n• Recurly → Recurly\n• Gr4vy → Gr4vy\n• Recharge → Recharge\n• Openpay → Openpay\n• Finix → Finix\n• Worldpay → Worldpay\n• FMJ → FMJ\n• Coinflow → Coinflow\n• Xecom → Xecom\n• Vrio → Vrio\n• Checkout → Checkout\n• a55 → a55\n• Seal → Seal\n• GuestyPay → GuestyPay\n• Fyntek → Fyntek\n• Paytech → Paytech\n• SwissCRM → SwissCRM\n• Paysight → Paysight\n• Whop → Whop\n• Spark → Spark\n• Kurv → Kurv\n• Everflow → Everflow\n• IMerchant → IMerchant\n• RocketGate → RocketGate"
+            },
+            "APIDisputesResponse": {
+                "type": "object",
+                "required": [
+                    "disputes",
+                    "page",
+                    "per",
+                    "total"
+                ],
+                "properties": {
+                    "disputes": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/APIDisputeDetail"
+                        },
+                        "description": "The disputes for this page."
+                    },
+                    "page": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "The current page."
+                    },
+                    "per": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "How many objects are returned per page."
+                    },
+                    "total": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Total number of disputes matching the filter."
+                    }
+                }
+            },
+            "APIDisputeDetail": {
+                "type": "object",
+                "required": [
+                    "dispute",
+                    "alerts",
+                    "deflections",
+                    "submissions"
+                ],
+                "properties": {
+                    "dispute": {
+                        "$ref": "#/components/schemas/CommonDisputeDirectDTO",
+                        "description": "The chargeback dispute. Recovery outcome fields: `disputeStatus` (needs_response, under_review, won, lost, ...); `isManagedByChargeblast`, `isSubmittedEvidenceByChargeblast`, `isBilled` and `invoicedDate` (omitted until Chargeblast has enriched the dispute); `submissionDate` (when evidence was submitted, omitted if it never was). Optional fields without a value are omitted from the JSON rather than sent as null."
+                    },
+                    "alerts": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ExportAlert"
+                        },
+                        "description": "Alerts (Ethoca, CDRN, RDR, TC40) linked to the charge behind this dispute, if any."
+                    },
+                    "deflections": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ExportDeflection"
+                        },
+                        "description": "Compelling Evidence / Fast Pay Thru deflections linked to the charge behind this dispute, if any."
+                    },
+                    "submissions": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ChargeSubmissionDTO"
+                        },
+                        "description": "Evidence submissions filed for this dispute, if any, each with its evidence documents."
+                    }
+                }
+            },
+            "CommonDisputeDirectDTO": {
+                "type": "object",
+                "required": [
+                    "transactionDate",
+                    "disputeDate",
+                    "amount",
+                    "source",
+                    "chargeId",
+                    "brand",
+                    "userId",
+                    "daysLeftToRespond",
+                    "supportsAutoRepresentment"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Chargeblast dispute id."
+                    },
+                    "transactionDate": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Date and time of the original charge."
+                    },
+                    "disputeDate": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Date and time the dispute was opened."
+                    },
+                    "submittedEvidence": {
+                        "type": "boolean",
+                        "nullable": true,
+                        "description": "Whether evidence has already been submitted for this dispute."
+                    },
+                    "amount": {
+                        "type": "number",
+                        "format": "double",
+                        "description": "Disputed transaction amount, in cents. For example, $19.99 is 1999."
+                    },
+                    "currency": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "ISO currency code of the original charge (e.g. USD)."
+                    },
+                    "customer": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "refunded": {
+                        "type": "boolean",
+                        "nullable": true
+                    },
+                    "descriptor": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Billing descriptor shown on the card statement."
+                    },
+                    "status": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/CommonChargeDirectStatus"
+                            }
+                        ],
+                        "nullable": true,
+                        "description": "Status of the original charge."
+                    },
+                    "last4": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "shop": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "bin": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "wallet": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/CommonChargeDirectWallet"
+                            }
+                        ],
+                        "nullable": true
+                    },
+                    "source": {
+                        "$ref": "#/components/schemas/CommonChargeChargePlatform"
+                    },
+                    "chargeId": {
+                        "type": "string",
+                        "description": "Chargeblast charge id linked to this dispute."
+                    },
+                    "accountId": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "brand": {
+                        "$ref": "#/components/schemas/CommonChargeDirectBrand"
+                    },
+                    "funding": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/CommonChargeDirectFunding"
+                            }
+                        ],
+                        "nullable": true
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "subscriptionId": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "subAccountId": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "disputeStatus": {
+                        "type": "string",
+                        "nullable": true,
+                        "enum": [
+                            "needs_response",
+                            "under_review",
+                            "charge_refunded",
+                            "won",
+                            "lost",
+                            "protected",
+                            "prevented"
+                        ],
+                        "description": "Current dispute status: needs_response, under_review, charge_refunded, won, lost, protected, or prevented."
+                    },
+                    "reason": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Issuer dispute reason (e.g. fraudulent, product_not_received, unrecognized)."
+                    },
+                    "isRDR": {
+                        "type": "boolean",
+                        "nullable": true,
+                        "description": "Whether the dispute was deflected via RDR."
+                    },
+                    "riskScore": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true
+                    },
+                    "userId": {
+                        "type": "string",
+                        "description": "Chargeblast company id that owns this dispute."
+                    },
+                    "issuer": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "amountUSD": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true,
+                        "description": "Disputed amount converted to USD cents."
+                    },
+                    "customerEmail": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "authorizationCode": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "streamId": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "arn": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Acquirer Reference Number of the original charge."
+                    },
+                    "is3DS": {
+                        "type": "boolean",
+                        "nullable": true
+                    },
+                    "expirationDate": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true,
+                        "description": "Deadline to respond to the dispute, when the processor supplies one."
+                    },
+                    "kind": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/CommonDisputeDirectKind"
+                            }
+                        ],
+                        "nullable": true
+                    },
+                    "daysLeftToRespond": {
+                        "type": "string",
+                        "description": "Human-readable time remaining to respond, e.g. `12 days` or `Expires soon`."
+                    },
+                    "explanation": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/DisputeExplanation"
+                            }
+                        ],
+                        "nullable": true
+                    },
+                    "supportsAutoRepresentment": {
+                        "type": "boolean"
+                    },
+                    "alertId": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Linked alert id when Chargeblast has enriched this dispute."
+                    },
+                    "externalUrl": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "winLikelihood": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/DisputeWinLikelihoodDTO"
+                            }
+                        ],
+                        "nullable": true
+                    },
+                    "isBilled": {
+                        "type": "boolean",
+                        "nullable": true,
+                        "description": "Whether Chargeblast has billed this recovery. Omitted until the dispute is enriched."
+                    },
+                    "invoicedDate": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true,
+                        "description": "When Chargeblast invoiced this recovery. Omitted until the dispute is enriched."
+                    },
+                    "submissionDate": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true,
+                        "description": "When evidence was submitted. Omitted if evidence was never submitted."
+                    },
+                    "isManagedByChargeblast": {
+                        "type": "boolean",
+                        "nullable": true,
+                        "description": "Whether Chargeblast is fighting this dispute on your behalf. Omitted until the dispute is enriched."
+                    },
+                    "isSubmittedEvidenceByChargeblast": {
+                        "type": "boolean",
+                        "nullable": true,
+                        "description": "Whether Chargeblast submitted evidence for this dispute. Omitted until the dispute is enriched."
+                    }
+                }
+            },
+            "ExportDeflection": {
+                "type": "object",
+                "required": [
+                    "chargeId",
+                    "type",
+                    "network",
+                    "status",
+                    "amount_usd",
+                    "currency",
+                    "deflectionDate"
+                ],
+                "properties": {
+                    "chargeId": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "Deflection type: `CE` (Compelling Evidence) or `FPT` (Fast Pay Thru)."
+                    },
+                    "network": {
+                        "type": "string",
+                        "description": "`OI` (Order Insights) or `CC` (Consumer Clarity)."
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "amount_usd": {
+                        "type": "number",
+                        "format": "double",
+                        "description": "Deflected amount in USD cents."
+                    },
+                    "currency": {
+                        "type": "string"
+                    },
+                    "deflectionDate": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "ChargeSubmissionDTO": {
+                "type": "object",
+                "required": [
+                    "isBilled",
+                    "isManual",
+                    "evidence"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "isBilled": {
+                        "type": "boolean"
+                    },
+                    "isManual": {
+                        "type": "boolean"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "disputeEnrichedId": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "commonDisputeDirectId": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "evidence": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ChargeSubmissionEvidenceDTO"
+                        }
+                    }
+                }
+            },
+            "ChargeSubmissionEvidenceDTO": {
+                "type": "object",
+                "required": [
+                    "isSubmittedToProcessor",
+                    "url"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "isSubmittedToProcessor": {
+                        "type": "boolean"
+                    },
+                    "url": {
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "submittedByAccountId": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                }
+            },
+            "DisputeWinLikelihoodDTO": {
+                "type": "object",
+                "required": [
+                    "score",
+                    "computedAt",
+                    "modelVersion",
+                    "source"
+                ],
+                "properties": {
+                    "score": {
+                        "type": "number",
+                        "format": "double",
+                        "description": "Probability that the merchant wins the dispute, from 0 to 1."
+                    },
+                    "computedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "modelVersion": {
+                        "type": "string"
+                    },
+                    "source": {
+                        "type": "string"
+                    }
+                }
+            },
+            "CommonChargeDirectStatus": {
+                "type": "string",
+                "enum": [
+                    "succeeded",
+                    "failed",
+                    "pending"
+                ]
+            },
+            "CommonChargeDirectBrand": {
+                "type": "string",
+                "enum": [
+                    "mastercard",
+                    "visa",
+                    "amex",
+                    "discover",
+                    "unknown",
+                    ""
+                ]
+            },
+            "CommonChargeDirectWallet": {
+                "type": "string",
+                "enum": [
+                    "apple_pay",
+                    "paypal",
+                    "google_pay",
+                    "link",
+                    "",
+                    "Bank",
+                    "cash_app",
+                    "pulse",
+                    "star",
+                    "nyce",
+                    "accel",
+                    "shazam",
+                    "pix",
+                    "klarna",
+                    "affirm",
+                    "afterpay_clearpay",
+                    "zip",
+                    "amazon_pay",
+                    "sepa_debit",
+                    "sunbit"
+                ]
+            },
+            "CommonChargeDirectFunding": {
+                "type": "string",
+                "enum": [
+                    "credit",
+                    "debit",
+                    "prepaid",
+                    ""
+                ]
+            },
+            "CommonDisputeDirectKind": {
+                "type": "string",
+                "enum": [
+                    "chargeback",
+                    "inquiry",
+                    "pre_arbitration",
+                    "second_chargeback"
+                ]
+            },
+            "DisputeExplanation": {
+                "type": "string",
+                "enum": [
+                    "alert_not_handled",
+                    "alerted_refunded_late",
+                    "alerted_bank_violated_sop",
+                    "alert_safe_failed",
+                    "alert_rejected",
+                    "alert_unknown",
+                    "rdr_deflected",
+                    "out_of_coverage",
+                    "alert_marked_as_already_refunded",
+                    "descriptor_not_enrolled",
+                    "descriptor_enrolled_out_of_coverage",
+                    "dispute_on_debit_network",
+                    "no_arn",
+                    "alert_update_request_failed",
+                    "unknown"
+                ]
             },
             "DisputeUploadBody": {
                 "type": "object",
