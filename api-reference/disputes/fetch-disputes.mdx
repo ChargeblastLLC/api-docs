@@ -9,5 +9,5 @@ Pass `managedByChargeblast=true` to return only the disputes Chargeblast fights 
 </Info>
 
 <Note>
-This endpoint is enabled per account. Ask your account manager to turn it on for your API key. Use `startDate` / `endDate` (ISO 8601 or `yyyy-MM-dd`) for incremental pulls. `per` defaults to 10 and is capped at 100.
+This endpoint is enabled per account. Ask your account manager to turn it on for your API key. Until then, a valid API key gets `403` with the reason "The Disputes API is not enabled for this account." Use `startDate` / `endDate` (ISO 8601 or `yyyy-MM-dd`) for incremental pulls. `per` defaults to 10 and is capped at 100.
 </Note>
