@@ -1176,9 +1176,6 @@
                                 }
                             }
                         }
-                    },
-                    "403": {
-                        "description": "The Disputes API is not enabled for this account. Contact your account manager to enable it."
                     }
                 }
             }
