@@ -169,7 +169,7 @@ The alert network or source. See [Alert Types](/reference/alert-types) for all p
   type="string"
   placeholder="2024-09-30 00:00:00.000000Z"
 >
-When the disputed transaction occurred, as reported by the alert network. **Precision varies by network and is frequently date-only** — the six fractional digits are fixed-width padding, not a guarantee of sub-second accuracy. Read [`transactionDate` precision](#transactiondate-precision) before matching on this field.
+When the disputed transaction occurred. The source and precision depend on the alert network. **Precision varies by network and is frequently date-only** — the six fractional digits are fixed-width padding, not a guarantee of sub-second accuracy. Read [`transactionDate` precision](#transactiondate-precision) before matching on this field.
 </ResponseField>
 </Expandable>
 
@@ -296,7 +296,14 @@ Chargeblast will begin emitting events to your webhook URL. Switch the example a
 
 ### `transactionDate` precision
 
-`transactionDate` is passed through exactly as the alert network reports it. Chargeblast does not truncate it, and does not fill in a time when the network omits one.
+The source of `transactionDate` depends on the alert network:
+
+| Network | Source of `transactionDate` |
+| --- | --- |
+| Ethoca | The timestamp that Ethoca sends, unchanged. If Ethoca sends no valid timestamp, the field is not in the payload. |
+| CDRN | The date that CDRN sends. CDRN sends a date only, so the time is always `00:00:00Z`. |
+| RDR | The date that RDR sends, at `00:00:00Z`. If RDR sends no date, Chargeblast uses the time it received the alert. |
+| Alerts that Chargeblast creates from your processor data (for example, Stripe early fraud warnings) | The date of the matched charge in your processor account. |
 
 <Warning>
   Every date in the webhook payload is formatted to a fixed width of six fractional digits, so `transactionDate` **always looks microsecond-precise even when it is not**. A value of `2024-09-30 00:00:00.000000Z` almost always means *the network gave us a calendar date and no time* — not that the transaction happened at midnight. Precision cannot be inferred from the format.
@@ -316,13 +323,13 @@ These proportions change over time. Do not hard-code them.
 **When matching alerts against your own transactions:**
 
 - Match on a **±1 day window**, never on an exact timestamp.
-- **Treat RDR alerts as date-only.** Almost no RDR alert carries a time component.
+- **Treat CDRN and RDR alerts as date-only.** If an RDR alert has a time of day, it is usually the time that Chargeblast received the alert, not the transaction time.
 - **Never treat `transactionDate` as millisecond-accurate**, on any network.
 - Do not use it to order or de-duplicate transactions within a single day.
 - Where you need a precise match, prefer `arn`, `authCode`, or `networkId`, and fall back to `transactionDate` together with amount and card.
 
 <Info>
-  **The date format differs between webhooks and the REST API.** Webhooks emit `2024-09-30 09:17:28.000000Z` (space separator, six fractional digits); the REST API emits `2024-09-30T09:17:28.000Z` (ISO-8601 `T`, three digits). Both describe the same instant, but a strict ISO-8601 parser will reject the webhook form. This applies to every date field in the webhook payload, including `createdAt` and `resolvedDate`.
+  **The date format differs between webhooks and the REST API.** Webhooks emit `2024-09-30 09:17:28.000000Z` (space separator, six fractional digits); the REST API emits `2024-09-30T09:17:28.000+0000` (`T` separator, three digits, `+0000` offset). Both describe the same instant, but a strict ISO-8601 parser can reject both forms. Use a parser that accepts the exact format. This applies to every date field in the payload, including `createdAt`, `resolvedDate` and `invoicedAt`.
 </Info>
 
 ### Authentication
