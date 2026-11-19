@@ -91,6 +91,27 @@ Dictionary of string keys and string values for optional metadata on the alert (
   type="string"
   placeholder="None"
 ></ResponseField>
+<ResponseField
+  name="creditRequestedAt"
+  type="string"
+  placeholder="2024-11-02 14:05:10.000000Z"
+>
+When a credit was requested for the alert. Omitted when no credit was requested.
+</ResponseField>
+<ResponseField
+  name="creditApprovedAt"
+  type="string"
+  placeholder="2024-11-04 09:30:00.000000Z"
+>
+When the credit request was approved, including approvals on appeal. Omitted until the request is approved, and for most approvals made before September 2025, which did not record the date.
+</ResponseField>
+<ResponseField
+  name="creditAmount"
+  type="number"
+  placeholder="12.5"
+>
+Amount credited back for the alert, in USD. Omitted until the credit is approved and issued.
+</ResponseField>
 <ResponseField name="currency" type="string" placeholder="USD"></ResponseField>
 <ResponseField
   name="customerEmail"
@@ -329,7 +350,7 @@ These proportions change over time. Do not hard-code them.
 - Where you need a precise match, prefer `arn`, `authCode`, or `networkId`, and fall back to `transactionDate` together with amount and card.
 
 <Info>
-  **The date format differs between webhooks and the REST API.** Webhooks emit `2024-09-30 09:17:28.000000Z` (space separator, six fractional digits); the REST API emits `2024-09-30T09:17:28.000+0000` (`T` separator, three digits, `+0000` offset). Both describe the same instant, but a strict ISO-8601 parser can reject both forms. Use a parser that accepts the exact format. This applies to every date field in the payload, including `createdAt`, `resolvedDate` and `invoicedAt`.
+  **The date format differs between webhooks and the REST API.** Webhooks emit `2024-09-30 09:17:28.000000Z` (space separator, six fractional digits); the REST API emits `2024-09-30T09:17:28.000+0000` (`T` separator, three digits, `+0000` offset). Both describe the same instant, but a strict ISO-8601 parser can reject both forms. Use a parser that accepts the exact format. This applies to every date field in the payload, including `createdAt`, `resolvedDate`, `invoicedAt`, `creditRequestedAt` and `creditApprovedAt`.
 </Info>
 
 ### Authentication
