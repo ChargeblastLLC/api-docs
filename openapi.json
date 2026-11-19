@@ -3533,6 +3533,24 @@
                         "description": "Additional notes or information regarding the credit status.",
                         "nullable": true
                     },
+                    "creditRequestedAt": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "date-time",
+                        "description": "Date and time when a credit was requested for the alert. Omitted when no credit was requested."
+                    },
+                    "creditApprovedAt": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "date-time",
+                        "description": "Date and time when the credit request was approved, including approvals on appeal. Omitted until the request is approved, and for most approvals made before September 2025, which did not record the date."
+                    },
+                    "creditAmount": {
+                        "type": "number",
+                        "nullable": true,
+                        "format": "double",
+                        "description": "Amount credited back for the alert, in USD. $139.38 will be represented as 139.38. Omitted until the credit is approved and issued."
+                    },
                     "arn": {
                         "description": "Acquirer Reference Number, unique identifier for the transaction.",
                         "nullable": true,
@@ -4110,14 +4128,32 @@
                         "type": "string",
                         "description": "Date and time when the alert was created."
                     },
+                    "creditAmount": {
+                        "type": "number",
+                        "nullable": true,
+                        "format": "double",
+                        "description": "Amount credited back for the alert, in USD. $139.38 will be represented as 139.38. Omitted until the credit is approved and issued."
+                    },
                     "creditAppealed": {
                         "type": "boolean",
                         "description": "Indicates if the credit associated with the alert was appealed."
+                    },
+                    "creditApprovedAt": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "date-time",
+                        "description": "Date and time when the credit request was approved, including approvals on appeal. Omitted until the request is approved, and for most approvals made before September 2025, which did not record the date."
                     },
                     "creditNotes": {
                         "type": "string",
                         "nullable": true,
                         "description": "Additional notes or information regarding the credit status."
+                    },
+                    "creditRequestedAt": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "date-time",
+                        "description": "Date and time when a credit was requested for the alert. Omitted when no credit was requested."
                     },
                     "creditStatus": {
                         "type": "string",
