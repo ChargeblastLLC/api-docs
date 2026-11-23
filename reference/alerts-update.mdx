@@ -22,6 +22,11 @@ Credit is **only** granted when all of the following are true:
 - The alert is not RDR
 - The alert is at most 7 days old
 - The alert does not already have a credit request
+- The alert is not a CDRN alert actioned with `AlreadyRefunded`, `MIDLost`, or `UnmatchedCannotFindTransaction`, unless Chargeblast enabled CDRN credits for your account
+
+<Note>
+Send `automatically_request_credit` on the same call that actions the alert. A later update call for an actioned alert does not request credit. It returns `409 Conflict`, or an empty response when it repeats the same reason code. When `action_at_expiration` defers the action, the call does not request credit. To request credit for an alert that is already actioned, use [Create Credit Request](/api-reference/credit-requests/create).
+</Note>
 
 If a credit will not be granted, **no** credit request is opened — the alert is still updated normally and the response body does not include credit fields.
 

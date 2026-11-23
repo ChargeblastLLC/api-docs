@@ -8,6 +8,8 @@ See the full list of available reason codes and their descriptions in the [Reaso
 
 ## Automatically request credit
 
-Set `automatically_request_credit` to `true` to request and auto-grant a credit when the reason code is credit-eligible (`AlreadyRefunded`, `AlreadyChargeback`, `MIDLost`, `ResolvedCancelled`, `UnmatchedCannotFindTransaction`) and the merchant/alert qualify (including that the merchant is not on bill-per-resolved pricing). If a credit will not be granted, no credit request is created. When a credit is granted, the response includes `credit_granted: true` and `credit_request_id`.
+Set `automatically_request_credit` to `true` to request and auto-grant a credit when the reason code is credit-eligible (`AlreadyRefunded`, `AlreadyChargeback`, `MIDLost`, `ResolvedCancelled`, `UnmatchedCannotFindTransaction`) and the merchant/alert qualify (including that the merchant is not on bill-per-resolved pricing). On CDRN alerts, `AlreadyRefunded`, `MIDLost`, and `UnmatchedCannotFindTransaction` do not grant a credit automatically, unless Chargeblast enabled CDRN credits for your account. If a credit will not be granted, no credit request is created. When a credit is granted, the response includes `credit_granted: true` and `credit_request_id`.
+
+Send `automatically_request_credit` on the same call that actions the alert. A later update call for an actioned alert does not request credit. It returns `409 Conflict`, or an empty response when it repeats the same reason code. When `action_at_expiration` defers the action, the call does not request credit. To request credit for an alert that is already actioned, use [Create Credit Request](/api-reference/credit-requests/create).
 
 See [Update Alert](/reference/alerts-update) for eligibility details.

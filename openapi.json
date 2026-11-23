@@ -576,7 +576,7 @@
                 },
                 "operationId": "postApiV2Credit-requestCreate",
                 "summary": "Create Credit Request",
-                "description": "Creates a credit request for a rejected alert. Will fail if requesting credit from resolved alert or alert with an existing credit request, otherwise will simply return 200 response code.",
+                "description": "Creates a credit request for an alert or a deflection. Send exactly one of `alert_id` or `deflection_id`. The request opens with status `Pending`, and Chargeblast reviews it. Billed Chargeblast Discover alerts skip the review and get an approved credit immediately. You can request credit for any actioned alert, except alerts with status `Resolved` or `WIP`. A `Resolved` alert had a refund issued, which is a billable outcome. A `WIP` alert is not actioned yet. A request for a `Resolved` or `WIP` alert returns `400 Bad Request`. Each alert or deflection can have one credit request only. A second request returns `409 Conflict`. To request credit at the time you action an alert, use `automatically_request_credit` on Update Alert instead.",
                 "responses": {
                     "200": {
                         "content": {
@@ -2087,7 +2087,7 @@
                     "automatically_request_credit": {
                         "type": "boolean",
                         "default": false,
-                        "description": "When true, automatically request and grant a credit if the reason code is credit-eligible (`AlreadyRefunded`, `AlreadyChargeback`, `MIDLost`, `ResolvedCancelled`, `UnmatchedCannotFindTransaction`) and the merchant/alert qualify (not on bill-per-resolved pricing, not RDR, alert age ≤ 7 days, no existing credit). If a credit will not be granted, no credit request is opened. When a credit is granted, the response includes `credit_granted: true` and `credit_request_id`."
+                        "description": "When true, automatically request and grant a credit if the reason code is credit-eligible (`AlreadyRefunded`, `AlreadyChargeback`, `MIDLost`, `ResolvedCancelled`, `UnmatchedCannotFindTransaction`) and the merchant/alert qualify (not on bill-per-resolved pricing, not RDR, alert age ≤ 7 days, no existing credit). On CDRN alerts, `AlreadyRefunded`, `MIDLost`, and `UnmatchedCannotFindTransaction` do not grant a credit automatically, unless Chargeblast enabled CDRN credits for your account. Send this field on the same call that actions the alert. A later update call for an actioned alert does not request credit. It returns `409 Conflict`, or an empty response when it repeats the same reason code. When `action_at_expiration` defers the action, the call does not request credit. If a credit will not be granted, no credit request is opened. When a credit is granted, the response includes `credit_granted: true` and `credit_request_id`."
                     }
                 },
                 "required": [
@@ -2109,18 +2109,22 @@
                 }
             },
             "RefundRequestBody": {
+                "description": "Send exactly one of `alert_id` or `deflection_id`.",
                 "properties": {
                     "comments": {
                         "type": "string",
-                        "nullable": true
+                        "nullable": true,
+                        "description": "Optional notes for the Chargeblast review."
                     },
                     "alert_id": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "Id of the alert to request credit for. Do not send it together with `deflection_id`."
+                    },
+                    "deflection_id": {
+                        "type": "string",
+                        "description": "Id of the deflection to request credit for. Do not send it together with `alert_id`."
                     }
                 },
-                "required": [
-                    "alert_id"
-                ],
                 "type": "object"
             },
             "SkioIntegration": {

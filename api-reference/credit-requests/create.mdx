@@ -1,3 +1,23 @@
 ---
 openapi: post /api/v2/credit-request/create
 ---
+
+## Which alerts can get a credit request
+
+This endpoint opens a credit request for an alert or a deflection. Send exactly one of `alert_id` or `deflection_id`.
+
+- The request opens with status `Pending`, and Chargeblast reviews it.
+- Billed Chargeblast Discover alerts skip the review and get an approved credit immediately.
+- You can request credit for any actioned alert, except alerts with status `Resolved` or `WIP`.
+- A `Resolved` alert had a refund issued, which is a billable outcome.
+- A `WIP` alert is not actioned yet.
+- Each alert or deflection can have one credit request only.
+
+| Response | Cause |
+| --- | --- |
+| `400 Bad Request` | The alert has status `Resolved` or `WIP`, or the body does not contain exactly one of `alert_id` or `deflection_id`. |
+| `409 Conflict` | The alert or deflection already has a credit request. |
+
+<Tip>
+To request credit at the time you action an alert, send `automatically_request_credit: true` on [Update Alert](/api-reference/alerts/update-alert). That flag grants the credit immediately when the alert qualifies.
+</Tip>
